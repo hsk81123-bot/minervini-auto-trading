@@ -53,6 +53,21 @@ python screener/screener.py        # docs/data/results.json 생성
 python -m http.server 8000 -d docs # http://localhost:8000
 ```
 
+## Firebase 연동 (매매 기록 기기 간 동기화, 선택)
+
+기본은 브라우저 localStorage. Google 로그인 동기화를 켜려면:
+
+1. [Firebase 콘솔](https://console.firebase.google.com) → 프로젝트 추가 (Analytics 불필요)
+2. **빌드 → Authentication → 시작하기 → Google** 사용 설정
+   - Settings → 승인된 도메인에 `hsk81123-bot.github.io` 추가
+3. **빌드 → Firestore Database → 데이터베이스 만들기** (프로덕션 모드)
+   - 규칙 탭에 [firestore.rules](firestore.rules) 내용 붙여넣고 게시
+4. **프로젝트 설정(⚙) → 내 앱 → 웹 앱 추가** → `firebaseConfig` 복사
+5. [docs/js/firebase-config.js](docs/js/firebase-config.js)의 `window.FIREBASE_CONFIG = null;`을 받은 설정으로 교체
+
+로그인하면 사이드바에 계정이 표시되고, 로컬에 쌓인 기록은 자동으로 클라우드에 병합된다.
+데이터는 `users/{uid}/trades/`에 저장되며 본인만 읽고 쓸 수 있다.
+
 ## 배포
 
 GitHub 저장소 Settings → Pages → Source: `main` 브랜치 `/docs` 폴더.

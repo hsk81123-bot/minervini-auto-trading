@@ -1,6 +1,6 @@
 /* 4. 통계 페이지 — 뼈대 + 기본 지표 (평균단가 기반 실현손익) */
 App.register("stats", async (page) => {
-  const items = Journal.load().sort((a, b) => a.date.localeCompare(b.date));
+  const items = (await Journal.load()).sort((a, b) => a.date.localeCompare(b.date));
 
   // 종목별 평균단가 추적으로 실현손익/R-multiple 계산 (단순화 버전)
   const pos = {}; // ticker -> {shares, avgCost, stop}

@@ -1,19 +1,66 @@
-/* 3. 매매 기록 페이지 — localStorage 저장 (추후 Firebase 연동 예정) */
-const Journal = {
-  KEY: "trade-journal-v1",
-  load() { try { return JSON.parse(localStorage.getItem(this.KEY)) || []; } catch { return []; } },
-  save(items) { localStorage.setItem(this.KEY, JSON.stringify(items)); },
-};
+/* 3. 매매 기록 페이지 — 저장 계층: Firestore(로그인 시) / localStorage(기본) */
+const Journal = (() => {
+  const KEY = "trade-journal-v1";
+  let mode = "local";
+  let uid = null;
+
+  const localLoad = () => {
+    try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; }
+  };
+  const localSave = items => localStorage.setItem(KEY, JSON.stringify(items));
+  const col = () => firebase.firestore()
+    .collection("users").doc(uid).collection("trades");
+
+  return {
+    mode: () => mode,
+
+    setLocal() { mode = "local"; uid = null; },
+
+    async setCloud(user) {
+      uid = user.uid;
+      mode = "cloud";
+      // 로컬에 쌓인 기록이 있으면 클라우드로 병합 업로드 후 로컬 비움
+      const locals = localLoad();
+      if (locals.length) {
+        const batch = firebase.firestore().batch();
+        locals.forEach(it => batch.set(col().doc(it.id), it, { merge: true }));
+        await batch.commit();
+        localStorage.removeItem(KEY);
+      }
+    },
+
+    async load() {
+      if (mode === "cloud") {
+        const snap = await col().get();
+        return snap.docs.map(d => d.data());
+      }
+      return localLoad();
+    },
+
+    async add(item) {
+      if (mode === "cloud") await col().doc(item.id).set(item);
+      else localSave([...localLoad(), item]);
+    },
+
+    async remove(id) {
+      if (mode === "cloud") await col().doc(id).delete();
+      else localSave(localLoad().filter(x => x.id !== id));
+    },
+  };
+})();
 
 App.register("journal", async (page) => {
   const SETUPS = ["VCP 돌파", "저점 돌파", "되돌림 매수", "기타"];
   const EXITS = ["", "손절", "익절", "추세 이탈", "기타"];
 
-  function draw() {
-    const items = Journal.load().sort((a, b) => b.date.localeCompare(a.date));
+  async function draw() {
+    const items = (await Journal.load()).sort((a, b) => b.date.localeCompare(a.date));
+    const modeBadge = Journal.mode() === "cloud"
+      ? "<span class='badge on'>☁ 클라우드 동기화</span>"
+      : "<span class='badge off'>로컬 저장 (로그인하면 기기 간 동기화)</span>";
     page.innerHTML = `
       <h1>매매 기록</h1>
-      <div class="subtitle">체결 단위로 입력 — 분할 매수/매도는 각각 별도 행으로 (현재 로컬 저장, 추후 연동 예정)</div>
+      <div class="subtitle">체결 단위로 입력 — 분할 매수/매도는 각각 별도 행으로 ${modeBadge}</div>
 
       <div class="card">
         <h2 style="margin-top:0">새 기록</h2>
@@ -56,7 +103,7 @@ App.register("journal", async (page) => {
         </table>`}
       </div>`;
 
-    document.getElementById("j-add").addEventListener("click", () => {
+    document.getElementById("j-add").addEventListener("click", async () => {
       const v = id => document.getElementById(id).value.trim();
       const item = {
         id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -71,16 +118,16 @@ App.register("journal", async (page) => {
       if (item.side === "BUY" && !item.stop) {
         alert("매수 기록에는 손절가가 필수입니다 (리스크 관리!)"); return;
       }
-      Journal.save([...Journal.load(), item]);
+      await Journal.add(item);
       draw();
     });
 
     page.querySelectorAll("[data-del]").forEach(btn =>
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", async () => {
         if (!confirm("이 기록을 삭제할까요?")) return;
-        Journal.save(Journal.load().filter(x => x.id !== btn.dataset.del));
+        await Journal.remove(btn.dataset.del);
         draw();
       }));
   }
-  draw();
+  await draw();
 });

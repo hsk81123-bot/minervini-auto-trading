@@ -44,6 +44,16 @@ body {
 .sidebar a:hover { background: var(--panel2); color: var(--text); }
 .sidebar a.active { background: var(--panel2); color: var(--accent); font-weight: 600; }
 .sidebar-footer { margin-top: auto; font-size: 11px; color: var(--muted); padding: 0 10px; }
+#auth-slot { margin-top: auto; padding: 0 4px 10px; }
+#auth-slot + .sidebar-footer { margin-top: 0; }
+.auth-user {
+  font-size: 11px; color: var(--green); padding: 0 6px 6px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.auth-btn {
+  width: 100%; font-size: 11px; padding: 7px 6px; line-height: 1.4;
+  background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+}
 
 main {
   margin-left: 200px;
@@ -153,7 +163,7 @@ button.danger { background: transparent; color: var(--red); border: 1px solid va
   .sidebar { width: 60px; }
   .sidebar a { font-size: 18px; text-align: center; padding: 10px 0; }
   .sidebar .logo { font-size: 14px; text-align: center; padding-bottom: 10px; }
-  .sidebar a span, .sidebar-footer { display: none; }
+  .sidebar a span, .sidebar-footer, #auth-slot { display: none; }
   main { margin-left: 60px; padding: 16px; }
   .analysis-layout { grid-template-columns: 1fr; }
 }

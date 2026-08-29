@@ -1,7 +1,10 @@
 /* 1. 종목 필터 페이지 — 트렌드 템플릿 통과 종목 테이블 */
 App.register("filter", async (page) => {
   const data = await App.loadResults();
+  const spSet = new Set(
+    await fetch("data/sp500.json").then(r => r.ok ? r.json() : []).catch(() => []));
   let rows = [...data.results];
+  let scope = "all"; // "all" | "sp500"
   let sortKey = "rs_rank", sortDir = -1;
 
   const vcpFlags = (v, price) => {
@@ -17,6 +20,7 @@ App.register("filter", async (page) => {
   function tableHTML() {
     const get = r => sortKey === "vcp" ? r.vcp.score : r[sortKey];
     rows.sort((a, b) => (get(a) > get(b) ? 1 : -1) * sortDir);
+    const visible = scope === "sp500" ? rows.filter(r => spSet.has(r.ticker)) : rows;
     return `
       <table>
         <thead><tr>
@@ -29,7 +33,7 @@ App.register("filter", async (page) => {
           <th>셋업 플래그</th>
         </tr></thead>
         <tbody>
-          ${rows.map(r => `
+          ${visible.map(r => `
             <tr>
               <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${r.ticker}</a>
                   <span style="color:var(--muted);font-size:11px"> ${App.cleanName(r.name)}</span></td>
@@ -46,11 +50,16 @@ App.register("filter", async (page) => {
   }
 
   function draw() {
+    const spCount = rows.filter(r => spSet.has(r.ticker)).length;
     page.innerHTML = `
       <h1>종목 필터</h1>
       <div class="subtitle">
-        미너비니 트렌드 템플릿 8개 조건 전부 통과 — ${data.passed}종목
+        미너비니 트렌드 템플릿 8개 조건 전부 통과 —
+        ${scope === "sp500" ? `S&P 500 내 ${spCount}종목` : `${data.passed}종목`}
         (분석 ${data.analyzed}종목, ${data.data_date} 기준) · 헤더 클릭으로 정렬
+        <span class="mode-group" style="margin-left:10px">
+          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sp" class="mode-btn ${scope === "sp500" ? "active" : ""}">S&P 500 (${spCount})</button>
+        </span>
       </div>
       <div class="card">${tableHTML()}</div>`;
     page.querySelectorAll("th[data-k]").forEach(th => {
@@ -61,6 +70,10 @@ App.register("filter", async (page) => {
         draw();
       });
     });
+    document.getElementById("scope-all").addEventListener("click",
+      () => { scope = "all"; draw(); });
+    document.getElementById("scope-sp").addEventListener("click",
+      () => { scope = "sp500"; draw(); });
   }
   draw();
 });

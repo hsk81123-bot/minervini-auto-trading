@@ -4,6 +4,7 @@
 유니버스: S&P 500 (추후 전 종목 확장 예정)
 출력: docs/data/results.json (GitHub Pages 웹앱이 읽음)
 """
+import io
 import json
 import sys
 import time
@@ -67,6 +68,21 @@ def get_universe() -> dict[str, str]:
             clean = name.split(" - ")[0].strip().rstrip(",")
             names[sym.replace(".", "-")] = clean  # yfinance 형식
     return names
+
+
+def export_sp500() -> None:
+    """S&P 500 구성종목 티커 목록 → docs/data/sp500.json (필터 토글용)."""
+    r = requests.get(
+        "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+        headers=UA, timeout=30,
+    )
+    sp500 = pd.read_html(io.StringIO(r.text))[0]
+    tickers = sorted(
+        sp500["Symbol"].astype(str).str.replace(".", "-", regex=False))
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(DATA_DIR / "sp500.json", "w", encoding="utf-8") as f:
+        json.dump(tickers, f)
+    print(f"  S&P 500 {len(tickers)} tickers -> sp500.json", flush=True)
 
 
 # ---------------------------------------------------------------- 데이터 수집
@@ -176,6 +192,7 @@ def main() -> None:
     names = get_universe()
     tickers = sorted(names)
     print(f"  {len(tickers)} tickers", flush=True)
+    export_sp500()
 
     print("[2/5] 가격 데이터 다운로드 (2년 일봉)...", flush=True)
     data = download_history(tickers)
