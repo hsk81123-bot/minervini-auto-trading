@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-29T15:01:10.327254",
+  "generated_at": "2026-08-29T06:16:58.552868",
   "data_date": "2026-08-27",
   "universe": "S&P 500",
   "universe_size": 503,
-  "analyzed": 499,
+  "analyzed": 500,
   "passed": 81,
   "results": [
     {
@@ -231,38 +231,6 @@
       }
     },
     {
-      "ticker": "CRL",
-      "name": "Charles River Laboratories",
-      "rs_rank": 96,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 296.41,
-      "ma50": 242.92,
-      "ma150": 197.54,
-      "ma200": 196.54,
-      "high52": 303.31,
-      "low52": 144.26,
-      "pct_off_high": -2.3,
-      "pct_above_low": 105.5,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 9.0,
-        "range_prior_pct": 25.2,
-        "vol10_ratio": 0.96
-      }
-    },
-    {
       "ticker": "MPC",
       "name": "Marathon Petroleum",
       "rs_rank": 96,
@@ -295,6 +263,38 @@
       }
     },
     {
+      "ticker": "CRWD",
+      "name": "CrowdStrike",
+      "rs_rank": 96,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 227.96,
+      "ma50": 195.27,
+      "ma150": 145.72,
+      "ma200": 140.08,
+      "high52": 229.08,
+      "low52": 85.68,
+      "pct_off_high": -0.5,
+      "pct_above_low": 166.1,
+      "vcp": {
+        "score": 1,
+        "tightening": false,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 21.0,
+        "range_prior_pct": 23.1,
+        "vol10_ratio": 1.06
+      }
+    },
+    {
       "ticker": "NTAP",
       "name": "NetApp",
       "rs_rank": 95,
@@ -324,6 +324,38 @@
         "range_recent_pct": 12.0,
         "range_prior_pct": 29.6,
         "vol10_ratio": 0.79
+      }
+    },
+    {
+      "ticker": "CRL",
+      "name": "Charles River Laboratories",
+      "rs_rank": 95,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 296.41,
+      "ma50": 242.92,
+      "ma150": 197.54,
+      "ma200": 196.54,
+      "high52": 303.31,
+      "low52": 144.26,
+      "pct_off_high": -2.3,
+      "pct_above_low": 105.5,
+      "vcp": {
+        "score": 2,
+        "tightening": true,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 9.0,
+        "range_prior_pct": 25.2,
+        "vol10_ratio": 0.96
       }
     },
     {
@@ -423,38 +455,6 @@
       }
     },
     {
-      "ticker": "APA",
-      "name": "APA Corporation",
-      "rs_rank": 94,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 42.38,
-      "ma50": 36.53,
-      "ma150": 35.38,
-      "ma200": 32.64,
-      "high52": 45.05,
-      "low52": 20.84,
-      "pct_off_high": -5.9,
-      "pct_above_low": 103.3,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 11.8,
-        "range_prior_pct": 22.2,
-        "vol10_ratio": 0.98
-      }
-    },
-    {
       "ticker": "TGT",
       "name": "Target Corporation",
       "rs_rank": 94,
@@ -519,38 +519,6 @@
       }
     },
     {
-      "ticker": "ABNB",
-      "name": "Airbnb",
-      "rs_rank": 93,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 184.4,
-      "ma50": 157.8,
-      "ma150": 140.68,
-      "ma200": 137.51,
-      "high52": 193.45,
-      "low52": 110.81,
-      "pct_off_high": -4.7,
-      "pct_above_low": 66.4,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.9,
-        "range_prior_pct": 27.9,
-        "vol10_ratio": 1.02
-      }
-    },
-    {
       "ticker": "STT",
       "name": "State Street Corporation",
       "rs_rank": 93,
@@ -580,6 +548,38 @@
         "range_recent_pct": 6.7,
         "range_prior_pct": 12.7,
         "vol10_ratio": 0.61
+      }
+    },
+    {
+      "ticker": "APA",
+      "name": "APA Corporation",
+      "rs_rank": 93,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 42.38,
+      "ma50": 36.53,
+      "ma150": 35.38,
+      "ma200": 32.64,
+      "high52": 45.05,
+      "low52": 20.84,
+      "pct_off_high": -5.9,
+      "pct_above_low": 103.3,
+      "vcp": {
+        "score": 1,
+        "tightening": false,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 11.8,
+        "range_prior_pct": 22.2,
+        "vol10_ratio": 0.98
       }
     },
     {
@@ -644,6 +644,38 @@
         "range_recent_pct": 9.4,
         "range_prior_pct": 37.6,
         "vol10_ratio": 0.77
+      }
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "rs_rank": 92,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 184.4,
+      "ma50": 157.8,
+      "ma150": 140.68,
+      "ma200": 137.51,
+      "high52": 193.45,
+      "low52": 110.81,
+      "pct_off_high": -4.7,
+      "pct_above_low": 66.4,
+      "vcp": {
+        "score": 2,
+        "tightening": true,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 7.9,
+        "range_prior_pct": 27.9,
+        "vol10_ratio": 1.02
       }
     },
     {
@@ -772,38 +804,6 @@
         "range_recent_pct": 5.3,
         "range_prior_pct": 11.8,
         "vol10_ratio": 0.61
-      }
-    },
-    {
-      "ticker": "AMGN",
-      "name": "Amgen",
-      "rs_rank": 90,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 436.99,
-      "ma50": 384.09,
-      "ma150": 359.56,
-      "ma200": 350.89,
-      "high52": 447.03,
-      "low52": 262.49,
-      "pct_off_high": -2.2,
-      "pct_above_low": 66.5,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 8.9,
-        "range_prior_pct": 15.4,
-        "vol10_ratio": 0.9
       }
     },
     {
@@ -967,8 +967,8 @@
       }
     },
     {
-      "ticker": "INCY",
-      "name": "Incyte",
+      "ticker": "AMGN",
+      "name": "Amgen",
       "rs_rank": 89,
       "checks": {
         "price_above_150_200": true,
@@ -980,22 +980,22 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 127.74,
-      "ma50": 118.11,
-      "ma150": 104.7,
-      "ma200": 104.12,
-      "high52": 132.6,
-      "low52": 81.09,
-      "pct_off_high": -3.7,
-      "pct_above_low": 57.5,
+      "price": 436.99,
+      "ma50": 384.09,
+      "ma150": 359.56,
+      "ma200": 350.89,
+      "high52": 447.03,
+      "low52": 262.49,
+      "pct_off_high": -2.2,
+      "pct_above_low": 66.5,
       "vcp": {
-        "score": 2,
+        "score": 1,
         "tightening": false,
-        "volume_dryup": true,
+        "volume_dryup": false,
         "near_52w_high": true,
-        "range_recent_pct": 10.4,
-        "range_prior_pct": 17.3,
-        "vol10_ratio": 0.66
+        "range_recent_pct": 8.9,
+        "range_prior_pct": 15.4,
+        "vol10_ratio": 0.9
       }
     },
     {
@@ -1063,8 +1063,8 @@
       }
     },
     {
-      "ticker": "VTRS",
-      "name": "Viatris",
+      "ticker": "INCY",
+      "name": "Incyte",
       "rs_rank": 88,
       "checks": {
         "price_above_150_200": true,
@@ -1076,22 +1076,22 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 16.89,
-      "ma50": 16.53,
-      "ma150": 15.31,
-      "ma200": 14.32,
-      "high52": 18.25,
-      "low52": 9.11,
-      "pct_off_high": -7.5,
-      "pct_above_low": 85.5,
+      "price": 127.74,
+      "ma50": 118.11,
+      "ma150": 104.7,
+      "ma200": 104.12,
+      "high52": 132.6,
+      "low52": 81.09,
+      "pct_off_high": -3.7,
+      "pct_above_low": 57.5,
       "vcp": {
         "score": 2,
         "tightening": false,
         "volume_dryup": true,
         "near_52w_high": true,
-        "range_recent_pct": 7.9,
-        "range_prior_pct": 14.3,
-        "vol10_ratio": 0.7
+        "range_recent_pct": 10.4,
+        "range_prior_pct": 17.3,
+        "vol10_ratio": 0.66
       }
     },
     {
@@ -1191,6 +1191,38 @@
       }
     },
     {
+      "ticker": "VTRS",
+      "name": "Viatris",
+      "rs_rank": 87,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 16.89,
+      "ma50": 16.53,
+      "ma150": 15.31,
+      "ma200": 14.32,
+      "high52": 18.25,
+      "low52": 9.11,
+      "pct_off_high": -7.5,
+      "pct_above_low": 85.5,
+      "vcp": {
+        "score": 2,
+        "tightening": false,
+        "volume_dryup": true,
+        "near_52w_high": true,
+        "range_recent_pct": 7.9,
+        "range_prior_pct": 14.3,
+        "vol10_ratio": 0.7
+      }
+    },
+    {
       "ticker": "BMY",
       "name": "Bristol Myers Squibb",
       "rs_rank": 86,
@@ -1287,38 +1319,6 @@
       }
     },
     {
-      "ticker": "NTRS",
-      "name": "Northern Trust",
-      "rs_rank": 86,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 186.27,
-      "ma50": 182.54,
-      "ma150": 162.84,
-      "ma200": 155.91,
-      "high52": 195.78,
-      "low52": 119.17,
-      "pct_off_high": -4.9,
-      "pct_above_low": 56.3,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.2,
-        "range_prior_pct": 11.4,
-        "vol10_ratio": 0.88
-      }
-    },
-    {
       "ticker": "TRV",
       "name": "Travelers Companies (The)",
       "rs_rank": 85,
@@ -1348,38 +1348,6 @@
         "range_recent_pct": 4.1,
         "range_prior_pct": 19.8,
         "vol10_ratio": 0.76
-      }
-    },
-    {
-      "ticker": "DGX",
-      "name": "Quest Diagnostics",
-      "rs_rank": 85,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 244.61,
-      "ma50": 222.45,
-      "ma150": 204.38,
-      "ma200": 198.28,
-      "high52": 247.19,
-      "low52": 168.97,
-      "pct_off_high": -1.0,
-      "pct_above_low": 44.8,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.8,
-        "range_prior_pct": 16.0,
-        "vol10_ratio": 0.87
       }
     },
     {
@@ -1447,6 +1415,38 @@
       }
     },
     {
+      "ticker": "NTRS",
+      "name": "Northern Trust",
+      "rs_rank": 85,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 186.27,
+      "ma50": 182.54,
+      "ma150": 162.84,
+      "ma200": 155.91,
+      "high52": 195.78,
+      "low52": 119.17,
+      "pct_off_high": -4.9,
+      "pct_above_low": 56.3,
+      "vcp": {
+        "score": 1,
+        "tightening": false,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 6.2,
+        "range_prior_pct": 11.4,
+        "vol10_ratio": 0.88
+      }
+    },
+    {
       "ticker": "BIIB",
       "name": "Biogen",
       "rs_rank": 84,
@@ -1508,6 +1508,38 @@
         "range_recent_pct": 8.8,
         "range_prior_pct": 18.4,
         "vol10_ratio": 0.96
+      }
+    },
+    {
+      "ticker": "DGX",
+      "name": "Quest Diagnostics",
+      "rs_rank": 84,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 244.61,
+      "ma50": 222.45,
+      "ma150": 204.38,
+      "ma200": 198.28,
+      "high52": 247.19,
+      "low52": 168.97,
+      "pct_off_high": -1.0,
+      "pct_above_low": 44.8,
+      "vcp": {
+        "score": 2,
+        "tightening": true,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 5.8,
+        "range_prior_pct": 16.0,
+        "vol10_ratio": 0.87
       }
     },
     {
@@ -1863,38 +1895,6 @@
       }
     },
     {
-      "ticker": "CPAY",
-      "name": "Corpay",
-      "rs_rank": 80,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 403.67,
-      "ma50": 376.14,
-      "ma150": 342.53,
-      "ma200": 333.07,
-      "high52": 425.95,
-      "low52": 252.84,
-      "pct_off_high": -5.2,
-      "pct_above_low": 59.7,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.6,
-        "range_prior_pct": 21.0,
-        "vol10_ratio": 0.66
-      }
-    },
-    {
       "ticker": "MET",
       "name": "MetLife",
       "rs_rank": 80,
@@ -1991,6 +1991,38 @@
       }
     },
     {
+      "ticker": "CPAY",
+      "name": "Corpay",
+      "rs_rank": 79,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 403.67,
+      "ma50": 376.14,
+      "ma150": 342.53,
+      "ma200": 333.07,
+      "high52": 425.95,
+      "low52": 252.84,
+      "pct_off_high": -5.2,
+      "pct_above_low": 59.7,
+      "vcp": {
+        "score": 3,
+        "tightening": true,
+        "volume_dryup": true,
+        "near_52w_high": true,
+        "range_recent_pct": 5.6,
+        "range_prior_pct": 21.0,
+        "vol10_ratio": 0.66
+      }
+    },
+    {
       "ticker": "WELL",
       "name": "Welltower",
       "rs_rank": 79,
@@ -2025,7 +2057,7 @@
     {
       "ticker": "FANG",
       "name": "Diamondback Energy",
-      "rs_rank": 79,
+      "rs_rank": 78,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -2119,38 +2151,6 @@
       }
     },
     {
-      "ticker": "BAC",
-      "name": "Bank of America",
-      "rs_rank": 76,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 61.17,
-      "ma50": 61.01,
-      "ma150": 54.56,
-      "ma200": 54.26,
-      "high52": 65.23,
-      "low52": 45.88,
-      "pct_off_high": -6.2,
-      "pct_above_low": 33.3,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.8,
-        "range_prior_pct": 11.9,
-        "vol10_ratio": 0.9
-      }
-    },
-    {
       "ticker": "RTX",
       "name": "RTX Corporation",
       "rs_rank": 76,
@@ -2212,6 +2212,38 @@
         "range_recent_pct": 4.7,
         "range_prior_pct": 16.4,
         "vol10_ratio": 0.59
+      }
+    },
+    {
+      "ticker": "BAC",
+      "name": "Bank of America",
+      "rs_rank": 75,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 61.17,
+      "ma50": 61.01,
+      "ma150": 54.56,
+      "ma200": 54.26,
+      "high52": 65.23,
+      "low52": 45.88,
+      "pct_off_high": -6.2,
+      "pct_above_low": 33.3,
+      "vcp": {
+        "score": 1,
+        "tightening": false,
+        "volume_dryup": false,
+        "near_52w_high": true,
+        "range_recent_pct": 6.8,
+        "range_prior_pct": 11.9,
+        "vol10_ratio": 0.9
       }
     },
     {
@@ -2564,38 +2596,6 @@
         "range_recent_pct": 9.9,
         "range_prior_pct": 17.3,
         "vol10_ratio": 0.68
-      }
-    },
-    {
-      "ticker": "APH",
-      "name": "Amphenol",
-      "rs_rank": 70,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 161.38,
-      "ma50": 161.18,
-      "ma150": 146.81,
-      "ma200": 144.72,
-      "high52": 178.52,
-      "low52": 104.74,
-      "pct_off_high": -9.6,
-      "pct_above_low": 54.1,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 12.7,
-        "range_prior_pct": 22.7,
-        "vol10_ratio": 0.82
       }
     }
   ]
