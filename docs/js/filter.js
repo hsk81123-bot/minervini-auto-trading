@@ -1,11 +1,15 @@
-/* 1. 종목 필터 페이지 — 트렌드 템플릿 통과 종목 테이블 */
+/* 1. 종목 필터 페이지 — 시장(미국/한국) + 범위(전체/S&P500·KOSPI) 토글 */
 App.register("filter", async (page) => {
+  const isKR = App.getMarket() === "kr";
   const data = await App.loadResults();
-  const spSet = new Set(
+  const spSet = isKR ? null : new Set(
     await fetch("data/sp500.json").then(r => r.ok ? r.json() : []).catch(() => []));
   let rows = [...data.results];
-  let scope = "all"; // "all" | "sp500"
+  let scope = "all"; // "all" | "sub" (S&P 500 또는 KOSPI)
   let sortKey = "rs_rank", sortDir = -1;
+
+  const inSub = r => isKR ? r.ticker.endsWith(".KS") : spSet.has(r.ticker);
+  const subLabel = isKR ? "KOSPI" : "S&P 500";
 
   const vcpFlags = (v, price) => {
     const f = [];
@@ -20,7 +24,7 @@ App.register("filter", async (page) => {
   function tableHTML() {
     const get = r => sortKey === "vcp" ? r.vcp.score : r[sortKey];
     rows.sort((a, b) => (get(a) > get(b) ? 1 : -1) * sortDir);
-    const visible = scope === "sp500" ? rows.filter(r => spSet.has(r.ticker)) : rows;
+    const visible = scope === "sub" ? rows.filter(inSub) : rows;
     return `
       <table>
         <thead><tr>
@@ -35,10 +39,10 @@ App.register("filter", async (page) => {
         <tbody>
           ${visible.map(r => `
             <tr>
-              <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${r.ticker}</a>
+              <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${App.tickerDisp(r.ticker)}</a>
                   <span style="color:var(--muted);font-size:11px"> ${App.cleanName(r.name)}</span></td>
               <td><b>${r.rs_rank}</b></td>
-              <td>$${App.fmt(r.price)}</td>
+              <td>${App.money(r.price, isKR)}</td>
               <td class="neg">${r.pct_off_high}%</td>
               <td class="pos">+${r.pct_above_low}%</td>
               <td class="${vcpCls(r.vcp.score)}">${r.vcp.score}</td>
@@ -50,18 +54,24 @@ App.register("filter", async (page) => {
   }
 
   function draw() {
-    const spCount = rows.filter(r => spSet.has(r.ticker)).length;
+    const subCount = rows.filter(inSub).length;
     page.innerHTML = `
       <h1>종목 필터</h1>
       <div class="subtitle">
-        미너비니 트렌드 템플릿 8개 조건 전부 통과 —
-        ${scope === "sp500" ? `S&P 500 내 ${spCount}종목` : `${data.passed}종목`}
-        (분석 ${data.analyzed}종목, ${data.data_date} 기준) · 헤더 클릭으로 정렬
-        <span class="mode-group" style="margin-left:10px">
-          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sp" class="mode-btn ${scope === "sp500" ? "active" : ""}">S&P 500 (${spCount})</button>
+        <span class="mode-group">
+          <button id="mkt-us" class="mode-btn ${isKR ? "" : "active"}">🇺🇸 미국</button><button id="mkt-kr" class="mode-btn ${isKR ? "active" : ""}">🇰🇷 한국</button>
+        </span>
+        <span class="mode-group" style="margin-left:6px">
+          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sub" class="mode-btn ${scope === "sub" ? "active" : ""}">${subLabel} (${subCount})</button>
+        </span>
+        <span style="margin-left:8px">
+          트렌드 템플릿 8조건 통과 —
+          ${scope === "sub" ? `${subLabel} 내 ${subCount}종목` : `${data.passed}종목`}
+          (분석 ${data.analyzed}종목, ${data.data_date} 기준)
         </span>
       </div>
       <div class="card">${tableHTML()}</div>`;
+
     page.querySelectorAll("th[data-k]").forEach(th => {
       th.addEventListener("click", () => {
         const k = th.dataset.k;
@@ -72,8 +82,15 @@ App.register("filter", async (page) => {
     });
     document.getElementById("scope-all").addEventListener("click",
       () => { scope = "all"; draw(); });
-    document.getElementById("scope-sp").addEventListener("click",
-      () => { scope = "sp500"; draw(); });
+    document.getElementById("scope-sub").addEventListener("click",
+      () => { scope = "sub"; draw(); });
+    const switchMkt = m => () => {
+      if (App.getMarket() === m) return;
+      App.setMarket(m);
+      window.dispatchEvent(new HashChangeEvent("hashchange")); // 페이지 재로딩
+    };
+    document.getElementById("mkt-us").addEventListener("click", switchMkt("us"));
+    document.getElementById("mkt-kr").addEventListener("click", switchMkt("kr"));
   }
   draw();
 });

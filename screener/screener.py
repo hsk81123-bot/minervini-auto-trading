@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-미너비니 트렌드 템플릿 스크리너
-유니버스: S&P 500 (추후 전 종목 확장 예정)
-출력: docs/data/results.json (GitHub Pages 웹앱이 읽음)
+미너비니 트렌드 템플릿 스크리너 (미국 / 한국)
+
+사용법:
+    python screener/screener.py        # 미국 (기본)
+    python screener/screener.py kr    # 한국 (KOSPI+KOSDAQ)
+
+출력: docs/data/results[_kr].json + docs/data/history[_kr]/ (웹앱이 읽음)
 """
 import io
 import json
@@ -18,22 +22,37 @@ from vcp import detect_vcp
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 DATA_DIR = Path(__file__).resolve().parent.parent / "docs" / "data"
-OUT_PATH = DATA_DIR / "results.json"
-HISTORY_DIR = DATA_DIR / "history"
+
+TOP_EXPORT = 150        # 차트 이력(5년) 내보낼 상위 종목 수 (저장소 크기 관리)
+
+# 시장별 설정
+CFG = {
+    "us": {
+        "bench": "^GSPC",              # RS 라인 벤치마크 (S&P 500)
+        "out": "results.json",
+        "hist": "history",
+        "min_price": 10.0,             # 유동성 필터: 최소 주가
+        "min_vol": 100_000,            # 유동성 필터: 최소 50일 평균 거래량
+        "label": "US 전 종목 ($10+, 유동성 필터)",
+    },
+    "kr": {
+        "bench": "^KS11",              # KOSPI 지수
+        "out": "results_kr.json",
+        "hist": "history_kr",
+        "min_price": 1_000.0,          # 1,000원 미만 동전주 제외
+        "min_vol": 50_000,
+        "label": "한국 전 종목 (KOSPI·KOSDAQ, 1,000원+, 유동성 필터)",
+    },
+}
 
 
 # ---------------------------------------------------------------- 유니버스
-# 유동성 필터: 미너비니는 저가·저유동성 종목을 피함
-MIN_PRICE = 10.0        # 최소 주가 ($)
-MIN_AVG_VOL = 100_000   # 최소 50일 평균 거래량 (주)
-TOP_EXPORT = 150        # 차트 이력(5년) 내보낼 상위 종목 수 (저장소 크기 관리)
-
 # 종목명에 이 단어가 있으면 보통주가 아님 (워런트/우선주/채권 등)
-_EXCLUDE_NAME = ("warrant", " right", " rights", "unit", "preferred",
-                 "depositary", "notes", " etn", "%", "trust", "fund")
+_EXCLUDE_NAME_US = ("warrant", " right", " rights", "unit", "preferred",
+                    "depositary", "notes", " etn", "%", "trust", "fund")
 
 
-def get_universe() -> dict[str, str]:
+def get_universe_us() -> dict[str, str]:
     """NASDAQ Trader 공식 심볼 디렉토리에서 미국 전 상장 보통주 수집
     (NASDAQ + NYSE/AMEX 등 otherlisted). ETF·테스트종목·비보통주 제외."""
     urls = [
@@ -62,11 +81,32 @@ def get_universe() -> dict[str, str]:
             if not core.isalpha() or len(core) > 5:
                 continue
             low = name.lower()
-            if any(k in low for k in _EXCLUDE_NAME):
+            if any(k in low for k in _EXCLUDE_NAME_US):
                 continue
             # 표시용 이름 정리: "- Common Stock", "- Class A Ordinary Shares" 등 제거
             clean = name.split(" - ")[0].strip().rstrip(",")
             names[sym.replace(".", "-")] = clean  # yfinance 형식
+    return names
+
+
+def get_universe_kr() -> dict[str, str]:
+    """KRX 상장 목록(FinanceDataReader)에서 KOSPI·KOSDAQ 보통주 수집.
+    yfinance 심볼: 005930.KS(KOSPI) / 247540.KQ(KOSDAQ)"""
+    import FinanceDataReader as fdr
+    df = fdr.StockListing("KRX")
+    names: dict[str, str] = {}
+    for _, row in df.iterrows():
+        code = str(row["Code"]).zfill(6)
+        name = str(row["Name"])
+        mkt = str(row["Market"])
+        if mkt not in ("KOSPI", "KOSDAQ"):
+            continue  # KONEX 등 제외
+        if code[-1] != "0":
+            continue  # 우선주·신형우선주 등 (보통주는 코드 끝자리 0)
+        if "스팩" in name or "리츠" in name:
+            continue
+        suffix = ".KS" if mkt == "KOSPI" else ".KQ"
+        names[code + suffix] = name
     return names
 
 
@@ -164,11 +204,12 @@ def trend_template(df: pd.DataFrame, rs_rank: float) -> dict:
 
 
 # ---------------------------------------------------------------- 이력 내보내기
-def export_history(ticker: str, df: pd.DataFrame, spx_close: pd.Series) -> None:
-    """심층 분석 페이지의 3단 차트(RS/SPX/가격·거래량)용 이력 JSON.
-    RS 라인 = 종가 / S&P500 종가 (책의 StockCharts 상대강도 라인과 동일 개념)"""
+def export_history(ticker: str, df: pd.DataFrame, bench_close: pd.Series,
+                   hist_dir: Path) -> None:
+    """심층 분석 페이지의 3단 차트(RS/벤치마크/가격·거래량)용 이력 JSON.
+    RS 라인 = 종가 / 벤치마크 지수 종가. (키 이름 spx는 벤치마크 범용으로 사용)"""
     sub = df
-    spx = spx_close.reindex(sub.index).ffill()
+    spx = bench_close.reindex(sub.index).ffill()
     valid = spx.notna()
     sub, spx = sub[valid], spx[valid]
     out = {
@@ -181,29 +222,34 @@ def export_history(ticker: str, df: pd.DataFrame, spx_close: pd.Series) -> None:
         "spx": [round(float(x), 2) for x in spx],
         "rs": [round(float(c / s), 6) for c, s in zip(sub["Close"], spx)],
     }
-    with open(HISTORY_DIR / f"{ticker}.json", "w", encoding="utf-8") as f:
+    with open(hist_dir / f"{ticker}.json", "w", encoding="utf-8") as f:
         json.dump(out, f, separators=(",", ":"))
 
 
 # ---------------------------------------------------------------- 메인
-def main() -> None:
-    print("[1/5] 유니버스 수집 (NASDAQ 심볼 디렉토리, 미국 전 상장 보통주)...",
-          flush=True)
-    names = get_universe()
+def main(market: str) -> None:
+    cfg = CFG[market]
+    out_path = DATA_DIR / cfg["out"]
+    hist_dir = DATA_DIR / cfg["hist"]
+
+    print(f"[1/5] 유니버스 수집 ({market.upper()})...", flush=True)
+    names = get_universe_us() if market == "us" else get_universe_kr()
     tickers = sorted(names)
     print(f"  {len(tickers)} tickers", flush=True)
-    export_sp500()
+    if market == "us":
+        export_sp500()
 
     print("[2/5] 가격 데이터 다운로드 (2년 일봉)...", flush=True)
     data = download_history(tickers)
     print(f"  {len(data)} tickers with sufficient history", flush=True)
     data = {
         t: df for t, df in data.items()
-        if float(df["Close"].iloc[-1]) >= MIN_PRICE
-        and float(df["Volume"].iloc[-50:].mean()) >= MIN_AVG_VOL
+        if float(df["Close"].iloc[-1]) >= cfg["min_price"]
+        and float(df["Volume"].iloc[-50:].mean()) >= cfg["min_vol"]
     }
     print(f"  {len(data)} tickers after liquidity filter "
-          f"(price>=${MIN_PRICE:.0f}, vol50>={MIN_AVG_VOL:,})", flush=True)
+          f"(price>={cfg['min_price']:,.0f}, vol50>={cfg['min_vol']:,})",
+          flush=True)
 
     print("[3/5] RS 점수 계산 및 백분위 랭킹...", flush=True)
     raw = {t: rs_raw_score(df["Close"]) for t, df in data.items()}
@@ -229,40 +275,44 @@ def main() -> None:
     results.sort(key=lambda x: (-x["rs_rank"], -x["vcp"]["score"]))
 
     print(f"[5/5] 상위 {TOP_EXPORT}종목 가격 이력 내보내기 "
-          "(5년, S&P 500 벤치마크 포함)...", flush=True)
-    spx = yf.download("^GSPC", period="5y", interval="1d", auto_adjust=True,
-                      progress=False)
-    spx_close = spx["Close"].dropna()
-    if isinstance(spx_close, pd.DataFrame):  # 단일 티커도 MultiIndex로 올 수 있음
-        spx_close = spx_close.iloc[:, 0]
+          "(5년, 벤치마크 포함)...", flush=True)
+    bench = yf.download(cfg["bench"], period="5y", interval="1d",
+                        auto_adjust=True, progress=False)
+    bench_close = bench["Close"].dropna()
+    if isinstance(bench_close, pd.DataFrame):  # 단일 티커도 MultiIndex 가능
+        bench_close = bench_close.iloc[:, 0]
     export = results[:TOP_EXPORT]  # 저장소 크기 관리: 나머지는 TradingView 폴백
     data5 = download_history([r["ticker"] for r in export],
                              period="5y", min_len=1)
-    HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+    hist_dir.mkdir(parents=True, exist_ok=True)
     # 이전 실행의 잔여 파일 제거 (통과 종목이 바뀌므로)
-    for old in HISTORY_DIR.glob("*.json"):
+    for old in hist_dir.glob("*.json"):
         old.unlink()
     for r in export:
         export_history(r["ticker"], data5.get(r["ticker"], data[r["ticker"]]),
-                       spx_close)
+                       bench_close, hist_dir)
 
     last_date = max(df.index[-1] for df in data.values())
     out = {
         "generated_at": pd.Timestamp.now().isoformat(),
         "data_date": str(last_date.date()),
-        "universe": "US 전 종목 ($10+, 유동성 필터)",
+        "market": market,
+        "universe": cfg["label"],
         "universe_size": len(tickers),
         "analyzed": len(rs_rank),
         "passed": len(results),
         "results": results,
     }
-    OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(out_path, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
-    print(f"\n통과 {len(results)}종목 / 분석 {len(rs_rank)}종목 -> {OUT_PATH}")
+    print(f"\n통과 {len(results)}종목 / 분석 {len(rs_rank)}종목 -> {out_path}")
 
 
 if __name__ == "__main__":
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
-    main()
+    mkt = sys.argv[1].lower() if len(sys.argv) > 1 else "us"
+    if mkt not in CFG:
+        sys.exit(f"unknown market: {mkt} (us|kr)")
+    main(mkt)

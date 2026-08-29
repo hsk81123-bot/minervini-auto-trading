@@ -1,14 +1,25 @@
-/* 라우터 + 공통 유틸 */
+/* 라우터 + 공통 유틸 + 시장(미국/한국) 상태 */
 const App = (() => {
-  let screenData = null; // results.json 캐시
+  const cache = {}; // market -> results.json
+  let market = localStorage.getItem("market") || "us";
+
+  const getMarket = () => market;
+  function setMarket(m) {
+    market = m;
+    localStorage.setItem("market", m);
+  }
 
   async function loadResults() {
-    if (screenData) return screenData;
-    const res = await fetch("data/results.json");
-    screenData = await res.json();
+    if (!cache[market]) {
+      const file = market === "kr" ? "data/results_kr.json" : "data/results.json";
+      const res = await fetch(file);
+      if (!res.ok) throw new Error(`데이터 파일 없음 (${file}) — 스크리너 실행 필요`);
+      cache[market] = await res.json();
+    }
+    const d = cache[market];
     const el = document.getElementById("data-date");
-    if (el) el.textContent = `데이터: ${screenData.data_date}\n(${screenData.universe})`;
-    return screenData;
+    if (el) el.textContent = `데이터: ${d.data_date}\n(${d.universe})`;
+    return d;
   }
 
   function parseHash() {
@@ -46,10 +57,17 @@ const App = (() => {
     n == null || isNaN(n) ? "-" : Number(n).toLocaleString("en-US", {
       minimumFractionDigits: d, maximumFractionDigits: d });
   const signCls = n => (n > 0 ? "pos" : n < 0 ? "neg" : "");
+  // 통화 표시: 한국 종목은 ₩ 정수, 미국은 $ 소수 2자리
+  const money = (n, isKR, d) =>
+    isKR ? "₩" + fmt(n, d ?? 0) : "$" + fmt(n, d ?? 2);
+  // 한국 티커(005930.KS)의 표시용 코드
+  const tickerDisp = t => (t || "").replace(/\.(KS|KQ)$/, "");
+  const isKRTicker = t => /\.(KS|KQ)$/.test(t || "");
   // NASDAQ 디렉토리 이름의 "- Common Stock" 류 접미사 제거
   const cleanName = s => (s || "").split(" - ")[0]
     .replace(/\s*(Class [A-Z]\s*)?(Common Stock|Ordinary Shares?|Common Shares?).*$/i, "")
     .trim().replace(/,$/, "");
 
-  return { start, register, loadResults, fmt, signCls, cleanName };
+  return { start, register, loadResults, fmt, signCls, money,
+           tickerDisp, isKRTicker, cleanName, getMarket, setMarket };
 })();

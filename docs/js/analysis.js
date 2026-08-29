@@ -3,7 +3,16 @@
    폴백/토글: TradingView 위젯 */
 App.register("analysis", async (page, params) => {
   const data = await App.loadResults();
-  const ticker = (params.get("ticker") || data.results[0]?.ticker || "AAPL").toUpperCase();
+  let ticker = (params.get("ticker") || data.results[0]?.ticker || "AAPL").toUpperCase();
+  // 한국 모드에서 6자리 코드만 입력한 경우 .KS/.KQ 접미사 해결
+  if (App.getMarket() === "kr" && /^\d{6}$/.test(ticker)) {
+    const hit = data.results.find(x => x.ticker.startsWith(ticker + "."));
+    ticker = hit ? hit.ticker : ticker + ".KS";
+  }
+  const isKR = App.isKRTicker(ticker) || App.getMarket() === "kr";
+  const benchName = isKR ? "KOSPI" : "S&P 500";
+  const disp = App.tickerDisp(ticker);
+  const won = n => App.money(n, isKR);
   const r = data.results.find(x => x.ticker === ticker);
 
   const check = (ok, label) =>
@@ -21,9 +30,9 @@ App.register("analysis", async (page, params) => {
   };
 
   page.innerHTML = `
-    <h1>심층 분석 — ${ticker}${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
+    <h1>심층 분석 — ${disp}${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
     <div class="subtitle">
-      <input id="ticker-input" value="${ticker}" style="width:120px;display:inline-block;text-transform:uppercase">
+      <input id="ticker-input" value="${disp}" style="width:120px;display:inline-block;text-transform:uppercase">
       <button id="ticker-go">조회</button>
       <span class="mode-group">
         <button id="mode-d" class="mode-btn active">일봉</button><button id="mode-w" class="mode-btn">주봉</button>
@@ -34,9 +43,9 @@ App.register("analysis", async (page, params) => {
     <div class="analysis-layout">
       <div id="chart-area">
         <div id="own-chart">
-          <div class="pane-label">RS 라인 — ${ticker} ÷ S&P 500 <span style="color:var(--muted);font-weight:400">(원시 비율 · 기울기만 의미 있음, 1~99 RS 순위와는 다른 지표)</span></div>
+          <div class="pane-label">RS 라인 — ${disp} ÷ ${benchName} <span style="color:var(--muted);font-weight:400">(원시 비율 · 기울기만 의미 있음, 1~99 RS 순위와는 다른 지표)</span></div>
           <div id="pane-rs"></div>
-          <div class="pane-label">S&P 500</div>
+          <div class="pane-label">${benchName}</div>
           <div id="pane-spx"></div>
           <div class="pane-label" id="price-label"></div>
           <div id="pane-price"></div>
@@ -63,18 +72,18 @@ App.register("analysis", async (page, params) => {
           ${check(r.vcp.vol_declining, "수축별 거래량 감소")}
           ${check(r.vcp.dryup, "거래량 드라이업 (5일 < 50일평균 65%)")}
           ${r.vcp.pivot ? `
-          <div class="metric-row"><span>피봇 (매수 지점)</span><span><b>$${App.fmt(r.vcp.pivot)}</b></span></div>
-          <div class="metric-row"><span>제안 손절 (마지막 수축 저점)</span><span>$${App.fmt(r.vcp.stop)} (${App.fmt((1 - r.vcp.stop / r.vcp.pivot) * 100, 1)}%)</span></div>
+          <div class="metric-row"><span>피봇 (매수 지점)</span><span><b>${won(r.vcp.pivot)}</b></span></div>
+          <div class="metric-row"><span>제안 손절 (마지막 수축 저점)</span><span>${won(r.vcp.stop)} (${App.fmt((1 - r.vcp.stop / r.vcp.pivot) * 100, 1)}%)</span></div>
           <button id="use-pivot" style="margin-top:10px;width:100%">피봇 기준으로 포지션 계산 ↓</button>` : ""}
         </div>
         <div class="card">
-          <div class="metric-row"><span>52주 고점 / 저점</span><span>$${App.fmt(r.high52)} / $${App.fmt(r.low52)}</span></div>
-          <div class="metric-row"><span>50 / 150 / 200일선</span><span>$${App.fmt(r.ma50, 0)} / $${App.fmt(r.ma150, 0)} / $${App.fmt(r.ma200, 0)}</span></div>
+          <div class="metric-row"><span>52주 고점 / 저점</span><span>${won(r.high52)} / ${won(r.low52)}</span></div>
+          <div class="metric-row"><span>50 / 150 / 200일선</span><span>${App.money(r.ma50, isKR, 0)} / ${App.money(r.ma150, isKR, 0)} / ${App.money(r.ma200, isKR, 0)}</span></div>
         </div>` : ""}
         <div class="card">
           <h2 style="margin-top:0">포지션 사이징</h2>
           <div class="form-grid" style="grid-template-columns:1fr 1fr">
-            <label>계좌 크기 ($)<input id="ps-account" type="number" value="${localStorage.getItem("ps-account") || 10000}"></label>
+            <label>계좌 크기 (${isKR ? "₩" : "$"})<input id="ps-account" type="number" value="${localStorage.getItem(isKR ? "ps-account-kr" : "ps-account") || (isKR ? 10000000 : 10000)}"></label>
             <label>리스크 (%)<input id="ps-risk" type="number" value="1" step="0.25"></label>
             <label>진입가<input id="ps-entry" type="number" value="${r ? r.price : ""}" step="0.01"></label>
             <label>손절가<input id="ps-stop" type="number" step="0.01"></label>
@@ -129,7 +138,7 @@ App.register("analysis", async (page, params) => {
       ? [[10, "#e6b32a", "10주"], [30, "#4f8cff", "30주"], [40, "#b06fd8", "40주"]]
       : [[50, "#e6b32a", "50일"], [150, "#4f8cff", "150일"], [200, "#b06fd8", "200일"]];
     document.getElementById("price-label").innerHTML =
-      `${ticker} ${mode === "W" ? "주봉" : "일봉"} · ` +
+      `${App.tickerDisp(ticker)} ${mode === "W" ? "주봉" : "일봉"} · ` +
       maSet.map(([n, c, l]) => `<span style="color:${c}">${l}선</span>`).join("/") +
       " · 거래량 · 52주 고점/저점";
 
@@ -242,7 +251,7 @@ App.register("analysis", async (page, params) => {
   }
 
   async function renderOwnChart() {
-    const res = await fetch(`data/history/${ticker}.json`);
+    const res = await fetch(`data/${isKR ? "history_kr" : "history"}/${ticker}.json`);
     if (!res.ok) throw new Error("no history");
     hist = await res.json();
     if (!window.LightweightCharts)
@@ -268,8 +277,8 @@ App.register("analysis", async (page, params) => {
       await loadScript("https://s3.tradingview.com/tv.js");
     if (tvLoaded) return;
     new TradingView.widget({
-      container_id: "tv-chart", symbol: ticker, interval: "D",
-      theme: "dark", style: "1", locale: "kr", autosize: true,
+      container_id: "tv-chart", symbol: isKR ? `KRX:${disp}` : ticker,
+      interval: "D", theme: "dark", style: "1", locale: "kr", autosize: true,
     });
     tvLoaded = true;
   }
@@ -323,7 +332,7 @@ App.register("analysis", async (page, params) => {
     const entry = +document.getElementById("ps-entry").value;
     const stop = +document.getElementById("ps-stop").value;
     const out = document.getElementById("ps-result");
-    localStorage.setItem("ps-account", acct);
+    localStorage.setItem(isKR ? "ps-account-kr" : "ps-account", acct);
     if (!acct || !entry || !stop || stop >= entry) {
       out.innerHTML = "<span style='color:var(--muted);font-size:12px'>진입가보다 낮은 손절가를 입력하세요</span>";
       return;
@@ -332,9 +341,9 @@ App.register("analysis", async (page, params) => {
     const shares = Math.floor((acct * risk) / riskPerShare);
     const cost = shares * entry;
     out.innerHTML = `
-      <div class="metric-row"><span>매수 수량 (1R = $${App.fmt(acct * risk, 0)})</span><span><b>${shares}주</b></span></div>
-      <div class="metric-row"><span>총 매수금액</span><span>$${App.fmt(cost, 0)} (계좌의 ${App.fmt(cost / acct * 100, 1)}%)</span></div>
-      <div class="metric-row"><span>주당 리스크</span><span>$${App.fmt(riskPerShare)} (${App.fmt(riskPerShare / entry * 100, 1)}%)</span></div>`;
+      <div class="metric-row"><span>매수 수량 (1R = ${App.money(acct * risk, isKR, 0)})</span><span><b>${shares}주</b></span></div>
+      <div class="metric-row"><span>총 매수금액</span><span>${App.money(cost, isKR, 0)} (계좌의 ${App.fmt(cost / acct * 100, 1)}%)</span></div>
+      <div class="metric-row"><span>주당 리스크</span><span>${won(riskPerShare)} (${App.fmt(riskPerShare / entry * 100, 1)}%)</span></div>`;
   };
   ["ps-account", "ps-risk", "ps-entry", "ps-stop"].forEach(id =>
     document.getElementById(id).addEventListener("input", psCalc));

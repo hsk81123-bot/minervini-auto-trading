@@ -24,13 +24,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r screener/requirements.txt
 
-      - name: Run screener
-        run: python screener/screener.py
+      - name: Run screener (US)
+        run: python screener/screener.py us
+
+      - name: Run screener (KR)
+        run: python screener/screener.py kr
 
       - name: Commit results
         run: |
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
-          git add docs/data/results.json
+          git add docs/data
           git diff --cached --quiet || git commit -m "screener: update results $(date -u +%F)"
           git push
