@@ -14,6 +14,8 @@ import pandas as pd
 import requests
 import yfinance as yf
 
+from vcp import detect_vcp
+
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 DATA_DIR = Path(__file__).resolve().parent.parent / "docs" / "data"
 OUT_PATH = DATA_DIR / "results.json"
@@ -112,37 +114,6 @@ def trend_template(df: pd.DataFrame, rs_rank: float) -> dict:
     }
 
 
-# ---------------------------------------------------------------- VCP 후보 점수
-def vcp_score(df: pd.DataFrame) -> dict:
-    """0~3점. 완전 자동판정이 아닌 '후보' 스코어링.
-    (a) 변동성 수축: 최근 10일 가격 범위가 그 이전 30일 범위의 절반 이하
-    (b) 거래량 고갈: 최근 10일 평균 거래량 < 50일 평균의 80%
-    (c) 베이스 위치: 52주 고점 대비 15% 이내
-    """
-    close, high, low, vol = df["Close"], df["High"], df["Low"], df["Volume"]
-    c = close.iloc[-1]
-
-    range_recent = (high.iloc[-10:].max() - low.iloc[-10:].min()) / c
-    prior = df.iloc[-40:-10]
-    range_prior = (prior["High"].max() - prior["Low"].min()) / c
-    tightening = bool(range_prior > 0 and range_recent <= 0.5 * range_prior)
-
-    vol_dryup = bool(vol.iloc[-10:].mean() < vol.iloc[-50:].mean() * 0.8)
-
-    high52 = high.iloc[-252:].max()
-    near_high = bool(c >= high52 * 0.85)
-
-    return {
-        "score": int(tightening) + int(vol_dryup) + int(near_high),
-        "tightening": tightening,
-        "volume_dryup": vol_dryup,
-        "near_52w_high": near_high,
-        "range_recent_pct": round(float(range_recent * 100), 1),
-        "range_prior_pct": round(float(range_prior * 100), 1),
-        "vol10_ratio": round(float(vol.iloc[-10:].mean() / vol.iloc[-50:].mean()), 2),
-    }
-
-
 # ---------------------------------------------------------------- 이력 내보내기
 def export_history(ticker: str, df: pd.DataFrame, spx_close: pd.Series) -> None:
     """심층 분석 페이지의 3단 차트(RS/SPX/가격·거래량)용 이력 JSON.
@@ -194,7 +165,7 @@ def main() -> None:
             "name": names.get(t, ""),
             "rs_rank": int(rs_rank[t]),
             **{k: v for k, v in tt.items() if k != "pass_all"},
-            "vcp": vcp_score(df),
+            "vcp": detect_vcp(df),
         })
 
     results.sort(key=lambda x: (-x["rs_rank"], -x["vcp"]["score"]))

@@ -51,10 +51,23 @@ App.register("analysis", async (page, params) => {
           <div class="metric-row"><span>RS 순위 (시장 내 백분위, 1~99)</span><span><b>${r.rs_rank}</b> / 99</span></div>
         </div>
         <div class="card">
-          <h2 style="margin-top:0">VCP 후보 점수 <span class="vcp-${r.vcp.score}">${r.vcp.score}/3</span></h2>
-          ${check(r.vcp.tightening, `가격 수축 (최근 ${r.vcp.range_recent_pct}% vs 이전 ${r.vcp.range_prior_pct}%)`)}
-          ${check(r.vcp.volume_dryup, `거래량 고갈 (10일/50일 = ${r.vcp.vol10_ratio})`)}
-          ${check(r.vcp.near_52w_high, "52주 고점 15% 이내")}
+          <h2 style="margin-top:0">VCP 수축 감지 <span class="${r.vcp.score >= 70 ? "vcp-3" : r.vcp.score >= 40 ? "vcp-2" : "vcp-1"}">${r.vcp.score}/100</span></h2>
+          ${r.vcp.count === 0 ? "<div style='color:var(--muted);font-size:12px;padding:6px 0'>최근 베이스에서 감지된 수축 시퀀스가 없습니다</div>" :
+            r.vcp.contractions.map((c, i) => `
+              <div class="metric-row">
+                <span>T${i + 1} <span style="font-size:11px">${c.hi_date.slice(5)} → ${c.lo_date.slice(5)}</span></span>
+                <span><b class="neg">-${c.depth_pct}%</b> <span style="color:var(--muted);font-size:11px">vol ${c.vol_ratio}</span></span>
+              </div>`).join("")}
+          ${check(r.vcp.count >= 2, `수축 횟수 ${r.vcp.count}회 (2회 이상)`)}
+          ${check(r.vcp.final_depth_pct != null && r.vcp.final_depth_pct <= 10, `마지막 수축 타이트 (${r.vcp.final_depth_pct ?? "-"}% ≤ 10%)`)}
+          ${check(r.vcp.vol_declining, "수축별 거래량 감소")}
+          ${check(r.vcp.dryup, "거래량 드라이업 (5일 < 50일평균 65%)")}
+          ${r.vcp.pivot ? `
+          <div class="metric-row"><span>피봇 (매수 지점)</span><span><b>$${App.fmt(r.vcp.pivot)}</b></span></div>
+          <div class="metric-row"><span>제안 손절 (마지막 수축 저점)</span><span>$${App.fmt(r.vcp.stop)} (${App.fmt((1 - r.vcp.stop / r.vcp.pivot) * 100, 1)}%)</span></div>
+          <button id="use-pivot" style="margin-top:10px;width:100%">피봇 기준으로 포지션 계산 ↓</button>` : ""}
+        </div>
+        <div class="card">
           <div class="metric-row"><span>52주 고점 / 저점</span><span>$${App.fmt(r.high52)} / $${App.fmt(r.low52)}</span></div>
           <div class="metric-row"><span>50 / 150 / 200일선</span><span>$${App.fmt(r.ma50, 0)} / $${App.fmt(r.ma150, 0)} / $${App.fmt(r.ma200, 0)}</span></div>
         </div>` : ""}
@@ -170,6 +183,34 @@ App.register("analysis", async (page, params) => {
     pline(lo52, "#8b93a7", "52주 저점");
     pline(hi52 * 0.75, "rgba(245,176,65,.5)", "고점 -25%");
 
+    // VCP 수축 오버레이 (피봇/손절 라인은 항상, 지그재그·마커는 일봉에서만)
+    const v = r && r.vcp;
+    if (v && v.contractions && v.contractions.length) {
+      if (v.pivot) pline(v.pivot, "#4f8cff", "피봇");
+      if (v.stop) pline(v.stop, "#e74c3c", "제안 손절");
+      if (mode === "D") {
+        const pts = [];
+        v.contractions.forEach(c => {
+          pts.push({ time: c.hi_date, value: c.high });
+          pts.push({ time: c.lo_date, value: c.low });
+        });
+        const seen = new Set();
+        const clean = pts.filter(p =>
+          seen.has(p.time) ? false : (seen.add(p.time), true));
+        if (clean.length >= 2) {
+          cPx.addLineSeries({
+            color: "#f5b041", lineWidth: 2,
+            priceLineVisible: false, lastValueVisible: false,
+            crosshairMarkerVisible: false,
+          }).setData(clean);
+        }
+        candles.setMarkers(v.contractions.map((c, i) => ({
+          time: c.hi_date, position: "aboveBar", color: "#f5b041",
+          shape: "arrowDown", text: `T${i + 1} -${c.depth_pct}%`,
+        })));
+      }
+    }
+
     const ma = (n, color) => {
       const s = cPx.addLineSeries({ color, lineWidth: 1, priceLineVisible: false, lastValueVisible: false });
       const out = [];
@@ -250,6 +291,19 @@ App.register("analysis", async (page, params) => {
     document.getElementById("chart-toggle").style.display = "none";
     await renderTV();
   }
+
+  // ---------- 피봇 → 포지션 계산기 ----------
+  const usePivot = document.getElementById("use-pivot");
+  if (usePivot) usePivot.addEventListener("click", () => {
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      el.value = val;
+      el.dispatchEvent(new Event("input"));
+    };
+    set("ps-entry", r.vcp.pivot);
+    set("ps-stop", r.vcp.stop);
+    document.getElementById("ps-result").scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 
   // ---------- 티커 검색 ----------
   const go = () => {

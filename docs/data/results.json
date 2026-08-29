@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-08-29T06:16:58.552868",
-  "data_date": "2026-08-27",
+  "generated_at": "2026-08-29T20:38:15.477777",
+  "data_date": "2026-08-28",
   "universe": "S&P 500",
   "universe_size": 503,
   "analyzed": 500,
@@ -29,13 +29,24 @@
       "pct_off_high": -19.2,
       "pct_above_low": 540.8,
       "vcp": {
-        "score": 0,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": false,
-        "range_recent_pct": 81.1,
-        "range_prior_pct": 23.1,
-        "vol10_ratio": 3.16
+        "score": 8,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-20",
+            "high": 176.66,
+            "low": 128.61,
+            "depth_pct": 27.2,
+            "vol_ratio": 11.45
+          }
+        ],
+        "pivot": 176.66,
+        "stop": 128.61,
+        "final_depth_pct": 27.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 7
       }
     },
     {
@@ -61,13 +72,32 @@
       "pct_off_high": -8.1,
       "pct_above_low": 330.5,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 16.3,
-        "range_prior_pct": 32.8,
-        "vol10_ratio": 0.7
+        "score": 47,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-28",
+            "high": 454.77,
+            "low": 358.88,
+            "depth_pct": 21.1,
+            "vol_ratio": 0.65
+          },
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-24",
+            "high": 514.0,
+            "low": 424.0,
+            "depth_pct": 17.5,
+            "vol_ratio": 0.77
+          }
+        ],
+        "pivot": 514.0,
+        "stop": 424.0,
+        "final_depth_pct": 17.5,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 26
       }
     },
     {
@@ -93,45 +123,32 @@
       "pct_off_high": -11.9,
       "pct_above_low": 672.5,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 22.5,
-        "range_prior_pct": 38.9,
-        "vol10_ratio": 0.89
-      }
-    },
-    {
-      "ticker": "FTNT",
-      "name": "Fortinet",
-      "rs_rank": 97,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 172.78,
-      "ma50": 157.01,
-      "ma150": 116.79,
-      "ma200": 107.69,
-      "high52": 173.89,
-      "low52": 73.55,
-      "pct_off_high": -0.6,
-      "pct_above_low": 134.9,
-      "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 14.8,
-        "range_prior_pct": 16.4,
-        "vol10_ratio": 0.74
+        "score": 39,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-29",
+            "high": 897.0,
+            "low": 594.84,
+            "depth_pct": 33.7,
+            "vol_ratio": 0.91
+          },
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-24",
+            "high": 999.67,
+            "low": 784.47,
+            "depth_pct": 21.5,
+            "vol_ratio": 0.92
+          }
+        ],
+        "pivot": 999.67,
+        "stop": 784.47,
+        "final_depth_pct": 21.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 26
       }
     },
     {
@@ -157,13 +174,24 @@
       "pct_off_high": -15.1,
       "pct_above_low": 177.3,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": false,
-        "range_recent_pct": 16.9,
-        "range_prior_pct": 41.8,
-        "vol10_ratio": 0.68
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-24",
+            "high": 63.44,
+            "low": 51.3,
+            "depth_pct": 19.1,
+            "vol_ratio": 0.75
+          }
+        ],
+        "pivot": 63.44,
+        "stop": 51.3,
+        "final_depth_pct": 19.1,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 11
       }
     },
     {
@@ -189,13 +217,67 @@
       "pct_off_high": -4.0,
       "pct_above_low": 174.3,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 18.1,
-        "range_prior_pct": 23.6,
-        "vol10_ratio": 0.8
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-26",
+            "high": 398.88,
+            "low": 328.0,
+            "depth_pct": 17.8,
+            "vol_ratio": 0.76
+          }
+        ],
+        "pivot": 398.88,
+        "stop": 328.0,
+        "final_depth_pct": 17.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 11
+      }
+    },
+    {
+      "ticker": "FTNT",
+      "name": "Fortinet",
+      "rs_rank": 97,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 172.78,
+      "ma50": 157.01,
+      "ma150": 116.79,
+      "ma200": 107.69,
+      "high52": 173.89,
+      "low52": 73.55,
+      "pct_off_high": -0.6,
+      "pct_above_low": 134.9,
+      "vcp": {
+        "score": 18,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-21",
+            "high": 172.09,
+            "low": 148.25,
+            "depth_pct": 13.9,
+            "vol_ratio": 0.77
+          }
+        ],
+        "pivot": 172.09,
+        "stop": 148.25,
+        "final_depth_pct": 13.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -221,13 +303,32 @@
       "pct_off_high": -1.8,
       "pct_above_low": 141.2,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.2,
-        "range_prior_pct": 24.1,
-        "vol10_ratio": 0.71
+        "score": 51,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-03",
+            "lo_date": "2026-06-18",
+            "high": 264.59,
+            "low": 231.82,
+            "depth_pct": 12.4,
+            "vol_ratio": 1.03
+          },
+          {
+            "hi_date": "2026-07-22",
+            "lo_date": "2026-07-30",
+            "high": 319.01,
+            "low": 293.08,
+            "depth_pct": 8.1,
+            "vol_ratio": 0.79
+          }
+        ],
+        "pivot": 319.01,
+        "stop": 293.08,
+        "final_depth_pct": 8.1,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 60
       }
     },
     {
@@ -253,13 +354,24 @@
       "pct_off_high": -1.1,
       "pct_above_low": 127.1,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.5,
-        "range_prior_pct": 26.2,
-        "vol10_ratio": 1.03
+        "score": 18,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-22",
+            "lo_date": "2026-08-07",
+            "high": 326.03,
+            "low": 289.57,
+            "depth_pct": 11.2,
+            "vol_ratio": 0.93
+          }
+        ],
+        "pivot": 326.03,
+        "stop": 289.57,
+        "final_depth_pct": 11.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 27
       }
     },
     {
@@ -285,45 +397,24 @@
       "pct_off_high": -0.5,
       "pct_above_low": 166.1,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 21.0,
-        "range_prior_pct": 23.1,
-        "vol10_ratio": 1.06
-      }
-    },
-    {
-      "ticker": "NTAP",
-      "name": "NetApp",
-      "rs_rank": 95,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 190.64,
-      "ma50": 175.23,
-      "ma150": 134.24,
-      "ma200": 127.73,
-      "high52": 209.06,
-      "low52": 92.93,
-      "pct_off_high": -8.8,
-      "pct_above_low": 105.1,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 12.0,
-        "range_prior_pct": 29.6,
-        "vol10_ratio": 0.79
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-14",
+            "lo_date": "2026-08-26",
+            "high": 227.5,
+            "low": 181.24,
+            "depth_pct": 20.3,
+            "vol_ratio": 0.93
+          }
+        ],
+        "pivot": 227.5,
+        "stop": 181.24,
+        "final_depth_pct": 20.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 10
       }
     },
     {
@@ -349,13 +440,32 @@
       "pct_off_high": -2.3,
       "pct_above_low": 105.5,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 9.0,
-        "range_prior_pct": 25.2,
-        "vol10_ratio": 0.96
+        "score": 34,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-05-07",
+            "lo_date": "2026-05-19",
+            "high": 194.57,
+            "low": 146.2,
+            "depth_pct": 24.9,
+            "vol_ratio": 1.2
+          },
+          {
+            "hi_date": "2026-07-10",
+            "lo_date": "2026-07-21",
+            "high": 237.86,
+            "low": 213.4,
+            "depth_pct": 10.3,
+            "vol_ratio": 0.99
+          }
+        ],
+        "pivot": 237.86,
+        "stop": 213.4,
+        "final_depth_pct": 10.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 78
       }
     },
     {
@@ -381,19 +491,30 @@
       "pct_off_high": -2.9,
       "pct_above_low": 94.8,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.8,
-        "range_prior_pct": 24.2,
-        "vol10_ratio": 0.98
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-31",
+            "lo_date": "2026-08-05",
+            "high": 212.86,
+            "low": 199.25,
+            "depth_pct": 6.4,
+            "vol_ratio": 1.17
+          }
+        ],
+        "pivot": 212.86,
+        "stop": 199.25,
+        "final_depth_pct": 6.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 20
       }
     },
     {
-      "ticker": "CNC",
-      "name": "Centene Corporation",
-      "rs_rank": 94,
+      "ticker": "NTAP",
+      "name": "NetApp",
+      "rs_rank": 95,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -404,54 +525,33 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 65.33,
-      "ma50": 65.12,
-      "ma150": 52.41,
-      "ma200": 49.43,
-      "high52": 69.36,
-      "low52": 28.24,
-      "pct_off_high": -5.8,
-      "pct_above_low": 131.3,
+      "price": 190.64,
+      "ma50": 175.23,
+      "ma150": 134.24,
+      "ma200": 127.73,
+      "high52": 209.06,
+      "low52": 92.93,
+      "pct_off_high": -8.8,
+      "pct_above_low": 105.1,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.4,
-        "range_prior_pct": 19.4,
-        "vol10_ratio": 0.71
-      }
-    },
-    {
-      "ticker": "HUM",
-      "name": "Humana",
-      "rs_rank": 94,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 392.63,
-      "ma50": 384.39,
-      "ma150": 280.62,
-      "ma200": 273.9,
-      "high52": 428.88,
-      "low52": 161.9,
-      "pct_off_high": -8.5,
-      "pct_above_low": 142.5,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 8.1,
-        "range_prior_pct": 19.2,
-        "vol10_ratio": 0.72
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-25",
+            "high": 209.06,
+            "low": 185.27,
+            "depth_pct": 11.4,
+            "vol_ratio": 0.85
+          }
+        ],
+        "pivot": 209.06,
+        "stop": 185.27,
+        "final_depth_pct": 11.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 11
       }
     },
     {
@@ -477,19 +577,38 @@
       "pct_off_high": -2.8,
       "pct_above_low": 104.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 14.8,
-        "range_prior_pct": 19.7,
-        "vol10_ratio": 1.34
+        "score": 51,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-25",
+            "lo_date": "2026-07-06",
+            "high": 141.73,
+            "low": 123.75,
+            "depth_pct": 12.7,
+            "vol_ratio": 0.97
+          },
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-23",
+            "high": 143.3,
+            "low": 131.54,
+            "depth_pct": 8.2,
+            "vol_ratio": 0.65
+          }
+        ],
+        "pivot": 143.3,
+        "stop": 131.54,
+        "final_depth_pct": 8.2,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 45
       }
     },
     {
-      "ticker": "ANET",
-      "name": "Arista Networks",
-      "rs_rank": 93,
+      "ticker": "CNC",
+      "name": "Centene Corporation",
+      "rs_rank": 94,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -500,22 +619,76 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 201.09,
-      "ma50": 179.87,
-      "ma150": 157.27,
-      "ma200": 150.16,
-      "high52": 214.89,
-      "low52": 114.52,
-      "pct_off_high": -6.4,
-      "pct_above_low": 75.6,
+      "price": 65.33,
+      "ma50": 65.12,
+      "ma150": 52.41,
+      "ma200": 49.43,
+      "high52": 69.36,
+      "low52": 28.24,
+      "pct_off_high": -5.8,
+      "pct_above_low": 131.3,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 11.6,
-        "range_prior_pct": 29.0,
-        "vol10_ratio": 0.75
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-14",
+            "lo_date": "2026-07-28",
+            "high": 69.36,
+            "low": 56.67,
+            "depth_pct": 18.3,
+            "vol_ratio": 1.01
+          }
+        ],
+        "pivot": 69.36,
+        "stop": 56.67,
+        "final_depth_pct": 18.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 33
+      }
+    },
+    {
+      "ticker": "HUM",
+      "name": "Humana",
+      "rs_rank": 94,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 392.63,
+      "ma50": 384.39,
+      "ma150": 280.62,
+      "ma200": 273.9,
+      "high52": 428.88,
+      "low52": 161.9,
+      "pct_off_high": -8.5,
+      "pct_above_low": 142.5,
+      "vcp": {
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-08-05",
+            "high": 428.88,
+            "low": 353.69,
+            "depth_pct": 17.5,
+            "vol_ratio": 1.12
+          }
+        ],
+        "pivot": 428.88,
+        "stop": 353.69,
+        "final_depth_pct": 17.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 31
       }
     },
     {
@@ -541,13 +714,75 @@
       "pct_off_high": -1.3,
       "pct_above_low": 88.2,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.7,
-        "range_prior_pct": 12.7,
-        "vol10_ratio": 0.61
+        "score": 76,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-29",
+            "high": 192.51,
+            "low": 175.5,
+            "depth_pct": 8.8,
+            "vol_ratio": 1.05
+          },
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-20",
+            "high": 195.18,
+            "low": 182.96,
+            "depth_pct": 6.3,
+            "vol_ratio": 0.62
+          }
+        ],
+        "pivot": 195.18,
+        "stop": 182.96,
+        "final_depth_pct": 6.3,
+        "vol_declining": true,
+        "dryup": true,
+        "base_days": 31
+      }
+    },
+    {
+      "ticker": "ANET",
+      "name": "Arista Networks",
+      "rs_rank": 93,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 201.09,
+      "ma50": 179.87,
+      "ma150": 157.27,
+      "ma200": 150.16,
+      "high52": 214.89,
+      "low52": 114.52,
+      "pct_off_high": -6.4,
+      "pct_above_low": 75.6,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-08-20",
+            "high": 211.45,
+            "low": 182.83,
+            "depth_pct": 13.5,
+            "vol_ratio": 0.85
+          }
+        ],
+        "pivot": 211.45,
+        "stop": 182.83,
+        "final_depth_pct": 13.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 12
       }
     },
     {
@@ -573,13 +808,24 @@
       "pct_off_high": -5.9,
       "pct_above_low": 103.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 11.8,
-        "range_prior_pct": 22.2,
-        "vol10_ratio": 0.98
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-26",
+            "high": 45.05,
+            "low": 40.46,
+            "depth_pct": 10.2,
+            "vol_ratio": 0.98
+          }
+        ],
+        "pivot": 45.05,
+        "stop": 40.46,
+        "final_depth_pct": 10.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -605,109 +851,24 @@
       "pct_off_high": -2.3,
       "pct_above_low": 125.5,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 18.7,
-        "range_prior_pct": 19.6,
-        "vol10_ratio": 1.08
-      }
-    },
-    {
-      "ticker": "ZBRA",
-      "name": "Zebra Technologies",
-      "rs_rank": 92,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 361.11,
-      "ma50": 301.21,
-      "ma150": 254.72,
-      "ma200": 254.05,
-      "high52": 386.23,
-      "low52": 199.05,
-      "pct_off_high": -6.5,
-      "pct_above_low": 81.4,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 9.4,
-        "range_prior_pct": 37.6,
-        "vol10_ratio": 0.77
-      }
-    },
-    {
-      "ticker": "ABNB",
-      "name": "Airbnb",
-      "rs_rank": 92,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 184.4,
-      "ma50": 157.8,
-      "ma150": 140.68,
-      "ma200": 137.51,
-      "high52": 193.45,
-      "low52": 110.81,
-      "pct_off_high": -4.7,
-      "pct_above_low": 66.4,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.9,
-        "range_prior_pct": 27.9,
-        "vol10_ratio": 1.02
-      }
-    },
-    {
-      "ticker": "MRK",
-      "name": "Merck & Co.",
-      "rs_rank": 92,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 149.54,
-      "ma50": 130.79,
-      "ma150": 120.66,
-      "ma200": 115.62,
-      "high52": 156.92,
-      "low52": 75.81,
-      "pct_off_high": -4.7,
-      "pct_above_low": 97.3,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 15.7,
-        "range_prior_pct": 10.4,
-        "vol10_ratio": 1.28
+        "score": 18,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-29",
+            "high": 65.43,
+            "low": 58.19,
+            "depth_pct": 11.1,
+            "vol_ratio": 1.06
+          }
+        ],
+        "pivot": 65.43,
+        "stop": 58.19,
+        "final_depth_pct": 11.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 26
       }
     },
     {
@@ -733,13 +894,169 @@
       "pct_off_high": -6.2,
       "pct_above_low": 104.8,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 13.7,
-        "range_prior_pct": 12.1,
-        "vol10_ratio": 1.12
+        "score": 44,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-24",
+            "lo_date": "2026-08-07",
+            "high": 289.68,
+            "low": 255.08,
+            "depth_pct": 11.9,
+            "vol_ratio": 1.07
+          },
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-26",
+            "high": 307.94,
+            "low": 284.0,
+            "depth_pct": 7.8,
+            "vol_ratio": 1.01
+          }
+        ],
+        "pivot": 307.94,
+        "stop": 284.0,
+        "final_depth_pct": 7.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 25
+      }
+    },
+    {
+      "ticker": "MRK",
+      "name": "Merck & Co.",
+      "rs_rank": 92,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 149.54,
+      "ma50": 130.79,
+      "ma150": 120.66,
+      "ma200": 115.62,
+      "high52": 156.92,
+      "low52": 75.81,
+      "pct_off_high": -4.7,
+      "pct_above_low": 97.3,
+      "vcp": {
+        "score": 41,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-30",
+            "lo_date": "2026-07-14",
+            "high": 130.29,
+            "low": 120.16,
+            "depth_pct": 7.8,
+            "vol_ratio": 0.85
+          },
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-04",
+            "high": 135.05,
+            "low": 126.22,
+            "depth_pct": 6.5,
+            "vol_ratio": 0.87
+          }
+        ],
+        "pivot": 135.05,
+        "stop": 126.22,
+        "final_depth_pct": 6.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 42
+      }
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "Zebra Technologies",
+      "rs_rank": 92,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 361.11,
+      "ma50": 301.21,
+      "ma150": 254.72,
+      "ma200": 254.05,
+      "high52": 386.23,
+      "low52": 199.05,
+      "pct_off_high": -6.5,
+      "pct_above_low": 81.4,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-08-20",
+            "high": 386.23,
+            "low": 350.36,
+            "depth_pct": 9.3,
+            "vol_ratio": 0.82
+          }
+        ],
+        "pivot": 386.23,
+        "stop": 350.36,
+        "final_depth_pct": 9.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 12
+      }
+    },
+    {
+      "ticker": "ABNB",
+      "name": "Airbnb",
+      "rs_rank": 92,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 184.4,
+      "ma50": 157.8,
+      "ma150": 140.68,
+      "ma200": 137.51,
+      "high52": 193.45,
+      "low52": 110.81,
+      "pct_off_high": -4.7,
+      "pct_above_low": 66.4,
+      "vcp": {
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-23",
+            "high": 150.88,
+            "low": 135.72,
+            "depth_pct": 10.0,
+            "vol_ratio": 0.9
+          }
+        ],
+        "pivot": 150.88,
+        "stop": 135.72,
+        "final_depth_pct": 10.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 31
       }
     },
     {
@@ -765,13 +1082,24 @@
       "pct_off_high": -9.9,
       "pct_above_low": 94.0,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 14.3,
-        "range_prior_pct": 25.1,
-        "vol10_ratio": 1.07
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-19",
+            "high": 280.11,
+            "low": 238.62,
+            "depth_pct": 14.8,
+            "vol_ratio": 0.92
+          }
+        ],
+        "pivot": 280.11,
+        "stop": 238.62,
+        "final_depth_pct": 14.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -797,13 +1125,32 @@
       "pct_off_high": -2.1,
       "pct_above_low": 60.8,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.3,
-        "range_prior_pct": 11.8,
-        "vol10_ratio": 0.61
+        "score": 76,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-29",
+            "high": 163.12,
+            "low": 151.68,
+            "depth_pct": 7.0,
+            "vol_ratio": 0.99
+          },
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-20",
+            "high": 165.69,
+            "low": 157.15,
+            "depth_pct": 5.2,
+            "vol_ratio": 0.61
+          }
+        ],
+        "pivot": 165.69,
+        "stop": 157.15,
+        "final_depth_pct": 5.2,
+        "vol_declining": true,
+        "dryup": true,
+        "base_days": 31
       }
     },
     {
@@ -829,45 +1176,24 @@
       "pct_off_high": -2.2,
       "pct_above_low": 64.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 10.2,
-        "range_prior_pct": 12.8,
-        "vol10_ratio": 0.86
-      }
-    },
-    {
-      "ticker": "BEN",
-      "name": "Franklin Resources",
-      "rs_rank": 89,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 34.82,
-      "ma50": 33.59,
-      "ma150": 29.39,
-      "ma200": 27.76,
-      "high52": 36.28,
-      "low52": 20.32,
-      "pct_off_high": -4.0,
-      "pct_above_low": 71.4,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.9,
-        "range_prior_pct": 13.1,
-        "vol10_ratio": 0.69
+        "score": 18,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-22",
+            "lo_date": "2026-08-07",
+            "high": 95.55,
+            "low": 85.37,
+            "depth_pct": 10.7,
+            "vol_ratio": 1.07
+          }
+        ],
+        "pivot": 95.55,
+        "stop": 85.37,
+        "final_depth_pct": 10.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 27
       }
     },
     {
@@ -893,45 +1219,32 @@
       "pct_off_high": -0.6,
       "pct_above_low": 70.6,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 3.5,
-        "range_prior_pct": 12.9,
-        "vol10_ratio": 0.6
-      }
-    },
-    {
-      "ticker": "IVZ",
-      "name": "Invesco",
-      "rs_rank": 89,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 33.31,
-      "ma50": 29.66,
-      "ma150": 26.97,
-      "ma200": 26.61,
-      "high52": 33.65,
-      "low52": 20.03,
-      "pct_off_high": -1.0,
-      "pct_above_low": 66.3,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 7.4,
-        "range_prior_pct": 17.9,
-        "vol10_ratio": 0.71
+        "score": 56,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-30",
+            "high": 183.52,
+            "low": 164.35,
+            "depth_pct": 10.4,
+            "vol_ratio": 0.97
+          },
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-06",
+            "high": 187.74,
+            "low": 176.73,
+            "depth_pct": 5.9,
+            "vol_ratio": 0.99
+          }
+        ],
+        "pivot": 187.74,
+        "stop": 176.73,
+        "final_depth_pct": 5.9,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 30
       }
     },
     {
@@ -957,13 +1270,126 @@
       "pct_off_high": -5.7,
       "pct_above_low": 83.3,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 10.7,
-        "range_prior_pct": 16.6,
-        "vol10_ratio": 0.69
+        "score": 54,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-15",
+            "lo_date": "2026-07-28",
+            "high": 435.0,
+            "low": 366.93,
+            "depth_pct": 15.6,
+            "vol_ratio": 1.1
+          },
+          {
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-08-20",
+            "high": 425.61,
+            "low": 376.21,
+            "depth_pct": 11.6,
+            "vol_ratio": 0.73
+          }
+        ],
+        "pivot": 425.61,
+        "stop": 376.21,
+        "final_depth_pct": 11.6,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 32
+      }
+    },
+    {
+      "ticker": "IVZ",
+      "name": "Invesco",
+      "rs_rank": 89,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 33.31,
+      "ma50": 29.66,
+      "ma150": 26.97,
+      "ma200": 26.61,
+      "high52": 33.65,
+      "low52": 20.03,
+      "pct_off_high": -1.0,
+      "pct_above_low": 66.3,
+      "vcp": {
+        "score": 49,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-15",
+            "lo_date": "2026-06-24",
+            "high": 29.62,
+            "low": 25.42,
+            "depth_pct": 14.2,
+            "vol_ratio": 1.2
+          },
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-29",
+            "high": 30.81,
+            "low": 27.67,
+            "depth_pct": 10.2,
+            "vol_ratio": 1.04
+          }
+        ],
+        "pivot": 30.81,
+        "stop": 27.67,
+        "final_depth_pct": 10.2,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 52
+      }
+    },
+    {
+      "ticker": "BEN",
+      "name": "Franklin Resources",
+      "rs_rank": 89,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 34.82,
+      "ma50": 33.59,
+      "ma150": 29.39,
+      "ma200": 27.76,
+      "high52": 36.28,
+      "low52": 20.32,
+      "pct_off_high": -4.0,
+      "pct_above_low": 71.4,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-12",
+            "high": 36.28,
+            "low": 33.25,
+            "depth_pct": 8.4,
+            "vol_ratio": 0.79
+          }
+        ],
+        "pivot": 36.28,
+        "stop": 33.25,
+        "final_depth_pct": 8.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -989,45 +1415,24 @@
       "pct_off_high": -2.2,
       "pct_above_low": 66.5,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 8.9,
-        "range_prior_pct": 15.4,
-        "vol10_ratio": 0.9
-      }
-    },
-    {
-      "ticker": "CSX",
-      "name": "CSX Corporation",
-      "rs_rank": 88,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 51.54,
-      "ma50": 49.73,
-      "ma150": 44.94,
-      "ma200": 42.58,
-      "high52": 53.6,
-      "low52": 31.48,
-      "pct_off_high": -3.8,
-      "pct_above_low": 63.7,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 4.2,
-        "range_prior_pct": 10.7,
-        "vol10_ratio": 0.69
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-23",
+            "high": 376.34,
+            "low": 357.12,
+            "depth_pct": 5.1,
+            "vol_ratio": 0.91
+          }
+        ],
+        "pivot": 376.34,
+        "stop": 357.12,
+        "final_depth_pct": 5.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 30
       }
     },
     {
@@ -1053,13 +1458,32 @@
       "pct_off_high": -5.2,
       "pct_above_low": 65.8,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.6,
-        "range_prior_pct": 20.0,
-        "vol10_ratio": 0.77
+        "score": 44,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-01",
+            "lo_date": "2026-07-08",
+            "high": 95.16,
+            "low": 84.86,
+            "depth_pct": 10.8,
+            "vol_ratio": 0.79
+          },
+          {
+            "hi_date": "2026-08-11",
+            "lo_date": "2026-08-20",
+            "high": 104.68,
+            "low": 97.05,
+            "depth_pct": 7.3,
+            "vol_ratio": 0.8
+          }
+        ],
+        "pivot": 104.68,
+        "stop": 97.05,
+        "final_depth_pct": 7.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 41
       }
     },
     {
@@ -1085,45 +1509,24 @@
       "pct_off_high": -3.7,
       "pct_above_low": 57.5,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 10.4,
-        "range_prior_pct": 17.3,
-        "vol10_ratio": 0.66
-      }
-    },
-    {
-      "ticker": "CF",
-      "name": "CF Industries",
-      "rs_rank": 88,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 125.71,
-      "ma50": 117.13,
-      "ma150": 114.45,
-      "ma200": 105.65,
-      "high52": 140.66,
-      "low52": 74.33,
-      "pct_off_high": -10.6,
-      "pct_above_low": 69.1,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 12.6,
-        "range_prior_pct": 17.3,
-        "vol10_ratio": 0.94
+        "score": 43,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-06",
+            "high": 132.6,
+            "low": 115.77,
+            "depth_pct": 12.7,
+            "vol_ratio": 1.28
+          }
+        ],
+        "pivot": 132.6,
+        "stop": 115.77,
+        "final_depth_pct": 12.7,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 23
       }
     },
     {
@@ -1149,19 +1552,38 @@
       "pct_off_high": -0.1,
       "pct_above_low": 59.9,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 12.4,
-        "range_prior_pct": 12.3,
-        "vol10_ratio": 0.95
+        "score": 41,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-26",
+            "lo_date": "2026-07-21",
+            "high": 116.09,
+            "low": 102.37,
+            "depth_pct": 11.8,
+            "vol_ratio": 0.99
+          },
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-27",
+            "high": 116.0,
+            "low": 107.48,
+            "depth_pct": 7.3,
+            "vol_ratio": 0.92
+          }
+        ],
+        "pivot": 116.0,
+        "stop": 107.48,
+        "final_depth_pct": 7.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 44
       }
     },
     {
-      "ticker": "BAX",
-      "name": "Baxter International",
-      "rs_rank": 87,
+      "ticker": "CSX",
+      "name": "CSX Corporation",
+      "rs_rank": 88,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1172,22 +1594,76 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 25.93,
-      "ma50": 24.05,
-      "ma150": 20.46,
-      "ma200": 20.11,
-      "high52": 30.0,
-      "low52": 15.72,
-      "pct_off_high": -13.6,
-      "pct_above_low": 64.9,
+      "price": 51.54,
+      "ma50": 49.73,
+      "ma150": 44.94,
+      "ma200": 42.58,
+      "high52": 53.6,
+      "low52": 31.48,
+      "pct_off_high": -3.8,
+      "pct_above_low": 63.7,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.4,
-        "range_prior_pct": 34.1,
-        "vol10_ratio": 0.72
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-27",
+            "lo_date": "2026-08-04",
+            "high": 53.6,
+            "low": 49.42,
+            "depth_pct": 7.8,
+            "vol_ratio": 1.13
+          }
+        ],
+        "pivot": 53.6,
+        "stop": 49.42,
+        "final_depth_pct": 7.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 24
+      }
+    },
+    {
+      "ticker": "CF",
+      "name": "CF Industries",
+      "rs_rank": 88,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 125.71,
+      "ma50": 117.13,
+      "ma150": 114.45,
+      "ma200": 105.65,
+      "high52": 140.66,
+      "low52": 74.33,
+      "pct_off_high": -10.6,
+      "pct_above_low": 69.1,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-06",
+            "high": 127.17,
+            "low": 108.87,
+            "depth_pct": 14.4,
+            "vol_ratio": 0.86
+          }
+        ],
+        "pivot": 127.17,
+        "stop": 108.87,
+        "final_depth_pct": 14.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
       }
     },
     {
@@ -1213,19 +1689,30 @@
       "pct_off_high": -7.5,
       "pct_above_low": 85.5,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 7.9,
-        "range_prior_pct": 14.3,
-        "vol10_ratio": 0.7
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-14",
+            "high": 18.25,
+            "low": 15.76,
+            "depth_pct": 13.6,
+            "vol_ratio": 1.36
+          }
+        ],
+        "pivot": 18.25,
+        "stop": 15.76,
+        "final_depth_pct": 13.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
       }
     },
     {
-      "ticker": "BMY",
-      "name": "Bristol Myers Squibb",
-      "rs_rank": 86,
+      "ticker": "BAX",
+      "name": "Baxter International",
+      "rs_rank": 87,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1236,54 +1723,33 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 66.95,
-      "ma50": 61.32,
-      "ma150": 58.74,
-      "ma200": 56.68,
-      "high52": 68.64,
-      "low52": 41.13,
-      "pct_off_high": -2.5,
-      "pct_above_low": 62.8,
+      "price": 25.93,
+      "ma50": 24.05,
+      "ma150": 20.46,
+      "ma200": 20.11,
+      "high52": 30.0,
+      "low52": 15.72,
+      "pct_off_high": -13.6,
+      "pct_above_low": 64.9,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 7.9,
-        "range_prior_pct": 17.5,
-        "vol10_ratio": 0.68
-      }
-    },
-    {
-      "ticker": "FDX",
-      "name": "FedEx",
-      "rs_rank": 86,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 331.41,
-      "ma50": 319.35,
-      "ma150": 306.69,
-      "ma200": 286.99,
-      "high52": 344.08,
-      "low52": 174.92,
-      "pct_off_high": -3.7,
-      "pct_above_low": 89.5,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.2,
-        "range_prior_pct": 11.2,
-        "vol10_ratio": 0.73
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-30",
+            "lo_date": "2026-08-18",
+            "high": 30.0,
+            "low": 25.75,
+            "depth_pct": 14.2,
+            "vol_ratio": 1.25
+          }
+        ],
+        "pivot": 30.0,
+        "stop": 25.75,
+        "final_depth_pct": 14.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 21
       }
     },
     {
@@ -1309,19 +1775,38 @@
       "pct_off_high": -3.0,
       "pct_above_low": 62.1,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 4.8,
-        "range_prior_pct": 17.9,
-        "vol10_ratio": 0.9
+        "score": 51,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-25",
+            "lo_date": "2026-07-07",
+            "high": 284.62,
+            "low": 253.26,
+            "depth_pct": 11.0,
+            "vol_ratio": 1.09
+          },
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-20",
+            "high": 306.32,
+            "low": 289.69,
+            "depth_pct": 5.4,
+            "vol_ratio": 0.99
+          }
+        ],
+        "pivot": 306.32,
+        "stop": 289.69,
+        "final_depth_pct": 5.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 45
       }
     },
     {
-      "ticker": "TRV",
-      "name": "Travelers Companies (The)",
-      "rs_rank": 85,
+      "ticker": "BMY",
+      "name": "Bristol Myers Squibb",
+      "rs_rank": 86,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1332,28 +1817,39 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 369.33,
-      "ma50": 356.56,
-      "ma150": 317.15,
-      "ma200": 308.51,
-      "high52": 398.7,
-      "low52": 249.31,
-      "pct_off_high": -7.4,
-      "pct_above_low": 48.1,
+      "price": 66.95,
+      "ma50": 61.32,
+      "ma150": 58.74,
+      "ma200": 56.68,
+      "high52": 68.64,
+      "low52": 41.13,
+      "pct_off_high": -2.5,
+      "pct_above_low": 62.8,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 4.1,
-        "range_prior_pct": 19.8,
-        "vol10_ratio": 0.76
+        "score": 50,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-03",
+            "lo_date": "2026-08-12",
+            "high": 68.1,
+            "low": 63.0,
+            "depth_pct": 7.5,
+            "vol_ratio": 1.13
+          }
+        ],
+        "pivot": 68.1,
+        "stop": 63.0,
+        "final_depth_pct": 7.5,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 19
       }
     },
     {
-      "ticker": "GRMN",
-      "name": "Garmin",
-      "rs_rank": 85,
+      "ticker": "FDX",
+      "name": "FedEx",
+      "rs_rank": 86,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1364,54 +1860,33 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 289.87,
-      "ma50": 267.3,
-      "ma150": 246.16,
-      "ma200": 234.72,
-      "high52": 314.28,
-      "low52": 184.35,
-      "pct_off_high": -7.8,
-      "pct_above_low": 57.2,
+      "price": 331.41,
+      "ma50": 319.35,
+      "ma150": 306.69,
+      "ma200": 286.99,
+      "high52": 344.08,
+      "low52": 174.92,
+      "pct_off_high": -3.7,
+      "pct_above_low": 89.5,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 9.6,
-        "range_prior_pct": 27.1,
-        "vol10_ratio": 0.9
-      }
-    },
-    {
-      "ticker": "NDSN",
-      "name": "Nordson Corporation",
-      "rs_rank": 85,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 330.84,
-      "ma50": 302.05,
-      "ma150": 286.9,
-      "ma200": 275.58,
-      "high52": 339.12,
-      "low52": 217.21,
-      "pct_off_high": -2.4,
-      "pct_above_low": 52.3,
-      "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 10.9,
-        "range_prior_pct": 10.7,
-        "vol10_ratio": 1.32
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-14",
+            "lo_date": "2026-08-24",
+            "high": 341.69,
+            "low": 324.3,
+            "depth_pct": 5.1,
+            "vol_ratio": 0.78
+          }
+        ],
+        "pivot": 341.69,
+        "stop": 324.3,
+        "final_depth_pct": 5.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 10
       }
     },
     {
@@ -1437,13 +1912,169 @@
       "pct_off_high": -4.9,
       "pct_above_low": 56.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.2,
-        "range_prior_pct": 11.4,
-        "vol10_ratio": 0.88
+        "score": 61,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-23",
+            "high": 191.6,
+            "low": 175.08,
+            "depth_pct": 8.6,
+            "vol_ratio": 1.36
+          },
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-20",
+            "high": 195.78,
+            "low": 182.41,
+            "depth_pct": 6.8,
+            "vol_ratio": 0.79
+          }
+        ],
+        "pivot": 195.78,
+        "stop": 182.41,
+        "final_depth_pct": 6.8,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 31
+      }
+    },
+    {
+      "ticker": "NDSN",
+      "name": "Nordson Corporation",
+      "rs_rank": 85,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 330.84,
+      "ma50": 302.05,
+      "ma150": 286.9,
+      "ma200": 275.58,
+      "high52": 339.12,
+      "low52": 217.21,
+      "pct_off_high": -2.4,
+      "pct_above_low": 52.3,
+      "vcp": {
+        "score": 49,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-25",
+            "lo_date": "2026-07-08",
+            "high": 307.74,
+            "low": 280.38,
+            "depth_pct": 8.9,
+            "vol_ratio": 0.98
+          },
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-19",
+            "high": 315.68,
+            "low": 302.92,
+            "depth_pct": 4.0,
+            "vol_ratio": 0.94
+          }
+        ],
+        "pivot": 315.68,
+        "stop": 302.92,
+        "final_depth_pct": 4.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 45
+      }
+    },
+    {
+      "ticker": "GRMN",
+      "name": "Garmin",
+      "rs_rank": 85,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 289.87,
+      "ma50": 267.3,
+      "ma150": 246.16,
+      "ma200": 234.72,
+      "high52": 314.28,
+      "low52": 184.35,
+      "pct_off_high": -7.8,
+      "pct_above_low": 57.2,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-10",
+            "lo_date": "2026-08-26",
+            "high": 314.28,
+            "low": 285.65,
+            "depth_pct": 9.1,
+            "vol_ratio": 0.82
+          }
+        ],
+        "pivot": 314.28,
+        "stop": 285.65,
+        "final_depth_pct": 9.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 14
+      }
+    },
+    {
+      "ticker": "TRV",
+      "name": "Travelers Companies (The)",
+      "rs_rank": 85,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 369.33,
+      "ma50": 356.56,
+      "ma150": 317.15,
+      "ma200": 308.51,
+      "high52": 398.7,
+      "low52": 249.31,
+      "pct_off_high": -7.4,
+      "pct_above_low": 48.1,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-20",
+            "high": 398.7,
+            "low": 358.88,
+            "depth_pct": 10.0,
+            "vol_ratio": 0.91
+          }
+        ],
+        "pivot": 398.7,
+        "stop": 358.88,
+        "final_depth_pct": 10.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
       }
     },
     {
@@ -1469,13 +2100,32 @@
       "pct_off_high": -0.6,
       "pct_above_low": 68.4,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.9,
-        "range_prior_pct": 14.9,
-        "vol10_ratio": 0.56
+        "score": 66,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-13",
+            "lo_date": "2026-07-15",
+            "high": 210.87,
+            "low": 186.03,
+            "depth_pct": 11.8,
+            "vol_ratio": 2.16
+          },
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-03",
+            "high": 218.59,
+            "low": 199.58,
+            "depth_pct": 8.7,
+            "vol_ratio": 1.04
+          }
+        ],
+        "pivot": 218.59,
+        "stop": 199.58,
+        "final_depth_pct": 8.7,
+        "vol_declining": true,
+        "dryup": true,
+        "base_days": 34
       }
     },
     {
@@ -1501,13 +2151,40 @@
       "pct_off_high": -4.7,
       "pct_above_low": 56.1,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 8.8,
-        "range_prior_pct": 18.4,
-        "vol10_ratio": 0.96
+        "score": 63,
+        "count": 3,
+        "contractions": [
+          {
+            "hi_date": "2026-06-11",
+            "lo_date": "2026-07-01",
+            "high": 120.71,
+            "low": 102.01,
+            "depth_pct": 15.5,
+            "vol_ratio": 1.12
+          },
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-28",
+            "high": 121.57,
+            "low": 112.46,
+            "depth_pct": 7.5,
+            "vol_ratio": 0.93
+          },
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-27",
+            "high": 135.88,
+            "low": 128.0,
+            "depth_pct": 5.8,
+            "vol_ratio": 0.93
+          }
+        ],
+        "pivot": 135.88,
+        "stop": 128.0,
+        "final_depth_pct": 5.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 54
       }
     },
     {
@@ -1533,45 +2210,32 @@
       "pct_off_high": -1.0,
       "pct_above_low": 44.8,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.8,
-        "range_prior_pct": 16.0,
-        "vol10_ratio": 0.87
-      }
-    },
-    {
-      "ticker": "DXCM",
-      "name": "Dexcom",
-      "rs_rank": 83,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 89.29,
-      "ma50": 78.84,
-      "ma150": 71.44,
-      "ma200": 69.95,
-      "high52": 92.59,
-      "low52": 54.11,
-      "pct_off_high": -3.6,
-      "pct_above_low": 65.0,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.7,
-        "range_prior_pct": 25.2,
-        "vol10_ratio": 0.88
+        "score": 49,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-07",
+            "lo_date": "2026-07-16",
+            "high": 218.31,
+            "low": 201.0,
+            "depth_pct": 7.9,
+            "vol_ratio": 0.98
+          },
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-21",
+            "high": 214.4,
+            "low": 204.1,
+            "depth_pct": 4.8,
+            "vol_ratio": 0.97
+          }
+        ],
+        "pivot": 214.4,
+        "stop": 204.1,
+        "final_depth_pct": 4.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 38
       }
     },
     {
@@ -1597,13 +2261,32 @@
       "pct_off_high": -3.4,
       "pct_above_low": 56.8,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.9,
-        "range_prior_pct": 11.0,
-        "vol10_ratio": 0.79
+        "score": 59,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-04",
+            "high": 273.55,
+            "low": 249.21,
+            "depth_pct": 8.9,
+            "vol_ratio": 0.93
+          },
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-27",
+            "high": 275.11,
+            "low": 263.83,
+            "depth_pct": 4.1,
+            "vol_ratio": 0.81
+          }
+        ],
+        "pivot": 275.11,
+        "stop": 263.83,
+        "final_depth_pct": 4.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
       }
     },
     {
@@ -1629,45 +2312,24 @@
       "pct_off_high": -1.5,
       "pct_above_low": 46.3,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 9.8,
-        "range_prior_pct": 14.8,
-        "vol10_ratio": 0.67
-      }
-    },
-    {
-      "ticker": "XYZ",
-      "name": "Block, Inc.",
-      "rs_rank": 83,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 84.85,
-      "ma50": 79.35,
-      "ma150": 69.47,
-      "ma200": 68.23,
-      "high52": 86.92,
-      "low52": 48.21,
-      "pct_off_high": -2.4,
-      "pct_above_low": 76.0,
-      "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 9.3,
-        "range_prior_pct": 14.1,
-        "vol10_ratio": 0.78
+        "score": 40,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-10",
+            "lo_date": "2026-08-14",
+            "high": 546.17,
+            "low": 502.29,
+            "depth_pct": 8.0,
+            "vol_ratio": 0.84
+          }
+        ],
+        "pivot": 546.17,
+        "stop": 502.29,
+        "final_depth_pct": 8.0,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 14
       }
     },
     {
@@ -1693,13 +2355,118 @@
       "pct_off_high": -2.6,
       "pct_above_low": 48.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.8,
-        "range_prior_pct": 12.2,
-        "vol10_ratio": 0.89
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-30",
+            "high": 315.99,
+            "low": 284.79,
+            "depth_pct": 9.9,
+            "vol_ratio": 1.38
+          }
+        ],
+        "pivot": 315.99,
+        "stop": 284.79,
+        "final_depth_pct": 9.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 26
+      }
+    },
+    {
+      "ticker": "DXCM",
+      "name": "Dexcom",
+      "rs_rank": 83,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 89.29,
+      "ma50": 78.84,
+      "ma150": 71.44,
+      "ma200": 69.95,
+      "high52": 92.59,
+      "low52": 54.11,
+      "pct_off_high": -3.6,
+      "pct_above_low": 65.0,
+      "vcp": {
+        "score": 34,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-10",
+            "lo_date": "2026-06-30",
+            "high": 78.91,
+            "low": 67.3,
+            "depth_pct": 14.7,
+            "vol_ratio": 0.88
+          },
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-24",
+            "high": 79.15,
+            "low": 69.79,
+            "depth_pct": 11.8,
+            "vol_ratio": 0.73
+          }
+        ],
+        "pivot": 79.15,
+        "stop": 69.79,
+        "final_depth_pct": 11.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 55
+      }
+    },
+    {
+      "ticker": "XYZ",
+      "name": "Block, Inc.",
+      "rs_rank": 83,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 84.85,
+      "ma50": 79.35,
+      "ma150": 69.47,
+      "ma200": 68.23,
+      "high52": 86.92,
+      "low52": 48.21,
+      "pct_off_high": -2.4,
+      "pct_above_low": 76.0,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-12",
+            "high": 86.75,
+            "low": 77.23,
+            "depth_pct": 11.0,
+            "vol_ratio": 1.16
+          }
+        ],
+        "pivot": 86.75,
+        "stop": 77.23,
+        "final_depth_pct": 11.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -1725,13 +2492,24 @@
       "pct_off_high": -7.1,
       "pct_above_low": 39.0,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.3,
-        "range_prior_pct": 15.9,
-        "vol10_ratio": 0.83
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-20",
+            "high": 275.39,
+            "low": 252.83,
+            "depth_pct": 8.2,
+            "vol_ratio": 1.05
+          }
+        ],
+        "pivot": 275.39,
+        "stop": 252.83,
+        "final_depth_pct": 8.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
       }
     },
     {
@@ -1757,13 +2535,24 @@
       "pct_off_high": -1.5,
       "pct_above_low": 38.7,
       "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.5,
-        "range_prior_pct": 18.9,
-        "vol10_ratio": 0.91
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-07",
+            "lo_date": "2026-07-14",
+            "high": 291.38,
+            "low": 262.11,
+            "depth_pct": 10.0,
+            "vol_ratio": 0.82
+          }
+        ],
+        "pivot": 291.38,
+        "stop": 262.11,
+        "final_depth_pct": 10.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 38
       }
     },
     {
@@ -1789,45 +2578,24 @@
       "pct_off_high": -3.0,
       "pct_above_low": 52.5,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 13.9,
-        "range_prior_pct": 15.2,
-        "vol10_ratio": 1.0
-      }
-    },
-    {
-      "ticker": "AIZ",
-      "name": "Assurant",
-      "rs_rank": 81,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 285.41,
-      "ma50": 278.02,
-      "ma150": 247.53,
-      "ma200": 243.16,
-      "high52": 303.94,
-      "low52": 202.7,
-      "pct_off_high": -6.1,
-      "pct_above_low": 40.8,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 5.2,
-        "range_prior_pct": 12.0,
-        "vol10_ratio": 0.93
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-04",
+            "high": 126.46,
+            "low": 114.57,
+            "depth_pct": 9.4,
+            "vol_ratio": 0.88
+          }
+        ],
+        "pivot": 126.46,
+        "stop": 114.57,
+        "final_depth_pct": 9.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
       }
     },
     {
@@ -1853,19 +2621,30 @@
       "pct_off_high": -4.0,
       "pct_above_low": 50.1,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.0,
-        "range_prior_pct": 12.1,
-        "vol10_ratio": 0.81
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-18",
+            "lo_date": "2026-08-26",
+            "high": 242.73,
+            "low": 228.58,
+            "depth_pct": 5.8,
+            "vol_ratio": 0.85
+          }
+        ],
+        "pivot": 242.73,
+        "stop": 228.58,
+        "final_depth_pct": 5.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 8
       }
     },
     {
-      "ticker": "BDX",
-      "name": "Becton Dickinson",
-      "rs_rank": 80,
+      "ticker": "AIZ",
+      "name": "Assurant",
+      "rs_rank": 81,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1876,54 +2655,33 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 188.13,
-      "ma50": 164.9,
-      "ma150": 159.13,
-      "ma200": 157.38,
-      "high52": 193.07,
-      "low52": 125.21,
-      "pct_off_high": -2.6,
-      "pct_above_low": 50.3,
+      "price": 285.41,
+      "ma50": 278.02,
+      "ma150": 247.53,
+      "ma200": 243.16,
+      "high52": 303.94,
+      "low52": 202.7,
+      "pct_off_high": -6.1,
+      "pct_above_low": 40.8,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.6,
-        "range_prior_pct": 19.7,
-        "vol10_ratio": 0.72
-      }
-    },
-    {
-      "ticker": "MET",
-      "name": "MetLife",
-      "rs_rank": 80,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 96.25,
-      "ma50": 92.71,
-      "ma150": 81.59,
-      "ma200": 80.43,
-      "high52": 100.93,
-      "low52": 66.41,
-      "pct_off_high": -4.6,
-      "pct_above_low": 44.9,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.4,
-        "range_prior_pct": 14.3,
-        "vol10_ratio": 0.77
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-20",
+            "high": 303.94,
+            "low": 274.36,
+            "depth_pct": 9.7,
+            "vol_ratio": 0.98
+          }
+        ],
+        "pivot": 303.94,
+        "stop": 274.36,
+        "final_depth_pct": 9.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
       }
     },
     {
@@ -1949,19 +2707,30 @@
       "pct_off_high": -3.8,
       "pct_above_low": 47.9,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.2,
-        "range_prior_pct": 9.2,
-        "vol10_ratio": 0.56
+        "score": 58,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-27",
+            "high": 115.8,
+            "low": 110.0,
+            "depth_pct": 5.0,
+            "vol_ratio": 0.58
+          }
+        ],
+        "pivot": 115.8,
+        "stop": 110.0,
+        "final_depth_pct": 5.0,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 9
       }
     },
     {
-      "ticker": "CAH",
-      "name": "Cardinal Health",
-      "rs_rank": 79,
+      "ticker": "MET",
+      "name": "MetLife",
+      "rs_rank": 80,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1972,22 +2741,76 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 235.13,
-      "ma50": 232.49,
-      "ma150": 217.26,
-      "ma200": 213.97,
-      "high52": 258.3,
-      "low52": 144.37,
-      "pct_off_high": -9.0,
-      "pct_above_low": 62.9,
+      "price": 96.25,
+      "ma50": 92.71,
+      "ma150": 81.59,
+      "ma200": 80.43,
+      "high52": 100.93,
+      "low52": 66.41,
+      "pct_off_high": -4.6,
+      "pct_above_low": 44.9,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.6,
-        "range_prior_pct": 16.1,
-        "vol10_ratio": 0.69
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-20",
+            "high": 100.93,
+            "low": 93.37,
+            "depth_pct": 7.5,
+            "vol_ratio": 0.76
+          }
+        ],
+        "pivot": 100.93,
+        "stop": 93.37,
+        "final_depth_pct": 7.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
+      }
+    },
+    {
+      "ticker": "BDX",
+      "name": "Becton Dickinson",
+      "rs_rank": 80,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 188.13,
+      "ma50": 164.9,
+      "ma150": 159.13,
+      "ma200": 157.38,
+      "high52": 193.07,
+      "low52": 125.21,
+      "pct_off_high": -2.6,
+      "pct_above_low": 50.3,
+      "vcp": {
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-21",
+            "high": 163.14,
+            "low": 151.97,
+            "depth_pct": 6.8,
+            "vol_ratio": 0.64
+          }
+        ],
+        "pivot": 163.14,
+        "stop": 151.97,
+        "final_depth_pct": 6.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 30
       }
     },
     {
@@ -2013,13 +2836,40 @@
       "pct_off_high": -5.2,
       "pct_above_low": 59.7,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 5.6,
-        "range_prior_pct": 21.0,
-        "vol10_ratio": 0.66
+        "score": 66,
+        "count": 3,
+        "contractions": [
+          {
+            "hi_date": "2026-06-17",
+            "lo_date": "2026-06-26",
+            "high": 364.29,
+            "low": 321.19,
+            "depth_pct": 11.8,
+            "vol_ratio": 1.91
+          },
+          {
+            "hi_date": "2026-07-17",
+            "lo_date": "2026-07-23",
+            "high": 374.09,
+            "low": 349.51,
+            "depth_pct": 6.6,
+            "vol_ratio": 0.72
+          },
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-27",
+            "high": 425.95,
+            "low": 402.76,
+            "depth_pct": 5.4,
+            "vol_ratio": 0.68
+          }
+        ],
+        "pivot": 425.95,
+        "stop": 402.76,
+        "final_depth_pct": 5.4,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 50
       }
     },
     {
@@ -2045,19 +2895,38 @@
       "pct_off_high": -5.8,
       "pct_above_low": 48.5,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 4.2,
-        "range_prior_pct": 12.3,
-        "vol10_ratio": 0.71
+        "score": 41,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-04",
+            "high": 254.24,
+            "low": 225.63,
+            "depth_pct": 11.3,
+            "vol_ratio": 1.11
+          },
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-11",
+            "high": 238.3,
+            "low": 224.7,
+            "depth_pct": 5.7,
+            "vol_ratio": 0.89
+          }
+        ],
+        "pivot": 238.3,
+        "stop": 224.7,
+        "final_depth_pct": 5.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
       }
     },
     {
-      "ticker": "FANG",
-      "name": "Diamondback Energy",
-      "rs_rank": 78,
+      "ticker": "CAH",
+      "name": "Cardinal Health",
+      "rs_rank": 79,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -2068,22 +2937,33 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 200.52,
-      "ma50": 192.42,
-      "ma150": 187.16,
-      "ma200": 177.35,
-      "high52": 216.9,
-      "low52": 131.14,
-      "pct_off_high": -7.6,
-      "pct_above_low": 52.9,
+      "price": 235.13,
+      "ma50": 232.49,
+      "ma150": 217.26,
+      "ma200": 213.97,
+      "high52": 258.3,
+      "low52": 144.37,
+      "pct_off_high": -9.0,
+      "pct_above_low": 62.9,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 10.1,
-        "range_prior_pct": 20.1,
-        "vol10_ratio": 0.81
+        "score": 36,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-11",
+            "lo_date": "2026-08-24",
+            "high": 258.3,
+            "low": 227.68,
+            "depth_pct": 11.9,
+            "vol_ratio": 0.84
+          }
+        ],
+        "pivot": 258.3,
+        "stop": 227.68,
+        "final_depth_pct": 11.9,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 13
       }
     },
     {
@@ -2109,13 +2989,75 @@
       "pct_off_high": -3.2,
       "pct_above_low": 53.6,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.1,
-        "range_prior_pct": 11.9,
-        "vol10_ratio": 0.87
+        "score": 61,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-24",
+            "lo_date": "2026-08-04",
+            "high": 94.75,
+            "low": 83.48,
+            "depth_pct": 11.9,
+            "vol_ratio": 1.16
+          },
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-26",
+            "high": 97.9,
+            "low": 91.13,
+            "depth_pct": 6.9,
+            "vol_ratio": 0.82
+          }
+        ],
+        "pivot": 97.9,
+        "stop": 91.13,
+        "final_depth_pct": 6.9,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 25
+      }
+    },
+    {
+      "ticker": "FANG",
+      "name": "Diamondback Energy",
+      "rs_rank": 78,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 200.52,
+      "ma50": 192.42,
+      "ma150": 187.16,
+      "ma200": 177.35,
+      "high52": 216.9,
+      "low52": 131.14,
+      "pct_off_high": -7.6,
+      "pct_above_low": 52.9,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-26",
+            "high": 216.9,
+            "low": 196.65,
+            "depth_pct": 9.3,
+            "vol_ratio": 0.91
+          }
+        ],
+        "pivot": 216.9,
+        "stop": 196.65,
+        "final_depth_pct": 9.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -2141,13 +3083,24 @@
       "pct_off_high": -6.5,
       "pct_above_low": 44.5,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 11.9,
-        "range_prior_pct": 17.4,
-        "vol10_ratio": 1.07
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-11",
+            "lo_date": "2026-08-26",
+            "high": 254.89,
+            "low": 221.34,
+            "depth_pct": 13.2,
+            "vol_ratio": 0.94
+          }
+        ],
+        "pivot": 254.89,
+        "stop": 221.34,
+        "final_depth_pct": 13.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 13
       }
     },
     {
@@ -2173,13 +3126,24 @@
       "pct_off_high": -6.3,
       "pct_above_low": 42.9,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 8.9,
-        "range_prior_pct": 17.3,
-        "vol10_ratio": 0.94
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-25",
+            "high": 226.41,
+            "low": 207.44,
+            "depth_pct": 8.4,
+            "vol_ratio": 0.98
+          }
+        ],
+        "pivot": 226.41,
+        "stop": 207.44,
+        "final_depth_pct": 8.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 7
       }
     },
     {
@@ -2205,13 +3169,40 @@
       "pct_off_high": -2.9,
       "pct_above_low": 32.5,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 4.7,
-        "range_prior_pct": 16.4,
-        "vol10_ratio": 0.59
+        "score": 96,
+        "count": 3,
+        "contractions": [
+          {
+            "hi_date": "2026-04-28",
+            "lo_date": "2026-06-03",
+            "high": 483.78,
+            "low": 431.89,
+            "depth_pct": 10.7,
+            "vol_ratio": 0.96
+          },
+          {
+            "hi_date": "2026-06-18",
+            "lo_date": "2026-06-26",
+            "high": 476.0,
+            "low": 442.62,
+            "depth_pct": 7.0,
+            "vol_ratio": 1.67
+          },
+          {
+            "hi_date": "2026-08-14",
+            "lo_date": "2026-08-20",
+            "high": 572.56,
+            "low": 546.66,
+            "depth_pct": 4.5,
+            "vol_ratio": 0.59
+          }
+        ],
+        "pivot": 572.56,
+        "stop": 546.66,
+        "final_depth_pct": 4.5,
+        "vol_declining": true,
+        "dryup": true,
+        "base_days": 85
       }
     },
     {
@@ -2237,77 +3228,32 @@
       "pct_off_high": -6.2,
       "pct_above_low": 33.3,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.8,
-        "range_prior_pct": 11.9,
-        "vol10_ratio": 0.9
-      }
-    },
-    {
-      "ticker": "OXY",
-      "name": "Occidental Petroleum",
-      "rs_rank": 74,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 59.17,
-      "ma50": 55.11,
-      "ma150": 55.04,
-      "ma200": 51.58,
-      "high52": 67.14,
-      "low52": 38.44,
-      "pct_off_high": -11.9,
-      "pct_above_low": 53.9,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.8,
-        "range_prior_pct": 19.1,
-        "vol10_ratio": 0.8
-      }
-    },
-    {
-      "ticker": "SW",
-      "name": "Smurfit Westrock",
-      "rs_rank": 74,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 48.63,
-      "ma50": 46.25,
-      "ma150": 42.85,
-      "ma200": 41.32,
-      "high52": 51.52,
-      "low52": 31.79,
-      "pct_off_high": -5.6,
-      "pct_above_low": 53.0,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.8,
-        "range_prior_pct": 22.1,
-        "vol10_ratio": 0.82
+        "score": 44,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-05-06",
+            "lo_date": "2026-05-15",
+            "high": 53.92,
+            "low": 49.05,
+            "depth_pct": 9.0,
+            "vol_ratio": 0.91
+          },
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-27",
+            "high": 65.23,
+            "low": 61.1,
+            "depth_pct": 6.3,
+            "vol_ratio": 0.93
+          }
+        ],
+        "pivot": 65.23,
+        "stop": 61.1,
+        "final_depth_pct": 6.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 79
       }
     },
     {
@@ -2333,13 +3279,110 @@
       "pct_off_high": -3.8,
       "pct_above_low": 51.7,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 7.1,
-        "range_prior_pct": 10.3,
-        "vol10_ratio": 0.85
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-25",
+            "high": 1098.35,
+            "low": 1027.94,
+            "depth_pct": 6.4,
+            "vol_ratio": 0.9
+          }
+        ],
+        "pivot": 1098.35,
+        "stop": 1027.94,
+        "final_depth_pct": 6.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 5
+      }
+    },
+    {
+      "ticker": "OXY",
+      "name": "Occidental Petroleum",
+      "rs_rank": 74,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 59.17,
+      "ma50": 55.11,
+      "ma150": 55.04,
+      "ma200": 51.58,
+      "high52": 67.14,
+      "low52": 38.44,
+      "pct_off_high": -11.9,
+      "pct_above_low": 53.9,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-26",
+            "high": 62.15,
+            "low": 57.54,
+            "depth_pct": 7.4,
+            "vol_ratio": 0.8
+          }
+        ],
+        "pivot": 62.15,
+        "stop": 57.54,
+        "final_depth_pct": 7.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
+      }
+    },
+    {
+      "ticker": "SW",
+      "name": "Smurfit Westrock",
+      "rs_rank": 74,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 48.63,
+      "ma50": 46.25,
+      "ma150": 42.85,
+      "ma200": 41.32,
+      "high52": 51.52,
+      "low52": 31.79,
+      "pct_off_high": -5.6,
+      "pct_above_low": 53.0,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-07-31",
+            "high": 51.52,
+            "low": 44.88,
+            "depth_pct": 12.9,
+            "vol_ratio": 1.17
+          }
+        ],
+        "pivot": 51.52,
+        "stop": 44.88,
+        "final_depth_pct": 12.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
       }
     },
     {
@@ -2365,45 +3408,32 @@
       "pct_off_high": -2.1,
       "pct_above_low": 45.7,
       "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 4.1,
-        "range_prior_pct": 10.9,
-        "vol10_ratio": 0.72
-      }
-    },
-    {
-      "ticker": "CVX",
-      "name": "Chevron Corporation",
-      "rs_rank": 73,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 199.77,
-      "ma50": 185.68,
-      "ma150": 185.29,
-      "ma200": 176.46,
-      "high52": 210.92,
-      "low52": 142.51,
-      "pct_off_high": -5.3,
-      "pct_above_low": 40.2,
-      "vcp": {
-        "score": 2,
-        "tightening": true,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 6.2,
-        "range_prior_pct": 15.4,
-        "vol10_ratio": 0.9
+        "score": 66,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-23",
+            "high": 89.34,
+            "low": 83.19,
+            "depth_pct": 6.9,
+            "vol_ratio": 0.9
+          },
+          {
+            "hi_date": "2026-08-04",
+            "lo_date": "2026-08-05",
+            "high": 92.18,
+            "low": 87.06,
+            "depth_pct": 5.6,
+            "vol_ratio": 1.75
+          }
+        ],
+        "pivot": 92.18,
+        "stop": 87.06,
+        "final_depth_pct": 5.6,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 31
       }
     },
     {
@@ -2429,13 +3459,75 @@
       "pct_off_high": -6.0,
       "pct_above_low": 45.8,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 8.6,
-        "range_prior_pct": 14.2,
-        "vol10_ratio": 0.73
+        "score": 54,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-31",
+            "lo_date": "2026-08-07",
+            "high": 148.69,
+            "low": 133.45,
+            "depth_pct": 10.2,
+            "vol_ratio": 1.0
+          },
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-27",
+            "high": 153.67,
+            "low": 142.76,
+            "depth_pct": 7.1,
+            "vol_ratio": 0.8
+          }
+        ],
+        "pivot": 153.67,
+        "stop": 142.76,
+        "final_depth_pct": 7.1,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 20
+      }
+    },
+    {
+      "ticker": "CVX",
+      "name": "Chevron Corporation",
+      "rs_rank": 73,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 199.77,
+      "ma50": 185.68,
+      "ma150": 185.29,
+      "ma200": 176.46,
+      "high52": 210.92,
+      "low52": 142.51,
+      "pct_off_high": -5.3,
+      "pct_above_low": 40.2,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-27",
+            "high": 208.98,
+            "low": 197.82,
+            "depth_pct": 5.3,
+            "vol_ratio": 0.87
+          }
+        ],
+        "pivot": 208.98,
+        "stop": 197.82,
+        "final_depth_pct": 5.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -2461,45 +3553,24 @@
       "pct_off_high": -8.4,
       "pct_above_low": 53.7,
       "vcp": {
-        "score": 1,
-        "tightening": false,
-        "volume_dryup": false,
-        "near_52w_high": true,
-        "range_recent_pct": 16.2,
-        "range_prior_pct": 17.7,
-        "vol10_ratio": 1.1
-      }
-    },
-    {
-      "ticker": "IFF",
-      "name": "International Flavors & Fragrances",
-      "rs_rank": 72,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 86.85,
-      "ma50": 80.18,
-      "ma150": 75.89,
-      "ma200": 73.48,
-      "high52": 89.32,
-      "low52": 58.13,
-      "pct_off_high": -2.8,
-      "pct_above_low": 49.4,
-      "vcp": {
-        "score": 3,
-        "tightening": true,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 8.9,
-        "range_prior_pct": 19.8,
-        "vol10_ratio": 0.7
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-27",
+            "high": 90.26,
+            "low": 76.7,
+            "depth_pct": 15.0,
+            "vol_ratio": 1.2
+          }
+        ],
+        "pivot": 90.26,
+        "stop": 76.7,
+        "final_depth_pct": 15.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 7
       }
     },
     {
@@ -2525,13 +3596,67 @@
       "pct_off_high": -3.5,
       "pct_above_low": 36.3,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 7.5,
-        "range_prior_pct": 10.2,
-        "vol10_ratio": 0.66
+        "score": 50,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-06",
+            "high": 267.47,
+            "low": 241.2,
+            "depth_pct": 9.8,
+            "vol_ratio": 0.89
+          }
+        ],
+        "pivot": 267.47,
+        "stop": 241.2,
+        "final_depth_pct": 9.8,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 22
+      }
+    },
+    {
+      "ticker": "IFF",
+      "name": "International Flavors & Fragrances",
+      "rs_rank": 72,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 86.85,
+      "ma50": 80.18,
+      "ma150": 75.89,
+      "ma200": 73.48,
+      "high52": 89.32,
+      "low52": 58.13,
+      "pct_off_high": -2.8,
+      "pct_above_low": 49.4,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-18",
+            "high": 89.32,
+            "low": 80.87,
+            "depth_pct": 9.5,
+            "vol_ratio": 0.9
+          }
+        ],
+        "pivot": 89.32,
+        "stop": 80.87,
+        "final_depth_pct": 9.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -2557,13 +3682,24 @@
       "pct_off_high": -3.7,
       "pct_above_low": 39.1,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 6.3,
-        "range_prior_pct": 11.3,
-        "vol10_ratio": 0.78
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-07-29",
+            "lo_date": "2026-08-04",
+            "high": 90.92,
+            "low": 85.16,
+            "depth_pct": 6.3,
+            "vol_ratio": 1.01
+          }
+        ],
+        "pivot": 90.92,
+        "stop": 85.16,
+        "final_depth_pct": 6.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
       }
     },
     {
@@ -2589,13 +3725,24 @@
       "pct_off_high": -1.5,
       "pct_above_low": 41.1,
       "vcp": {
-        "score": 2,
-        "tightening": false,
-        "volume_dryup": true,
-        "near_52w_high": true,
-        "range_recent_pct": 9.9,
-        "range_prior_pct": 17.3,
-        "vol10_ratio": 0.68
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-10",
+            "high": 30.88,
+            "low": 28.21,
+            "depth_pct": 8.6,
+            "vol_ratio": 1.0
+          }
+        ],
+        "pivot": 30.88,
+        "stop": 28.21,
+        "final_depth_pct": 8.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
       }
     }
   ]

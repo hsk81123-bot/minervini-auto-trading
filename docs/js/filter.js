@@ -4,13 +4,15 @@ App.register("filter", async (page) => {
   let rows = [...data.results];
   let sortKey = "rs_rank", sortDir = -1;
 
-  const vcpFlags = v => {
+  const vcpFlags = (v, price) => {
     const f = [];
-    if (v.tightening) f.push("수축");
-    if (v.volume_dryup) f.push("거래량↓");
-    if (v.near_52w_high) f.push("고점권");
+    if (v.count >= 2) f.push(`수축×${v.count}`);
+    if (v.final_depth_pct != null && v.final_depth_pct <= 10) f.push("타이트");
+    if (v.dryup) f.push("드라이업");
+    if (v.pivot && price <= v.pivot && (v.pivot - price) / v.pivot <= 0.05) f.push("피봇근접");
     return f;
   };
+  const vcpCls = s => (s >= 70 ? "vcp-3" : s >= 40 ? "vcp-2" : "vcp-1");
 
   function tableHTML() {
     const get = r => sortKey === "vcp" ? r.vcp.score : r[sortKey];
@@ -35,8 +37,8 @@ App.register("filter", async (page) => {
               <td>$${App.fmt(r.price)}</td>
               <td class="neg">${r.pct_off_high}%</td>
               <td class="pos">+${r.pct_above_low}%</td>
-              <td class="vcp-${r.vcp.score}">${"●".repeat(r.vcp.score)}${"○".repeat(3 - r.vcp.score)}</td>
-              <td style="text-align:left">${vcpFlags(r.vcp).map(f =>
+              <td class="${vcpCls(r.vcp.score)}">${r.vcp.score}</td>
+              <td style="text-align:left">${vcpFlags(r.vcp, r.price).map(f =>
                 `<span class="badge on">${f}</span>`).join("") || "<span class='badge off'>-</span>"}</td>
             </tr>`).join("")}
         </tbody>
