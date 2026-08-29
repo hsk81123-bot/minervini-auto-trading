@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minervini Screener</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <div class="logo">📈 Minervini</div>
+    <a href="#/filter" data-route="filter">🔍 <span>종목 필터</span></a>
+    <a href="#/analysis" data-route="analysis">📊 <span>심층 분석</span></a>
+    <a href="#/journal" data-route="journal">📝 <span>매매 기록</span></a>
+    <a href="#/stats" data-route="stats">📉 <span>통계</span></a>
+    <div class="sidebar-footer" id="data-date"></div>
+  </nav>
+  <main id="page"></main>
+
+  <script src="js/app.js"></script>
+  <script src="js/filter.js"></script>
+  <script src="js/analysis.js"></script>
+  <script src="js/journal.js"></script>
+  <script src="js/stats.js"></script>
+  <script>App.start();</script>
+</body>
+</html>

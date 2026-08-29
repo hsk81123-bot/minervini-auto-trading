@@ -1,0 +1,36 @@
+name: Daily Screener
+
+on:
+  schedule:
+    # 미국 장 마감(16:00 ET) 이후 — 22:00 UTC, 평일만
+    - cron: "0 22 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  screen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r screener/requirements.txt
+
+      - name: Run screener
+        run: python screener/screener.py
+
+      - name: Commit results
+        run: |
+          git config user.name "screener-bot"
+          git config user.email "actions@github.com"
+          git add docs/data/results.json
+          git diff --cached --quiet || git commit -m "screener: update results $(date -u +%F)"
+          git push
