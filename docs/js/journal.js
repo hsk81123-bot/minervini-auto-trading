@@ -85,20 +85,20 @@ App.register("journal", async (page) => {
           <thead><tr><th>날짜</th><th>종목</th><th>구분</th><th>수량</th><th>가격</th>
             <th>손절가</th><th>목표가</th><th>셋업</th><th>청산사유</th><th>메모</th><th></th></tr></thead>
           <tbody>
-            ${items.map(it => `
+            ${items.map(it => { const kr = /^\d{6}(\.(KS|KQ))?$/.test(it.ticker); return `
               <tr>
                 <td>${it.date}</td>
-                <td><a class="ticker-link" href="#/analysis?ticker=${it.ticker}">${it.ticker}</a></td>
+                <td><a class="ticker-link" href="#/analysis?ticker=${it.ticker}">${App.tickerDisp(it.ticker)}</a></td>
                 <td class="${it.side === "BUY" ? "pos" : "neg"}">${it.side === "BUY" ? "매수" : "매도"}</td>
                 <td>${it.shares}</td>
-                <td>$${App.fmt(it.price)}</td>
-                <td>${it.stop ? "$" + App.fmt(it.stop) : "-"}</td>
-                <td>${it.target ? "$" + App.fmt(it.target) : "-"}</td>
+                <td>${App.money(it.price, kr)}</td>
+                <td>${it.stop ? App.money(it.stop, kr) : "-"}</td>
+                <td>${it.target ? App.money(it.target, kr) : "-"}</td>
                 <td style="text-align:left">${it.setup || "-"}</td>
                 <td style="text-align:left">${it.exitReason || "-"}</td>
                 <td style="text-align:left;color:var(--muted)">${it.notes || ""}</td>
                 <td><button class="danger" data-del="${it.id}">삭제</button></td>
-              </tr>`).join("")}
+              </tr>`; }).join("")}
           </tbody>
         </table>`}
       </div>`;
