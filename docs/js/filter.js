@@ -32,7 +32,7 @@ App.register("filter", async (page) => {
           ${rows.map(r => `
             <tr>
               <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${r.ticker}</a>
-                  <span style="color:var(--muted);font-size:11px"> ${r.name || ""}</span></td>
+                  <span style="color:var(--muted);font-size:11px"> ${App.cleanName(r.name)}</span></td>
               <td><b>${r.rs_rank}</b></td>
               <td>$${App.fmt(r.price)}</td>
               <td class="neg">${r.pct_off_high}%</td>

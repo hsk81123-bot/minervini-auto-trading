@@ -21,7 +21,7 @@ App.register("analysis", async (page, params) => {
   };
 
   page.innerHTML = `
-    <h1>심층 분석 — ${ticker}${r ? ` <span style="font-size:14px;color:var(--muted)">${r.name}</span>` : ""}</h1>
+    <h1>심층 분석 — ${ticker}${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
     <div class="subtitle">
       <input id="ticker-input" value="${ticker}" style="width:120px;display:inline-block;text-transform:uppercase">
       <button id="ticker-go">조회</button>
@@ -34,7 +34,7 @@ App.register("analysis", async (page, params) => {
     <div class="analysis-layout">
       <div id="chart-area">
         <div id="own-chart">
-          <div class="pane-label">RS 라인 — ${ticker} ÷ S&P 500 <span style="color:var(--muted);font-weight:400">(비율 곡선 · 시작=100 정규화 · 기울기만 의미 있음, 1~99 RS 순위와는 다른 지표)</span></div>
+          <div class="pane-label">RS 라인 — ${ticker} ÷ S&P 500 <span style="color:var(--muted);font-weight:400">(원시 비율 · 기울기만 의미 있음, 1~99 RS 순위와는 다른 지표)</span></div>
           <div id="pane-rs"></div>
           <div class="pane-label">S&P 500</div>
           <div id="pane-spx"></div>
@@ -150,11 +150,14 @@ App.register("analysis", async (page, params) => {
     };
     const rows = h.time.map((t, i) => i);
 
-    // ① 상대강도 (종가/SPX, 기간 시작 = 100 정규화)
-    const rsBase = h.rs[0];
+    // ① 상대강도 (종가/SPX 원시 비율 — 책의 StockCharts 표기와 동일)
+    const rsMax = Math.max(...h.rs);
+    const prec = rsMax < 0.01 ? 6 : rsMax < 0.1 ? 5 : rsMax < 10 ? 4 : 2;
     const cRS = mk("pane-rs", 110, { timeScale: { ...base.timeScale, visible: false } });
-    cRS.addLineSeries({ color: "#2ecc71", lineWidth: 2 })
-      .setData(rows.map(i => ({ time: h.time[i], value: h.rs[i] / rsBase * 100 })));
+    cRS.addLineSeries({
+      color: "#2ecc71", lineWidth: 2,
+      priceFormat: { type: "price", precision: prec, minMove: Math.pow(10, -prec) },
+    }).setData(rows.map(i => ({ time: h.time[i], value: h.rs[i] })));
 
     // ② S&P 500
     const cSPX = mk("pane-spx", 110, { timeScale: { ...base.timeScale, visible: false } });

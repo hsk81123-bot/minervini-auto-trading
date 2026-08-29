@@ -4,7 +4,6 @@
 유니버스: S&P 500 (추후 전 종목 확장 예정)
 출력: docs/data/results.json (GitHub Pages 웹앱이 읽음)
 """
-import io
 import json
 import sys
 import time
@@ -23,16 +22,50 @@ HISTORY_DIR = DATA_DIR / "history"
 
 
 # ---------------------------------------------------------------- 유니버스
-def get_universe() -> list[str]:
-    r = requests.get(
-        "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
-        headers=UA, timeout=30,
-    )
-    sp500 = pd.read_html(io.StringIO(r.text))[0]
-    names = dict(zip(
-        sp500["Symbol"].astype(str).str.replace(".", "-", regex=False),
-        sp500["Security"].astype(str),
-    ))
+# 유동성 필터: 미너비니는 저가·저유동성 종목을 피함
+MIN_PRICE = 10.0        # 최소 주가 ($)
+MIN_AVG_VOL = 100_000   # 최소 50일 평균 거래량 (주)
+TOP_EXPORT = 150        # 차트 이력(5년) 내보낼 상위 종목 수 (저장소 크기 관리)
+
+# 종목명에 이 단어가 있으면 보통주가 아님 (워런트/우선주/채권 등)
+_EXCLUDE_NAME = ("warrant", " right", " rights", "unit", "preferred",
+                 "depositary", "notes", " etn", "%", "trust", "fund")
+
+
+def get_universe() -> dict[str, str]:
+    """NASDAQ Trader 공식 심볼 디렉토리에서 미국 전 상장 보통주 수집
+    (NASDAQ + NYSE/AMEX 등 otherlisted). ETF·테스트종목·비보통주 제외."""
+    urls = [
+        "https://www.nasdaqtrader.com/dynamic/SymDir/nasdaqlisted.txt",
+        "https://www.nasdaqtrader.com/dynamic/SymDir/otherlisted.txt",
+    ]
+    names: dict[str, str] = {}
+    for url in urls:
+        r = requests.get(url, headers=UA, timeout=30)
+        r.raise_for_status()
+        lines = r.text.strip().splitlines()
+        header = lines[0].split("|")
+        etf_col = header.index("ETF")
+        test_col = next(i for i, c in enumerate(header) if "Test Issue" in c)
+        for line in lines[1:]:
+            if line.startswith("File Creation Time"):
+                continue
+            f = line.split("|")
+            if len(f) <= max(etf_col, test_col):
+                continue
+            sym, name = f[0].strip(), f[1].strip()
+            if f[etf_col].strip() == "Y" or f[test_col].strip() == "Y":
+                continue
+            # 보통주 심볼만: 영문 1~5자 (+ 선택적 클래스 접미사 .A 등)
+            core = sym.replace(".", "").replace("-", "")
+            if not core.isalpha() or len(core) > 5:
+                continue
+            low = name.lower()
+            if any(k in low for k in _EXCLUDE_NAME):
+                continue
+            # 표시용 이름 정리: "- Common Stock", "- Class A Ordinary Shares" 등 제거
+            clean = name.split(" - ")[0].strip().rstrip(",")
+            names[sym.replace(".", "-")] = clean  # yfinance 형식
     return names
 
 
@@ -138,16 +171,24 @@ def export_history(ticker: str, df: pd.DataFrame, spx_close: pd.Series) -> None:
 
 # ---------------------------------------------------------------- 메인
 def main() -> None:
-    print("[1/4] 유니버스 수집 (S&P 500)...", flush=True)
+    print("[1/5] 유니버스 수집 (NASDAQ 심볼 디렉토리, 미국 전 상장 보통주)...",
+          flush=True)
     names = get_universe()
     tickers = sorted(names)
     print(f"  {len(tickers)} tickers", flush=True)
 
-    print("[2/4] 가격 데이터 다운로드 (2년 일봉)...", flush=True)
+    print("[2/5] 가격 데이터 다운로드 (2년 일봉)...", flush=True)
     data = download_history(tickers)
     print(f"  {len(data)} tickers with sufficient history", flush=True)
+    data = {
+        t: df for t, df in data.items()
+        if float(df["Close"].iloc[-1]) >= MIN_PRICE
+        and float(df["Volume"].iloc[-50:].mean()) >= MIN_AVG_VOL
+    }
+    print(f"  {len(data)} tickers after liquidity filter "
+          f"(price>=${MIN_PRICE:.0f}, vol50>={MIN_AVG_VOL:,})", flush=True)
 
-    print("[3/4] RS 점수 계산 및 백분위 랭킹...", flush=True)
+    print("[3/5] RS 점수 계산 및 백분위 랭킹...", flush=True)
     raw = {t: rs_raw_score(df["Close"]) for t, df in data.items()}
     raw = {t: v for t, v in raw.items() if v is not None}
     rs_rank = (pd.Series(raw).rank(pct=True) * 98 + 1).round(0)  # 1~99
@@ -170,20 +211,21 @@ def main() -> None:
 
     results.sort(key=lambda x: (-x["rs_rank"], -x["vcp"]["score"]))
 
-    print("[5/5] 통과 종목 가격 이력 내보내기 (5년, S&P 500 벤치마크 포함)...",
-          flush=True)
+    print(f"[5/5] 상위 {TOP_EXPORT}종목 가격 이력 내보내기 "
+          "(5년, S&P 500 벤치마크 포함)...", flush=True)
     spx = yf.download("^GSPC", period="5y", interval="1d", auto_adjust=True,
                       progress=False)
     spx_close = spx["Close"].dropna()
     if isinstance(spx_close, pd.DataFrame):  # 단일 티커도 MultiIndex로 올 수 있음
         spx_close = spx_close.iloc[:, 0]
-    passed = [r["ticker"] for r in results]
-    data5 = download_history(passed, period="5y", min_len=1)
+    export = results[:TOP_EXPORT]  # 저장소 크기 관리: 나머지는 TradingView 폴백
+    data5 = download_history([r["ticker"] for r in export],
+                             period="5y", min_len=1)
     HISTORY_DIR.mkdir(parents=True, exist_ok=True)
     # 이전 실행의 잔여 파일 제거 (통과 종목이 바뀌므로)
     for old in HISTORY_DIR.glob("*.json"):
         old.unlink()
-    for r in results:
+    for r in export:
         export_history(r["ticker"], data5.get(r["ticker"], data[r["ticker"]]),
                        spx_close)
 
@@ -191,7 +233,7 @@ def main() -> None:
     out = {
         "generated_at": pd.Timestamp.now().isoformat(),
         "data_date": str(last_date.date()),
-        "universe": "S&P 500",
+        "universe": "US 전 종목 ($10+, 유동성 필터)",
         "universe_size": len(tickers),
         "analyzed": len(rs_rank),
         "passed": len(results),

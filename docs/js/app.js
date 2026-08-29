@@ -46,6 +46,10 @@ const App = (() => {
     n == null || isNaN(n) ? "-" : Number(n).toLocaleString("en-US", {
       minimumFractionDigits: d, maximumFractionDigits: d });
   const signCls = n => (n > 0 ? "pos" : n < 0 ? "neg" : "");
+  // NASDAQ 디렉토리 이름의 "- Common Stock" 류 접미사 제거
+  const cleanName = s => (s || "").split(" - ")[0]
+    .replace(/\s*(Class [A-Z]\s*)?(Common Stock|Ordinary Shares?|Common Shares?).*$/i, "")
+    .trim().replace(/,$/, "");
 
-  return { start, register, loadResults, fmt, signCls };
+  return { start, register, loadResults, fmt, signCls, cleanName };
 })();
