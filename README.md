@@ -68,7 +68,11 @@ python -m http.server 8000 -d docs # http://localhost:8000
 5. [docs/js/firebase-config.js](docs/js/firebase-config.js)의 `window.FIREBASE_CONFIG = null;`을 받은 설정으로 교체
 
 로그인하면 사이드바에 계정이 표시되고, 로컬에 쌓인 기록은 자동으로 클라우드에 병합된다.
-데이터는 `users/{uid}/trades/`에 저장되며 본인만 읽고 쓸 수 있다.
+데이터는 `users/{uid}/trades/`(매매기록)와 `users/{uid}/meta/watchlist`(관심종목)에 저장된다.
+
+**접근 제한:** `firebase-config.js`의 `ALLOWED_EMAILS`에 있는 Google 계정만 앱에 입장 가능
+(UI 게이트 + firestore.rules의 이메일 검증 이중 방어). 정적 호스팅 특성상 스크리닝 결과
+JSON 자체는 공개 접근 가능하지만 개인 데이터는 Firestore 규칙이 서버에서 보호한다.
 
 ## 배포
 

@@ -14,6 +14,7 @@ App.register("analysis", async (page, params) => {
   const disp = App.tickerDisp(ticker);
   const won = n => App.money(n, isKR);
   const r = data.results.find(x => x.ticker === ticker);
+  const watched = (await Watchlist.load()).includes(ticker);
 
   const check = (ok, label) =>
     `<div class="metric-row"><span>${label}</span><span class="${ok ? "pos" : "neg"}">${ok ? "통과" : "미달"}</span></div>`;
@@ -30,7 +31,8 @@ App.register("analysis", async (page, params) => {
   };
 
   page.innerHTML = `
-    <h1>심층 분석 — ${disp}${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
+    <h1>심층 분석 — ${disp}
+      <span id="watch-btn" class="star" style="font-size:20px" title="관심종목 토글">${watched ? "★" : "☆"}</span>${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
     <div class="subtitle">
       <input id="ticker-input" value="${disp}" style="width:120px;display:inline-block;text-transform:uppercase">
       <button id="ticker-go">조회</button>
@@ -304,6 +306,12 @@ App.register("analysis", async (page, params) => {
     document.getElementById("chart-toggle").style.display = "none";
     await renderTV();
   }
+
+  // ---------- 관심종목 토글 ----------
+  document.getElementById("watch-btn").addEventListener("click", async e => {
+    const on = await Watchlist.toggle(ticker);
+    e.target.textContent = on ? "★" : "☆";
+  });
 
   // ---------- 피봇 → 포지션 계산기 ----------
   const usePivot = document.getElementById("use-pivot");

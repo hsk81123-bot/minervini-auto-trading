@@ -4,8 +4,9 @@ App.register("filter", async (page) => {
   const data = await App.loadResults();
   const spSet = isKR ? null : new Set(
     await fetch("data/sp500.json").then(r => r.ok ? r.json() : []).catch(() => []));
+  const watch = new Set(await Watchlist.load());
   let rows = [...data.results];
-  let scope = "all"; // "all" | "sub" (S&P 500 또는 KOSPI)
+  let scope = "all"; // "all" | "sub"(S&P500·KOSPI) | "watch"(관심종목)
   let sortKey = "rs_rank", sortDir = -1;
 
   const inSub = r => isKR ? r.ticker.endsWith(".KS") : spSet.has(r.ticker);
@@ -24,10 +25,12 @@ App.register("filter", async (page) => {
   function tableHTML() {
     const get = r => sortKey === "vcp" ? r.vcp.score : r[sortKey];
     rows.sort((a, b) => (get(a) > get(b) ? 1 : -1) * sortDir);
-    const visible = scope === "sub" ? rows.filter(inSub) : rows;
+    const visible = scope === "sub" ? rows.filter(inSub)
+      : scope === "watch" ? rows.filter(r => watch.has(r.ticker)) : rows;
     return `
       <table>
         <thead><tr>
+          <th style="cursor:default">⭐</th>
           <th data-k="ticker">종목</th>
           <th data-k="rs_rank">RS</th>
           <th data-k="price">가격</th>
@@ -39,6 +42,7 @@ App.register("filter", async (page) => {
         <tbody>
           ${visible.map(r => `
             <tr>
+              <td class="star" data-star="${r.ticker}" title="관심종목 토글">${watch.has(r.ticker) ? "★" : "☆"}</td>
               <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${App.tickerDisp(r.ticker)}</a>
                   <span style="color:var(--muted);font-size:11px"> ${App.cleanName(r.name)}</span></td>
               <td><b>${r.rs_rank}</b></td>
@@ -62,7 +66,7 @@ App.register("filter", async (page) => {
           <button id="mkt-us" class="mode-btn ${isKR ? "" : "active"}">🇺🇸 미국</button><button id="mkt-kr" class="mode-btn ${isKR ? "active" : ""}">🇰🇷 한국</button>
         </span>
         <span class="mode-group" style="margin-left:6px">
-          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sub" class="mode-btn ${scope === "sub" ? "active" : ""}">${subLabel} (${subCount})</button>
+          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sub" class="mode-btn ${scope === "sub" ? "active" : ""}">${subLabel} (${subCount})</button><button id="scope-watch" class="mode-btn ${scope === "watch" ? "active" : ""}">⭐ 관심 (${rows.filter(r => watch.has(r.ticker)).length})</button>
         </span>
         <span style="margin-left:8px">
           트렌드 템플릿 8조건 통과 —
@@ -84,6 +88,15 @@ App.register("filter", async (page) => {
       () => { scope = "all"; draw(); });
     document.getElementById("scope-sub").addEventListener("click",
       () => { scope = "sub"; draw(); });
+    document.getElementById("scope-watch").addEventListener("click",
+      () => { scope = "watch"; draw(); });
+    page.querySelectorAll("[data-star]").forEach(el =>
+      el.addEventListener("click", async () => {
+        const t = el.dataset.star;
+        const on = await Watchlist.toggle(t);
+        if (on) watch.add(t); else watch.delete(t);
+        draw();
+      }));
     const switchMkt = m => () => {
       if (App.getMarket() === m) return;
       App.setMarket(m);

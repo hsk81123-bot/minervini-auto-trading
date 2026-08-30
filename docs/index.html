@@ -1,31 +1,43 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minervini Screener</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=9">
 </head>
 <body>
+  <div id="gate" hidden>
+    <div class="gate-card">
+      <div style="font-size:34px">📈</div>
+      <h1 style="margin:8px 0 4px">Minervini Screener</h1>
+      <div id="gate-msg" class="gate-msg"></div>
+      <button id="gate-login">Google 계정으로 로그인</button>
+    </div>
+  </div>
+
   <nav class="sidebar">
     <div class="logo">📈 Minervini</div>
     <a href="#/filter" data-route="filter">🔍 <span>종목 필터</span></a>
     <a href="#/analysis" data-route="analysis">📊 <span>심층 분석</span></a>
     <a href="#/journal" data-route="journal">📝 <span>매매 기록</span></a>
     <a href="#/stats" data-route="stats">📉 <span>통계</span></a>
+    <a href="#/guide" data-route="guide">📖 <span>설명서</span></a>
     <div id="auth-slot"></div>
     <div class="sidebar-footer" id="data-date"></div>
   </nav>
   <main id="page"></main>
 
   <!-- JS 변경 시 v= 버전을 올려 브라우저 캐시 무효화 -->
-  <script src="js/firebase-config.js?v=8"></script>
-  <script src="js/app.js?v=8"></script>
-  <script src="js/journal.js?v=8"></script>
-  <script src="js/firebase.js?v=8"></script>
-  <script src="js/filter.js?v=8"></script>
-  <script src="js/analysis.js?v=8"></script>
-  <script src="js/stats.js?v=8"></script>
+  <script src="js/firebase-config.js?v=9"></script>
+  <script src="js/app.js?v=9"></script>
+  <script src="js/journal.js?v=9"></script>
+  <script src="js/watchlist.js?v=9"></script>
+  <script src="js/firebase.js?v=9"></script>
+  <script src="js/filter.js?v=9"></script>
+  <script src="js/analysis.js?v=9"></script>
+  <script src="js/stats.js?v=9"></script>
+  <script src="js/guide.js?v=9"></script>
   <script>Cloud.init(); App.start();</script>
 </body>
 </html>

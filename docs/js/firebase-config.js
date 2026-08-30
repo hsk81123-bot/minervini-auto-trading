@@ -8,3 +8,7 @@ window.FIREBASE_CONFIG = {
   messagingSenderId: "784138978556",
   appId: "1:784138978556:web:f17cc3b3499c0149fc0379",
 };
+
+/* 접근 허용 계정 — 이 목록에 없는 Google 계정은 로그인해도 입장 불가.
+   (UI 차원 게이트. 개인 데이터 보호는 Firestore 규칙이 담당) */
+window.ALLOWED_EMAILS = ["hsk81123@gmail.com"];
