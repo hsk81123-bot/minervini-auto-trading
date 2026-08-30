@@ -280,6 +280,10 @@ def main(market: str) -> None:
     raw = {t: rs_raw_score(df["Close"]) for t, df in data.items()}
     raw = {t: v for t, v in raw.items() if v is not None}
     rs_rank = (pd.Series(raw).rank(pct=True) * 98 + 1).round(0)  # 1~99
+    # 온디맨드 생성이 RS 백분위를 근사할 수 있도록 원점수 분포 저장
+    dist_name = "rs_dist.json" if market == "us" else "rs_dist_kr.json"
+    with open(DATA_DIR / dist_name, "w", encoding="utf-8") as f:
+        json.dump(sorted(round(float(v), 6) for v in raw.values()), f)
 
     print("[4/5] 트렌드 템플릿 + VCP 스코어링...", flush=True)
     bench2 = yf.download(cfg["bench"], period="2y", interval="1d",

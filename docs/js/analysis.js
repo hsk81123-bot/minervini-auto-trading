@@ -93,7 +93,7 @@ App.register("analysis", async (page, params) => {
         <div class="card">
           <h2 style="margin-top:0">트렌드 템플릿</h2>
           ${Object.entries(checkLabels).map(([k, label]) => check(r.checks[k], label)).join("")}
-          <div class="metric-row"><span>RS 순위 (시장 내 백분위, 1~99)</span><span><b>${r.rs_rank ?? "-"}</b> / 99</span></div>
+          <div class="metric-row"><span>RS 순위 (시장 내 백분위, 1~99)</span><span><b>${r.rs_rank ?? "-"}</b> / 99${r.ondemand && r.rs_rank != null ? " <span style='color:var(--muted);font-size:11px'>(전일 분포 기준 근사)</span>" : ""}</span></div>
         </div>
         <div class="card">
           <h2 style="margin-top:0">VCP 수축 감지 <span class="${r.vcp.score >= 70 ? "vcp-3" : r.vcp.score >= 40 ? "vcp-2" : "vcp-1"}">${r.vcp.score}/100</span></h2>

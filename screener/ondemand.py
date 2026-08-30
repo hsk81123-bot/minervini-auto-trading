@@ -7,6 +7,8 @@
 웹앱의 '자체 차트 생성' 버튼이 GitHub Actions(ondemand.yml)로 호출한다.
 RS 순위는 전 종목 비교가 필요해 단일 종목으로는 계산하지 않는다(None).
 """
+import bisect
+import json
 import sys
 from pathlib import Path
 
@@ -14,7 +16,8 @@ import pandas as pd
 import yfinance as yf
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from screener import CFG, DATA_DIR, export_history, trend_template  # noqa: E402
+from screener import (CFG, DATA_DIR, export_history, rs_raw_score,  # noqa: E402
+                      trend_template)
 from vcp import detect_vcp  # noqa: E402
 
 
@@ -55,8 +58,18 @@ def main() -> None:
     if len(df) >= 260:  # 1년 미만 상장 종목은 지표 계산 불가 → 차트만
         tt = trend_template(df, rs_rank=0)
         meta = {k: v for k, v in tt.items() if k != "pass_all"}
-        meta["checks"]["rs_rank_70plus"] = None  # 단일 종목으로는 측정 불가
+        meta["checks"]["rs_rank_70plus"] = None  # 분포 파일 없으면 측정 불가
         meta["rs_rank"] = None
+        # 정식 스크리닝이 저장한 rs_raw 분포로 백분위 근사 (전일 분포 기준)
+        dist_file = DATA_DIR / ("rs_dist_kr.json" if market == "kr"
+                                else "rs_dist.json")
+        if dist_file.exists():
+            dist = json.load(open(dist_file, encoding="utf-8"))
+            score = rs_raw_score(df["Close"])
+            if score is not None and dist:
+                pct = bisect.bisect_left(dist, float(score)) / len(dist)
+                meta["rs_rank"] = int(round(pct * 98 + 1))
+                meta["checks"]["rs_rank_70plus"] = bool(meta["rs_rank"] >= 70)
         meta["vcp"] = detect_vcp(df)
         meta["ondemand"] = True
 
