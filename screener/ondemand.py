@@ -18,16 +18,30 @@ from screener import CFG, DATA_DIR, export_history, trend_template  # noqa: E402
 from vcp import detect_vcp  # noqa: E402
 
 
-def main() -> None:
-    ticker = sys.argv[1].strip().upper()
-    market = "kr" if ticker.endswith((".KS", ".KQ")) else "us"
-    cfg = CFG[market]
-
+def _download(ticker: str) -> pd.DataFrame:
     df = yf.download(ticker, period="5y", interval="1d", auto_adjust=True,
                      progress=False)
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
-    df = df.dropna(subset=["Close"])
+    return df.dropna(subset=["Close"])
+
+
+def main() -> None:
+    ticker = sys.argv[1].strip().upper()
+    # 접미사 없는 6자리 한국 코드 → .KQ/.KS 순차 시도
+    if ticker.isdigit() and len(ticker) == 6:
+        for suf in (".KQ", ".KS"):
+            df = _download(ticker + suf)
+            if len(df) >= 60:
+                ticker += suf
+                break
+        else:
+            sys.exit(f"no data for Korean code {ticker} (.KQ/.KS both empty)")
+    else:
+        df = _download(ticker)
+    market = "kr" if ticker.endswith((".KS", ".KQ")) else "us"
+    cfg = CFG[market]
+
     if len(df) < 60:
         sys.exit(f"not enough data for {ticker} ({len(df)} rows)")
 

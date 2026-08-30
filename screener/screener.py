@@ -99,14 +99,14 @@ def get_universe_kr() -> dict[str, str]:
         code = str(row["Code"]).zfill(6)
         name = str(row["Name"])
         mkt = str(row["Market"])
-        if mkt not in ("KOSPI", "KOSDAQ"):
-            continue  # KONEX 등 제외
+        # KOSDAQ GLOBAL 같은 세그먼트 표기도 포함, KONEX 등 제외
+        if mkt != "KOSPI" and not mkt.startswith("KOSDAQ"):
+            continue
         if code[-1] != "0":
             continue  # 우선주·신형우선주 등 (보통주는 코드 끝자리 0)
         if "스팩" in name or "리츠" in name:
             continue
-        suffix = ".KS" if mkt == "KOSPI" else ".KQ"
-        names[code + suffix] = name
+        names[code + (".KS" if mkt == "KOSPI" else ".KQ")] = name
     return names
 
 

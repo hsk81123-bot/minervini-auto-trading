@@ -4,10 +4,17 @@
 App.register("analysis", async (page, params) => {
   const data = await App.loadResults();
   let ticker = (params.get("ticker") || data.results[0]?.ticker || "AAPL").toUpperCase();
-  // 한국 모드에서 6자리 코드만 입력한 경우 .KS/.KQ 접미사 해결
-  if (App.getMarket() === "kr" && /^\d{6}$/.test(ticker)) {
+  // 6자리 숫자 = 한국 종목 코드 (현재 시장 모드와 무관하게) → .KS/.KQ 접미사 해결
+  if (/^\d{6}$/.test(ticker)) {
     const hit = data.results.find(x => x.ticker.startsWith(ticker + "."));
-    ticker = hit ? hit.ticker : ticker + ".KS";
+    if (hit) ticker = hit.ticker;
+    else {
+      try {
+        const krNames = await fetch("data/tickers_kr.json")
+          .then(res => res.ok ? res.json() : {});
+        ticker = krNames[ticker + ".KQ"] ? ticker + ".KQ" : ticker + ".KS";
+      } catch { ticker += ".KS"; }
+    }
   }
   const isKR = App.isKRTicker(ticker) || App.getMarket() === "kr";
   const benchName = isKR ? "KOSPI" : "S&P 500";
@@ -53,7 +60,7 @@ App.register("analysis", async (page, params) => {
       <span class="mode-group">
         <button id="mode-d" class="mode-btn active">일봉</button><button id="mode-w" class="mode-btn">주봉</button>
       </span>
-      <button id="chart-toggle" style="background:var(--panel2);border:1px solid var(--border)">TradingView 전환</button>
+      <button id="chart-toggle" style="background:var(--panel2);border:1px solid var(--border)">${isKR ? "TradingView ↗" : "TradingView 전환"}</button>
     </div>
     <div class="analysis-layout">
       <div id="chart-area">
@@ -164,7 +171,10 @@ App.register("analysis", async (page, params) => {
     document.getElementById("price-label").innerHTML =
       `${App.tickerDisp(ticker)} ${mode === "W" ? "주봉" : "일봉"} · ` +
       maSet.map(([n, c, l]) => `<span style="color:${c}">${l}선</span>`).join("/") +
-      " · 거래량 · 52주 고점/저점";
+      (mode === "W"
+        ? " · 거래량+<span style='color:#8b93a7'>10주평균</span>"
+        : " · 거래량+<span style='color:#f5b041'>5일</span>/<span style='color:#8b93a7'>50일평균</span>") +
+      " · 52주 고점/저점";
 
     const base = {
       layout: { background: { color: "transparent" }, textColor: "#8b93a7" },
@@ -284,6 +294,25 @@ App.register("analysis", async (page, params) => {
       time: h.time[i], value: h.volume[i],
       color: h.close[i] >= h.open[i] ? "rgba(46,204,113,.35)" : "rgba(231,76,60,.35)" })));
 
+    // 거래량 이동평균선 (드라이업 시각화: 짧은 선이 기준선 아래로 말리면 매물 소진)
+    const volMA = (n, color) => {
+      const s = cPx.addLineSeries({
+        color, lineWidth: 1, priceScaleId: "vol",
+        priceLineVisible: false, lastValueVisible: false,
+        crosshairMarkerVisible: false,
+      });
+      const out = [];
+      let sum = 0;
+      for (let i = 0; i < h.volume.length; i++) {
+        sum += h.volume[i];
+        if (i >= n) sum -= h.volume[i - n];
+        if (i >= n - 1) out.push({ time: h.time[i], value: sum / n });
+      }
+      s.setData(out);
+    };
+    if (mode === "W") volMA(10, "#8b93a7");         // 10주 평균 (≈50일)
+    else { volMA(50, "#8b93a7"); volMA(5, "#f5b041"); } // 기준선 + 최근 추세
+
     // 시간축 동기화
     charts.forEach(c => c.timeScale().subscribeVisibleLogicalRangeChange(range => {
       if (!range) return;
@@ -326,7 +355,10 @@ App.register("analysis", async (page, params) => {
 
   const own = () => document.getElementById("own-chart");
   const tv = () => document.getElementById("tv-chart");
+  // KRX 데이터는 TradingView 임베드 위젯이 지원하지 않음 → 사이트 새 탭으로
+  const tvExternal = `https://kr.tradingview.com/chart/?symbol=KRX%3A${disp}`;
   document.getElementById("chart-toggle").addEventListener("click", async () => {
+    if (isKR) { window.open(tvExternal, "_blank"); return; }
     const showTV = tv().style.display === "none";
     tv().style.display = showTV ? "block" : "none";
     own().style.display = showTV ? "none" : "block";
@@ -353,19 +385,28 @@ App.register("analysis", async (page, params) => {
     own().style.display = "none";
     document.getElementById("chart-toggle").style.display = "none";
     document.getElementById("no-chart").style.display = "block";
-    document.getElementById("btn-tv").addEventListener("click", showTVOnly);
+    document.getElementById("btn-tv").addEventListener("click", () => {
+      if (isKR) window.open(tvExternal, "_blank"); // KRX는 임베드 불가 → 새 탭
+      else showTVOnly();
+    });
     document.getElementById("btn-gen").addEventListener("click", async () => {
       const st = document.getElementById("gen-status");
       const btn = document.getElementById("btn-gen");
       btn.disabled = true;
+      btn.textContent = "⏳ 생성 중...";
+      st.style.color = "var(--accent)";
+      st.style.fontWeight = "600";
       const concl = await Refresh.runWorkflow("ondemand.yml", { ticker },
         t => { st.textContent = t; });
       if (concl !== "success") {
-        if (concl) st.textContent = `생성 실패 (${concl}) — 티커가 맞는지 확인하세요`;
+        st.style.color = "var(--red)";
+        if (concl) st.textContent = `❌ 생성 실패 (${concl}) — 티커가 맞는지 확인하세요`;
         btn.disabled = false;
+        btn.textContent = "⚙ 자체 차트 생성";
         return;
       }
-      st.textContent = "생성 완료 — 사이트 배포 대기 중 (1~2분)...";
+      st.style.color = "var(--green)";
+      st.textContent = "✅ 생성 완료 — 사이트 배포 대기 중 (1~2분)...";
       const path = `data/${isKR ? "history_kr" : "history"}/${ticker}.json`;
       for (let i = 0; i < 20; i++) {
         await new Promise(w => setTimeout(w, 15000));
