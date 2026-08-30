@@ -152,6 +152,7 @@ App.register("analysis", async (page, params) => {
     };
     const mk = (id, px, extra = {}) => {
       const el = document.getElementById(id);
+      el.innerHTML = ""; // 중복 렌더(인증 이벤트와의 레이스) 시 이중 차트 방지
       el.style.height = px + "px";
       const c = LightweightCharts.createChart(el, { ...base, ...extra });
       charts.push(c);

@@ -28,11 +28,15 @@ const Cloud = (() => {
       await loadScript(
         `https://www.gstatic.com/firebasejs/${VER}/firebase-${f}-compat.js`);
     firebase.initializeApp(window.FIREBASE_CONFIG);
+    let first = true;
     firebase.auth().onAuthStateChanged(async user => {
       if (user) await Journal.setCloud(user);
       else Journal.setLocal();
       renderSlot(user);
-      // 현재 페이지 다시 그려서 데이터 소스 반영
+      // 시작 직후의 '비로그인' 이벤트는 상태 변화가 아니므로 재렌더 생략
+      // (초기 렌더와 겹치면 차트가 이중으로 그려짐)
+      if (first && !user) { first = false; return; }
+      first = false;
       window.dispatchEvent(new HashChangeEvent("hashchange"));
     });
   }

@@ -2,3 +2,9 @@ __pycache__/
 *.pyc
 .venv/
 prototype/results.json
+
+# Windows 예약 장치 이름 티커 (git이 열지 못함, 스크리너도 생성하지 않음)
+**/CON.json
+**/PRN.json
+**/AUX.json
+**/NUL.json

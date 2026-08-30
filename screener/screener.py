@@ -23,7 +23,7 @@ from vcp import detect_vcp
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 DATA_DIR = Path(__file__).resolve().parent.parent / "docs" / "data"
 
-TOP_EXPORT = 150        # 차트 이력(5년) 내보낼 상위 종목 수 (저장소 크기 관리)
+TOP_EXPORT = 1000       # 차트 이력(5년) 내보낼 상위 종목 수 (사실상 통과 전체)
 
 # 시장별 설정
 CFG = {
@@ -204,10 +204,18 @@ def trend_template(df: pd.DataFrame, rs_rank: float) -> dict:
 
 
 # ---------------------------------------------------------------- 이력 내보내기
+# Windows 예약 장치 이름과 겹치는 티커는 파일로 만들 수 없음 (git도 실패)
+_WIN_RESERVED = ({"CON", "PRN", "AUX", "NUL"}
+                 | {f"COM{i}" for i in range(1, 10)}
+                 | {f"LPT{i}" for i in range(1, 10)})
+
+
 def export_history(ticker: str, df: pd.DataFrame, bench_close: pd.Series,
                    hist_dir: Path) -> None:
     """심층 분석 페이지의 3단 차트(RS/벤치마크/가격·거래량)용 이력 JSON.
     RS 라인 = 종가 / 벤치마크 지수 종가. (키 이름 spx는 벤치마크 범용으로 사용)"""
+    if ticker.upper().split(".")[0] in _WIN_RESERVED:
+        return  # 해당 종목은 웹앱에서 TradingView 폴백으로 표시됨
     sub = df
     spx = bench_close.reindex(sub.index).ffill()
     valid = spx.notna()
