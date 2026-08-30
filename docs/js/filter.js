@@ -272,16 +272,20 @@ App.register("filter", async (page) => {
           placeholder="메모 입력 후 Enter" style="width:100%;min-width:180px">`;
         const inp = td.querySelector("input");
         inp.focus();
-        inp.addEventListener("keydown", e => {
-          if (e.key === "Enter") inp.blur();
-          if (e.key === "Escape") { inp.value = cur; inp.blur(); }
-        });
-        inp.addEventListener("blur", async () => {
+        let done = false; // Enter/blur 이중 저장 방지
+        const save = async () => {
+          if (done) return;
+          done = true;
           const v = inp.value.trim();
           if (v) noteMap[t] = v; else delete noteMap[t];
           await Watchlist.setNote(t, v);
           draw();
+        };
+        inp.addEventListener("keydown", e => {
+          if (e.key === "Enter") save();
+          if (e.key === "Escape") { done = true; draw(); }
         });
+        inp.addEventListener("blur", save);
       }));
     page.querySelectorAll("[data-star]").forEach(el =>
       el.addEventListener("click", async () => {
