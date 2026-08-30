@@ -7,7 +7,7 @@ App.register("filter", async (page) => {
   const watch = new Set(await Watchlist.load());
   let rows = [...data.results];
   let scope = "all"; // "all" | "sub"(S&P500·KOSPI) | "watch"(관심종목)
-  let sortKey = "rs_rank", sortDir = -1;
+  let sortKey = "vcp", sortDir = -1; // 기본 정렬: VCP 점수 내림차순
 
   const inSub = r => isKR ? r.ticker.endsWith(".KS") : spSet.has(r.ticker);
   const subLabel = isKR ? "KOSPI" : "S&P 500";

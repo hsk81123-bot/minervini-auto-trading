@@ -77,7 +77,8 @@ h2 { font-size: 15px; margin: 18px 0 10px; }
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th, td { padding: 8px 10px; text-align: right; white-space: nowrap; }
-th:first-child, td:first-child { text-align: left; }
+th:first-child, td:first-child,
+th:nth-child(2), td:nth-child(2) { text-align: left; } /* 날짜/⭐ + 종목 열 왼쪽 정렬 */
 thead th {
   color: var(--muted);
   font-weight: 600;
