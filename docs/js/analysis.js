@@ -63,6 +63,9 @@ App.register("analysis", async (page, params) => {
       </span>
       <button id="ticker-go">조회</button>
       <span class="mode-group">
+        <button id="mkt-us-a" class="mode-btn ${isKR ? "" : "active"}">🇺🇸 미국</button><button id="mkt-kr-a" class="mode-btn ${isKR ? "active" : ""}">🇰🇷 한국</button>
+      </span>
+      <span class="mode-group">
         <button id="mode-d" class="mode-btn active">일봉</button><button id="mode-w" class="mode-btn">주봉</button>
       </span>
       <button id="chart-toggle" style="background:var(--panel2);border:1px solid var(--border)">${isKR ? "TradingView ↗" : "TradingView 전환"}</button>
@@ -469,6 +472,16 @@ App.register("analysis", async (page, params) => {
       btn.disabled = false;
     });
   }
+
+  // ---------- 시장 전환 (미국/한국) ----------
+  const switchMkt = m => async () => {
+    if ((m === "kr") === (App.getMarket() === "kr")) return;
+    App.setMarket(m);
+    const d = await App.loadResults(); // 해당 시장 데이터 로드
+    location.hash = `#/analysis?ticker=${d.results[0]?.ticker || (m === "kr" ? "005930.KS" : "AAPL")}`;
+  };
+  document.getElementById("mkt-us-a").addEventListener("click", switchMkt("us"));
+  document.getElementById("mkt-kr-a").addEventListener("click", switchMkt("kr"));
 
   // ---------- 관심종목 토글 ----------
   document.getElementById("watch-btn").addEventListener("click", async e => {
