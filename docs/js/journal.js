@@ -50,7 +50,7 @@ const Journal = (() => {
 })();
 
 App.register("journal", async (page) => {
-  const SETUPS = ["VCP 돌파", "저점 돌파", "되돌림 매수", "기타"];
+  const SETUPS = ["피봇 돌파", "치트 진입", "되돌림 매수", "기타"];
   const EXITS = ["", "손절", "익절", "추세 이탈", "기타"];
 
   async function draw() {
