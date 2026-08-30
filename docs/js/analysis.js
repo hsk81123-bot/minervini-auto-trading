@@ -208,6 +208,7 @@ App.register("analysis", async (page, params) => {
     const vline52 = (chart, paneId) => {
       const pane = document.getElementById(paneId);
       pane.style.position = "relative";
+      pane.style.overflow = "hidden"; // 패널 밖(사이드바 등)으로 새는 것 차단
       const el = document.createElement("div");
       el.title = "52주 시작";
       el.style.cssText = "position:absolute;top:0;bottom:0;width:0;" +
@@ -215,7 +216,11 @@ App.register("analysis", async (page, params) => {
       pane.appendChild(el);
       const upd = () => {
         const x = chart.timeScale().timeToCoordinate(t52start);
-        if (x == null) { el.style.display = "none"; return; }
+        // 화면 밖(왼쪽/오른쪽)이면 숨김
+        if (x == null || x < 0 || x > pane.clientWidth) {
+          el.style.display = "none";
+          return;
+        }
         el.style.display = "block";
         el.style.left = x + "px";
       };
