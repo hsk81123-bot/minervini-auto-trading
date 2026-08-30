@@ -168,13 +168,13 @@ def rs_raw_score(close: pd.Series) -> float | None:
 
 
 def rs_line_new_high(close: pd.Series, bench_close: pd.Series) -> bool:
-    """RS 라인(종가/지수)이 52주 신고가 2% 이내인지 — 주도주 선행 신호."""
+    """RS 라인(종가/지수)이 52주 신고가 5% 이내인지 — 주도주 선행 신호."""
     b = bench_close.reindex(close.index).ffill()
     rs = (close / b).dropna()
     if len(rs) < 60:
         return False
     win = rs.iloc[-252:]
-    return bool(win.iloc[-1] >= win.max() * 0.98)
+    return bool(win.iloc[-1] >= win.max() * 0.95)
 
 
 # ---------------------------------------------------------------- 트렌드 템플릿

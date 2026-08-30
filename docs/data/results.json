@@ -540,7 +540,7 @@
         "dryup": false,
         "base_days": 31
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ANRO",
@@ -584,7 +584,7 @@
         "dryup": false,
         "base_days": 81
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "DRTS",
@@ -628,7 +628,7 @@
         "dryup": false,
         "base_days": 30
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ETON",
@@ -874,7 +874,7 @@
         "dryup": false,
         "base_days": 0
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TOP",
@@ -961,7 +961,7 @@
         "dryup": true,
         "base_days": 79
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "DNTH",
@@ -1177,7 +1177,7 @@
         "dryup": false,
         "base_days": 46
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ARTV",
@@ -1265,7 +1265,7 @@
         "dryup": true,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "DELL",
@@ -1449,7 +1449,7 @@
         "dryup": false,
         "base_days": 43
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "PAYS",
@@ -1893,7 +1893,7 @@
         "dryup": true,
         "base_days": 77
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TVTX",
@@ -1937,7 +1937,7 @@
         "dryup": true,
         "base_days": 27
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "INBX",
@@ -2625,7 +2625,7 @@
         "dryup": false,
         "base_days": 13
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "AMWL",
@@ -2713,7 +2713,7 @@
         "dryup": false,
         "base_days": 12
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "STRZ",
@@ -3165,7 +3165,7 @@
         "dryup": false,
         "base_days": 18
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ANIK",
@@ -3209,7 +3209,7 @@
         "dryup": false,
         "base_days": 35
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CGAU",
@@ -3253,7 +3253,7 @@
         "dryup": false,
         "base_days": 34
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "DINO",
@@ -3385,7 +3385,7 @@
         "dryup": false,
         "base_days": 30
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "MPC",
@@ -3517,7 +3517,7 @@
         "dryup": false,
         "base_days": 16
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "OKTA",
@@ -3561,7 +3561,7 @@
         "dryup": false,
         "base_days": 11
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "URGN",
@@ -4237,7 +4237,7 @@
         "dryup": false,
         "base_days": 39
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TWLO",
@@ -4421,7 +4421,7 @@
         "dryup": false,
         "base_days": 11
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ATI",
@@ -4725,7 +4725,7 @@
         "dryup": false,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "GH",
@@ -4873,7 +4873,7 @@
         "dryup": false,
         "base_days": 79
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CHEF",
@@ -4917,7 +4917,7 @@
         "dryup": false,
         "base_days": 20
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "IMVT",
@@ -5277,7 +5277,7 @@
         "dryup": true,
         "base_days": 54
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CGON",
@@ -5693,7 +5693,7 @@
         "dryup": false,
         "base_days": 29
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "FDMT",
@@ -5973,7 +5973,7 @@
         "dryup": false,
         "base_days": 33
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "KELYA",
@@ -6417,7 +6417,7 @@
         "dryup": false,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "MSBI",
@@ -6697,7 +6697,7 @@
         "dryup": false,
         "base_days": 40
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "MAKO",
@@ -6933,7 +6933,7 @@
         "dryup": false,
         "base_days": 54
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "VIRT",
@@ -6993,7 +6993,7 @@
         "dryup": false,
         "base_days": 36
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TGT",
@@ -7045,7 +7045,7 @@
         "dryup": false,
         "base_days": 46
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ZETA",
@@ -7201,7 +7201,7 @@
         "dryup": true,
         "base_days": 19
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "NGNE",
@@ -7305,7 +7305,7 @@
         "dryup": false,
         "base_days": 53
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "EAT",
@@ -7453,7 +7453,7 @@
         "dryup": false,
         "base_days": 4
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "RELY",
@@ -7793,7 +7793,7 @@
         "dryup": false,
         "base_days": 34
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "EPC",
@@ -8161,7 +8161,7 @@
         "dryup": false,
         "base_days": 39
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "SGMT",
@@ -8205,7 +8205,7 @@
         "dryup": false,
         "base_days": 31
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "HUM",
@@ -8709,7 +8709,7 @@
         "dryup": false,
         "base_days": 7
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "HBM",
@@ -8885,7 +8885,7 @@
         "dryup": false,
         "base_days": 37
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "NTAP",
@@ -9305,7 +9305,7 @@
         "dryup": true,
         "base_days": 39
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "SSRM",
@@ -9401,7 +9401,7 @@
         "dryup": false,
         "base_days": 9
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ABNB",
@@ -9489,7 +9489,7 @@
         "dryup": false,
         "base_days": 108
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TBBB",
@@ -9533,7 +9533,7 @@
         "dryup": false,
         "base_days": 19
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TENB",
@@ -9629,7 +9629,7 @@
         "dryup": true,
         "base_days": 30
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "KARO",
@@ -9801,7 +9801,7 @@
         "dryup": true,
         "base_days": 93
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "WLY",
@@ -9897,7 +9897,7 @@
         "dryup": false,
         "base_days": 62
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "SKM",
@@ -10361,7 +10361,7 @@
         "dryup": false,
         "base_days": 34
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ETSY",
@@ -10537,7 +10537,7 @@
         "dryup": false,
         "base_days": 22
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TNK",
@@ -10581,7 +10581,7 @@
         "dryup": false,
         "base_days": 6
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "WHD",
@@ -10669,7 +10669,7 @@
         "dryup": false,
         "base_days": 27
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "SCCO",
@@ -11341,7 +11341,7 @@
         "dryup": false,
         "base_days": 17
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "THC",
@@ -11881,7 +11881,7 @@
         "dryup": true,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "JHX",
@@ -11933,7 +11933,7 @@
         "dryup": true,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ATKR",
@@ -12037,7 +12037,7 @@
         "dryup": true,
         "base_days": 23
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "HQL",
@@ -12089,7 +12089,7 @@
         "dryup": false,
         "base_days": 36
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ALRS",
@@ -12133,7 +12133,7 @@
         "dryup": true,
         "base_days": 19
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "AMTB",
@@ -12273,7 +12273,7 @@
         "dryup": false,
         "base_days": 68
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "MG",
@@ -12501,7 +12501,7 @@
         "dryup": false,
         "base_days": 13
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TECX",
@@ -12921,7 +12921,7 @@
         "dryup": false,
         "base_days": 36
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ZIM",
@@ -13085,7 +13085,7 @@
         "dryup": false,
         "base_days": 91
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "FLYW",
@@ -13137,7 +13137,7 @@
         "dryup": true,
         "base_days": 32
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "EXPD",
@@ -13285,7 +13285,7 @@
         "dryup": false,
         "base_days": 66
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "AMG",
@@ -13337,7 +13337,7 @@
         "dryup": false,
         "base_days": 33
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CHRD",
@@ -13425,7 +13425,7 @@
         "dryup": false,
         "base_days": 11
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TILE",
@@ -13469,7 +13469,7 @@
         "dryup": false,
         "base_days": 16
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CCSI",
@@ -13513,7 +13513,7 @@
         "dryup": false,
         "base_days": 18
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "CF",
@@ -13785,7 +13785,7 @@
         "dryup": true,
         "base_days": 16
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "BEN",
@@ -13829,7 +13829,7 @@
         "dryup": true,
         "base_days": 18
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "UBS",
@@ -13873,7 +13873,7 @@
         "dryup": false,
         "base_days": 33
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ARMK",
@@ -14049,7 +14049,7 @@
         "dryup": false,
         "base_days": 28
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "NEXN",
@@ -14277,7 +14277,7 @@
         "dryup": false,
         "base_days": 31
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "PAG",
@@ -14513,7 +14513,7 @@
         "dryup": false,
         "base_days": 21
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "FISI",
@@ -14821,7 +14821,7 @@
         "dryup": false,
         "base_days": 31
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TPC",
@@ -15285,7 +15285,7 @@
         "dryup": true,
         "base_days": 80
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ASC",
@@ -15461,7 +15461,7 @@
         "dryup": false,
         "base_days": 31
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "GSL",
@@ -15505,7 +15505,7 @@
         "dryup": false,
         "base_days": 21
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "SLG",
@@ -16853,7 +16853,7 @@
         "dryup": false,
         "base_days": 44
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "TRIN",
@@ -17604,7 +17604,7 @@
         "dryup": false,
         "base_days": 39
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "WAB",
@@ -17864,7 +17864,7 @@
         "dryup": false,
         "base_days": 39
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "UNP",
@@ -17908,7 +17908,7 @@
         "dryup": false,
         "base_days": 27
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "ALL",
@@ -18712,7 +18712,7 @@
         "dryup": true,
         "base_days": 78
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "RBKB",
@@ -18860,7 +18860,7 @@
         "dryup": true,
         "base_days": 12
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "NDSN",
@@ -18912,7 +18912,7 @@
         "dryup": false,
         "base_days": 46
       },
-      "rs_nh": false
+      "rs_nh": true
     },
     {
       "ticker": "NEU",
