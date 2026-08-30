@@ -134,6 +134,7 @@ App.register("analysis", async (page, params) => {
   let hist = null;      // 일봉 원본 (history JSON)
   let charts = [];      // 현재 렌더된 차트 인스턴스 (모드 전환 시 dispose)
   let chartMode = "D";  // "D" 일봉 | "W" 주봉
+  let fitRO = null;     // 기본 시야 유지용 ResizeObserver
 
   // 일봉 → 주봉 집계 (월요일 기준 주 단위)
   function aggWeekly(h) {
@@ -161,6 +162,7 @@ App.register("analysis", async (page, params) => {
   }
 
   function drawCharts(mode) {
+    if (fitRO) { fitRO.disconnect(); fitRO = null; }
     charts.forEach(c => c.remove());
     charts = [];
     const h = mode === "W" ? aggWeekly(hist) : hist;
@@ -173,13 +175,13 @@ App.register("analysis", async (page, params) => {
       maSet.map(([n, c, l]) => `<span style="color:${c}">${l}선</span>`).join("/") +
       (mode === "W"
         ? " · 거래량+<span style='color:#8b93a7'>10주평균</span>"
-        : " · 거래량+<span style='color:#f5b041'>5일</span>/<span style='color:#8b93a7'>50일평균</span>") +
+        : " · 거래량+<span style='color:#f5b041'>5일평균</span>/<span style='color:#8b93a7'>드라이업기준선(50일×65%)</span>") +
       " · 52주 고점/저점";
 
     const base = {
       layout: { background: { color: "transparent" }, textColor: "#8b93a7" },
       grid: { vertLines: { color: "#20242f" }, horzLines: { color: "#20242f" } },
-      rightPriceScale: { borderColor: "#2a2f40" },
+      rightPriceScale: { borderColor: "#2a2f40", minimumWidth: 72 },
       timeScale: { borderColor: "#2a2f40" },
       crosshair: { mode: 0 },
       autoSize: true,
@@ -196,6 +198,25 @@ App.register("analysis", async (page, params) => {
 
     // 52주 구간 (일봉 252개 / 주봉 52개)
     const look = Math.min(mode === "W" ? 52 : 252, h.time.length);
+    const t52start = h.time[h.time.length - look];
+    // 52주 시작 지점 수직 점선 (차트 위 DOM 오버레이 — 줌/이동 시 좌표 추적)
+    const vline52 = (chart, paneId) => {
+      const pane = document.getElementById(paneId);
+      pane.style.position = "relative";
+      const el = document.createElement("div");
+      el.title = "52주 시작";
+      el.style.cssText = "position:absolute;top:0;bottom:0;width:0;" +
+        "border-left:1px dashed rgba(139,147,167,.55);pointer-events:none;z-index:3";
+      pane.appendChild(el);
+      const upd = () => {
+        const x = chart.timeScale().timeToCoordinate(t52start);
+        if (x == null) { el.style.display = "none"; return; }
+        el.style.display = "block";
+        el.style.left = x + "px";
+      };
+      chart.timeScale().subscribeVisibleLogicalRangeChange(upd);
+      setTimeout(upd, 0);
+    };
     const line52 = (series, arr, title52 = "52주") => {
       const hi = Math.max(...arr.slice(-look));
       const lo = Math.min(...arr.slice(-look));
@@ -218,12 +239,14 @@ App.register("analysis", async (page, params) => {
     });
     sRS.setData(rows.map(i => ({ time: h.time[i], value: h.rs[i] })));
     line52(sRS, h.rs);
+    vline52(cRS, "pane-rs");
 
     // ② 벤치마크 지수 (S&P 500 / KOSPI)
     const cSPX = mk("pane-spx", 110, { timeScale: { ...base.timeScale, visible: false } });
     const sSPX = cSPX.addLineSeries({ color: "#8b93a7", lineWidth: 2 });
     sSPX.setData(rows.map(i => ({ time: h.time[i], value: h.spx[i] })));
     line52(sSPX, h.spx);
+    vline52(cSPX, "pane-spx");
 
     // ③ 가격(캔들) + 이동평균 + 거래량
     const cPx = mk("pane-price", 360);
@@ -246,6 +269,7 @@ App.register("analysis", async (page, params) => {
     pline(hi52, "#f5b041", "52주 고점");
     pline(lo52, "#8b93a7", "52주 저점");
     pline(hi52 * 0.75, "rgba(245,176,65,.5)", "고점 -25%");
+    vline52(cPx, "pane-price");
 
     // VCP 수축 오버레이 (피봇/손절 라인은 항상, 지그재그·마커는 일봉에서만)
     const v = r && r.vcp;
@@ -294,10 +318,12 @@ App.register("analysis", async (page, params) => {
       time: h.time[i], value: h.volume[i],
       color: h.close[i] >= h.open[i] ? "rgba(46,204,113,.35)" : "rgba(231,76,60,.35)" })));
 
-    // 거래량 이동평균선 (드라이업 시각화: 짧은 선이 기준선 아래로 말리면 매물 소진)
-    const volMA = (n, color) => {
+    // 거래량 이동평균선. scale·dashed로 '드라이업 기준선(50일×0.65)'도 그림 —
+    // 5일선(주황)이 이 점선 아래면 드라이업 플래그와 정확히 1:1 대응
+    const volMA = (n, color, scale = 1, dashed = false) => {
       const s = cPx.addLineSeries({
         color, lineWidth: 1, priceScaleId: "vol",
+        lineStyle: dashed ? 2 : 0,
         priceLineVisible: false, lastValueVisible: false,
         crosshairMarkerVisible: false,
       });
@@ -306,19 +332,32 @@ App.register("analysis", async (page, params) => {
       for (let i = 0; i < h.volume.length; i++) {
         sum += h.volume[i];
         if (i >= n) sum -= h.volume[i - n];
-        if (i >= n - 1) out.push({ time: h.time[i], value: sum / n });
+        if (i >= n - 1) out.push({ time: h.time[i], value: sum / n * scale });
       }
       s.setData(out);
     };
-    if (mode === "W") volMA(10, "#8b93a7");         // 10주 평균 (≈50일)
-    else { volMA(50, "#8b93a7"); volMA(5, "#f5b041"); } // 기준선 + 최근 추세
+    if (mode === "W") volMA(10, "#8b93a7");                    // 10주 평균 (≈50일)
+    else { volMA(50, "#8b93a7", 0.65, true); volMA(5, "#f5b041"); }
 
     // 시간축 동기화
     charts.forEach(c => c.timeScale().subscribeVisibleLogicalRangeChange(range => {
       if (!range) return;
       charts.forEach(o => { if (o !== c) o.timeScale().setVisibleLogicalRange(range); });
     }));
-    cPx.timeScale().fitContent();
+    // 기본 시야: 최근 52주 + 여유 15% (52주 시작 수직선이 왼쪽에 보이도록).
+    // setVisibleLogicalRange는 autoSize 초기 리사이즈에 덮이므로,
+    // barSpacing 옵션을 패널 폭에 맞춰 계산하고 폭이 바뀔 때마다 재적용한다.
+    const fitRecent = () => {
+      const w = document.getElementById("pane-price")?.clientWidth;
+      if (!w) return;
+      cPx.timeScale().applyOptions({
+        rightOffset: 3,
+        barSpacing: Math.max(0.5, w / (look * 1.15)),
+      });
+    };
+    fitRecent();
+    fitRO = new ResizeObserver(fitRecent);
+    fitRO.observe(document.getElementById("pane-price"));
   }
 
   async function renderOwnChart() {
