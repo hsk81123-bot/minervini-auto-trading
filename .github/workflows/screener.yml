@@ -35,5 +35,15 @@ jobs:
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
           git add docs/data
-          git diff --cached --quiet || git commit -m "screener: update results $(date -u +%F)"
-          git push
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git commit -m "screener: update results $(date -u +%F)"
+          # 실행 중 다른 커밋이 푸시됐을 수 있으므로 rebase 후 푸시 (최대 3회 재시도)
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            echo "push failed, retrying ($i/3)..."
+            sleep 10
+          done
+          exit 1
