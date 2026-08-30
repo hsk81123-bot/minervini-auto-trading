@@ -13,11 +13,22 @@ App.register("analysis", async (page, params) => {
   const benchName = isKR ? "KOSPI" : "S&P 500";
   const disp = App.tickerDisp(ticker);
   const won = n => App.money(n, isKR);
-  const r = data.results.find(x => x.ticker === ticker);
+  let r = data.results.find(x => x.ticker === ticker);
   const watched = (await Watchlist.load()).includes(ticker);
 
+  // 이력 JSON 프리페치 — 온디맨드 생성분(meta 포함)이면 미통과 종목도 패널 표시
+  let histData = null;
+  try {
+    const hres = await fetch(`data/${isKR ? "history_kr" : "history"}/${ticker}.json`);
+    if (hres.ok) histData = await hres.json();
+  } catch { /* 없으면 아래 안내 표시 */ }
+  if (!r && histData && histData.meta)
+    r = { ticker, name: "(온디맨드 분석 — 필터 미통과 종목)", ...histData.meta };
+
   const check = (ok, label) =>
-    `<div class="metric-row"><span>${label}</span><span class="${ok ? "pos" : "neg"}">${ok ? "통과" : "미달"}</span></div>`;
+    ok == null
+      ? `<div class="metric-row"><span>${label}</span><span style="color:var(--muted)">측정 불가</span></div>`
+      : `<div class="metric-row"><span>${label}</span><span class="${ok ? "pos" : "neg"}">${ok ? "통과" : "미달"}</span></div>`;
 
   const checkLabels = {
     price_above_150_200: "현재가 > 150·200일선",
@@ -34,13 +45,15 @@ App.register("analysis", async (page, params) => {
     <h1>심층 분석 — ${disp}
       <span id="watch-btn" class="star" style="font-size:20px" title="관심종목 토글">${watched ? "★" : "☆"}</span>${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
     <div class="subtitle">
-      <input id="ticker-input" value="${disp}" style="width:120px;display:inline-block;text-transform:uppercase">
+      <span style="position:relative;display:inline-block">
+        <input id="ticker-input" value="${disp}" placeholder="티커 또는 종목명" style="width:160px;display:inline-block">
+        <div id="suggest" class="suggest" style="display:none"></div>
+      </span>
       <button id="ticker-go">조회</button>
       <span class="mode-group">
         <button id="mode-d" class="mode-btn active">일봉</button><button id="mode-w" class="mode-btn">주봉</button>
       </span>
       <button id="chart-toggle" style="background:var(--panel2);border:1px solid var(--border)">TradingView 전환</button>
-      ${r ? "" : " <span style='color:var(--amber)'>⚠ 필터 통과 종목이 아니라 자체 차트/지표 데이터가 없습니다 (TradingView만 표시)</span>"}
     </div>
     <div class="analysis-layout">
       <div id="chart-area">
@@ -53,13 +66,22 @@ App.register("analysis", async (page, params) => {
           <div id="pane-price"></div>
         </div>
         <div id="tv-chart" style="display:none"></div>
+        <div id="no-chart" class="card" style="display:none;text-align:center;padding:36px 20px">
+          <div style="font-size:14px;margin-bottom:8px">필터 통과 종목이 아니라 자체 차트 데이터가 아직 없습니다</div>
+          <div id="gen-status" style="color:var(--muted);font-size:12px;margin-bottom:16px">
+            자체 차트를 생성하면 VCP 수축 분석·트렌드 템플릿 패널까지 볼 수 있습니다
+            (GitHub Actions에서 계산, 약 3~4분 · 다음 자동 갱신 때 삭제되므로 필요 시 재생성)
+          </div>
+          <button id="btn-gen">⚙ 자체 차트 생성</button>
+          <button id="btn-tv" style="background:var(--panel2);border:1px solid var(--border);margin-left:8px">TradingView로 보기</button>
+        </div>
       </div>
       <div>
         ${r ? `
         <div class="card">
           <h2 style="margin-top:0">트렌드 템플릿</h2>
           ${Object.entries(checkLabels).map(([k, label]) => check(r.checks[k], label)).join("")}
-          <div class="metric-row"><span>RS 순위 (시장 내 백분위, 1~99)</span><span><b>${r.rs_rank}</b> / 99</span></div>
+          <div class="metric-row"><span>RS 순위 (시장 내 백분위, 1~99)</span><span><b>${r.rs_rank ?? "-"}</b> / 99</span></div>
         </div>
         <div class="card">
           <h2 style="margin-top:0">VCP 수축 감지 <span class="${r.vcp.score >= 70 ? "vcp-3" : r.vcp.score >= 40 ? "vcp-2" : "vcp-1"}">${r.vcp.score}/100</span></h2>
@@ -271,9 +293,8 @@ App.register("analysis", async (page, params) => {
   }
 
   async function renderOwnChart() {
-    const res = await fetch(`data/${isKR ? "history_kr" : "history"}/${ticker}.json`);
-    if (!res.ok) throw new Error("no history");
-    hist = await res.json();
+    if (!histData) throw new Error("no history");
+    hist = histData;
     if (!window.LightweightCharts)
       await loadScript("https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js");
     drawCharts(chartMode);
@@ -313,15 +334,50 @@ App.register("analysis", async (page, params) => {
     if (showTV) { tv().style.height = "580px"; await renderTV(); }
   });
 
-  try {
-    await renderOwnChart();
-  } catch {
-    // 이력 데이터 없는 종목 → TradingView로 폴백
+  async function showTVOnly() {
     own().style.display = "none";
+    document.getElementById("no-chart").style.display = "none";
     tv().style.display = "block";
     tv().style.height = "580px";
     document.getElementById("chart-toggle").style.display = "none";
     await renderTV();
+  }
+
+  if (histData) {
+    try { await renderOwnChart(); } catch { await showTVOnly(); }
+  } else if (r) {
+    // 통과 종목인데 이력 파일만 없음 (예약어 티커 등) → TradingView 자동
+    await showTVOnly();
+  } else {
+    // 미통과 + 이력 없음 → 안내 + [자체 차트 생성 | TradingView로 보기]
+    own().style.display = "none";
+    document.getElementById("chart-toggle").style.display = "none";
+    document.getElementById("no-chart").style.display = "block";
+    document.getElementById("btn-tv").addEventListener("click", showTVOnly);
+    document.getElementById("btn-gen").addEventListener("click", async () => {
+      const st = document.getElementById("gen-status");
+      const btn = document.getElementById("btn-gen");
+      btn.disabled = true;
+      const concl = await Refresh.runWorkflow("ondemand.yml", { ticker },
+        t => { st.textContent = t; });
+      if (concl !== "success") {
+        if (concl) st.textContent = `생성 실패 (${concl}) — 티커가 맞는지 확인하세요`;
+        btn.disabled = false;
+        return;
+      }
+      st.textContent = "생성 완료 — 사이트 배포 대기 중 (1~2분)...";
+      const path = `data/${isKR ? "history_kr" : "history"}/${ticker}.json`;
+      for (let i = 0; i < 20; i++) {
+        await new Promise(w => setTimeout(w, 15000));
+        try {
+          const res = await fetch(path, { cache: "no-store" });
+          if (res.ok) { location.reload(); return; }
+        } catch { /* 다음 시도 */ }
+        st.textContent = `사이트 배포 대기 중... ${(i + 1) * 15}초`;
+      }
+      st.textContent = "배포 확인 실패 — 잠시 후 새로고침(F5) 해보세요";
+      btn.disabled = false;
+    });
   }
 
   // ---------- 관심종목 토글 ----------
@@ -343,11 +399,45 @@ App.register("analysis", async (page, params) => {
     document.getElementById("ps-result").scrollIntoView({ behavior: "smooth", block: "center" });
   });
 
-  // ---------- 티커 검색 ----------
-  const go = () => {
-    const t = document.getElementById("ticker-input").value.trim().toUpperCase();
-    if (t) location.hash = `#/analysis?ticker=${t}`;
-  };
+  // ---------- 티커/종목명 검색 ----------
+  let nameMap = null; // {ticker: 이름} — 스크리너가 내보낸 유니버스 사전
+  async function loadNames() {
+    if (nameMap) return nameMap;
+    try {
+      nameMap = await fetch(`data/tickers_${App.getMarket()}.json`)
+        .then(res => res.ok ? res.json() : {});
+    } catch { nameMap = {}; }
+    return nameMap;
+  }
+  const navigate = t => { location.hash = `#/analysis?ticker=${t}`; };
+  const suggestEl = () => document.getElementById("suggest");
+
+  async function go() {
+    const q = document.getElementById("ticker-input").value.trim();
+    if (!q) return;
+    suggestEl().style.display = "none";
+    const upper = q.toUpperCase();
+    const names = await loadNames();
+    // 1) 티커 직접 일치
+    if (names[upper]) { navigate(upper); return; }
+    if (/^\d{6}$/.test(upper)) { // 한국 6자리 코드 → 접미사 해결
+      if (names[upper + ".KS"]) { navigate(upper + ".KS"); return; }
+      if (names[upper + ".KQ"]) { navigate(upper + ".KQ"); return; }
+    }
+    // 2) 종목명 부분 일치 검색
+    const matches = Object.entries(names).filter(([t, n]) =>
+      n.toUpperCase().includes(upper) || t.startsWith(upper)).slice(0, 8);
+    if (matches.length === 1) { navigate(matches[0][0]); return; }
+    if (matches.length > 1) {
+      suggestEl().innerHTML = matches.map(([t, n]) =>
+        `<div data-go="${t}"><b>${App.tickerDisp(t)}</b> <span style="color:var(--muted)">${n}</span></div>`).join("");
+      suggestEl().style.display = "block";
+      suggestEl().querySelectorAll("[data-go]").forEach(el =>
+        el.addEventListener("click", () => navigate(el.dataset.go)));
+      return;
+    }
+    navigate(upper); // 사전에 없는 심볼도 시도 (TradingView 폴백)
+  }
   document.getElementById("ticker-go").addEventListener("click", go);
   document.getElementById("ticker-input").addEventListener("keydown", e => { if (e.key === "Enter") go(); });
 

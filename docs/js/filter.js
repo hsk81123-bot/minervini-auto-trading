@@ -101,7 +101,45 @@ const Refresh = (() => {
     }
   }
 
-  return { trigger };
+  /** 범용: 워크플로우 디스패치 후 완료까지 폴링. conclusion 문자열 반환 (실패 시 null) */
+  async function runWorkflow(file, inputs, onStatus, pollSec = 15) {
+    if (!window.FIREBASE_CONFIG) {
+      onStatus("로컬 모드에서는 사용할 수 없습니다");
+      return null;
+    }
+    const { tok, err } = await getToken();
+    if (err) { onStatus(err); return null; }
+    onStatus("실행 요청 중...");
+    const api = `https://api.github.com/repos/${REPO}/actions/workflows/${file}`;
+    try {
+      const res = await fetch(`${api}/dispatches`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${tok}`, Accept: "application/vnd.github+json" },
+        body: JSON.stringify({ ref: "main", inputs }),
+      });
+      if (res.status === 401 || res.status === 403) {
+        await clearToken();
+        onStatus("토큰 오류 — 다시 시도해 새 토큰을 입력하세요");
+        return null;
+      }
+      if (res.status !== 204) { onStatus(`요청 실패: HTTP ${res.status}`); return null; }
+    } catch (e) { onStatus("요청 실패: " + e.message); return null; }
+    await new Promise(r => setTimeout(r, 8000));
+    const started = Date.now();
+    while (Date.now() - started < 15 * 60000) {
+      try {
+        const r = await fetch(`${api}/runs?per_page=1`);
+        const run = (await r.json()).workflow_runs?.[0];
+        if (run && run.status === "completed") return run.conclusion;
+        onStatus(`GitHub에서 실행 중... ${Math.round((Date.now() - started) / 1000)}초 경과`);
+      } catch { /* 일시 오류 무시 */ }
+      await new Promise(r => setTimeout(r, pollSec * 1000));
+    }
+    onStatus("시간 초과");
+    return null;
+  }
+
+  return { trigger, runWorkflow };
 })();
 
 App.register("filter", async (page) => {

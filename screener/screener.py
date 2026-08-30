@@ -211,9 +211,10 @@ _WIN_RESERVED = ({"CON", "PRN", "AUX", "NUL"}
 
 
 def export_history(ticker: str, df: pd.DataFrame, bench_close: pd.Series,
-                   hist_dir: Path) -> None:
+                   hist_dir: Path, extra: dict | None = None) -> None:
     """심층 분석 페이지의 3단 차트(RS/벤치마크/가격·거래량)용 이력 JSON.
-    RS 라인 = 종가 / 벤치마크 지수 종가. (키 이름 spx는 벤치마크 범용으로 사용)"""
+    RS 라인 = 종가 / 벤치마크 지수 종가. (키 이름 spx는 벤치마크 범용으로 사용)
+    extra: 온디맨드 생성 시 분석 메타(vcp 등)를 함께 저장."""
     if ticker.upper().split(".")[0] in _WIN_RESERVED:
         return  # 해당 종목은 웹앱에서 TradingView 폴백으로 표시됨
     sub = df
@@ -230,8 +231,10 @@ def export_history(ticker: str, df: pd.DataFrame, bench_close: pd.Series,
         "spx": [round(float(x), 2) for x in spx],
         "rs": [round(float(c / s), 6) for c, s in zip(sub["Close"], spx)],
     }
+    if extra:
+        out.update(extra)
     with open(hist_dir / f"{ticker}.json", "w", encoding="utf-8") as f:
-        json.dump(out, f, separators=(",", ":"))
+        json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
 
 
 # ---------------------------------------------------------------- 메인
@@ -244,6 +247,10 @@ def main(market: str) -> None:
     names = get_universe_us() if market == "us" else get_universe_kr()
     tickers = sorted(names)
     print(f"  {len(tickers)} tickers", flush=True)
+    # 이름 검색용 사전 (심층 분석 검색창에서 종목명으로 조회)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with open(DATA_DIR / f"tickers_{market}.json", "w", encoding="utf-8") as f:
+        json.dump(names, f, ensure_ascii=False, separators=(",", ":"))
     if market == "us":
         export_sp500()
 

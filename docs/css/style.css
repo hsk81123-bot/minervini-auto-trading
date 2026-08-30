@@ -177,6 +177,16 @@ button.danger { background: transparent; color: var(--red); border: 1px solid va
 }
 .gate-msg { color: var(--muted); font-size: 13px; margin: 10px 0 18px; min-height: 18px; }
 
+/* ---------- 종목명 검색 자동완성 ---------- */
+.suggest {
+  position: absolute; top: 100%; left: 0; z-index: 50;
+  min-width: 260px; max-height: 260px; overflow-y: auto;
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 8px; margin-top: 4px; text-align: left;
+}
+.suggest div { padding: 7px 12px; cursor: pointer; font-size: 13px; }
+.suggest div:hover { background: var(--panel); }
+
 /* ---------- 관심종목 별표 ---------- */
 .star { cursor: pointer; color: var(--amber); user-select: none; font-size: 15px; }
 .star:hover { filter: brightness(1.3); }
