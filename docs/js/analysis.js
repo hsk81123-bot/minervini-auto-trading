@@ -50,7 +50,12 @@ App.register("analysis", async (page, params) => {
 
   page.innerHTML = `
     <h1>심층 분석 — ${disp}
-      <span id="watch-btn" class="star" style="font-size:20px" title="관심종목 토글">${watched ? "★" : "☆"}</span>${r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
+      <span id="watch-btn" class="star" style="font-size:20px" title="관심종목 토글">${watched ? "★" : "☆"}</span>${
+        r && r.rs_rank >= 90 && r.pct_off_high >= -15 && r.rs_nh && r.vcp.score >= 40
+          ? ' <span class="badge lead" style="font-size:12px;vertical-align:middle" title="주도주: RS 90+ · 고점 −15% 이내 · RS라인 52주 신고가 · VCP 40+">👑 주도주</span>' : ""}${
+        r && r.pct_off_high >= -2
+          ? ' <span class="badge nh" style="font-size:12px;vertical-align:middle" title="52주 고점 −2% 이내">신고가</span>' : ""}${
+        r ? ` <span style="font-size:14px;color:var(--muted)">${App.cleanName(r.name)}</span>` : ""}</h1>
     <div class="subtitle">
       <span style="position:relative;display:inline-block">
         <input id="ticker-input" value="${disp}" placeholder="티커 또는 종목명" style="width:160px;display:inline-block">

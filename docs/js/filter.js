@@ -154,6 +154,14 @@ App.register("filter", async (page) => {
 
   const inSub = r => isKR ? r.ticker.endsWith(".KS") : spSet.has(r.ticker);
   const subLabel = isKR ? "KOSPI" : "S&P 500";
+  // 신고가: 52주 고점 -2% 이내 / 주도주(미너비니 프록시): RS 90+ · 고점 -15% 이내
+  //         · RS라인 52주 신고가 · VCP 40+
+  const isNH = r => r.pct_off_high >= -2;
+  const isLeader = r => r.rs_rank >= 90 && r.pct_off_high >= -15
+    && r.rs_nh && r.vcp.score >= 40;
+  const nameBadges = r =>
+    (isLeader(r) ? `<span class="badge lead" title="주도주: RS 90+ · 고점 −15% 이내 · RS라인 52주 신고가 · VCP 40+">👑 주도주</span>` : "") +
+    (isNH(r) ? `<span class="badge nh" title="52주 고점 −2% 이내">신고가</span>` : "");
 
   const vcpFlags = (v, price) => {
     const f = [];
@@ -169,7 +177,9 @@ App.register("filter", async (page) => {
     const get = r => sortKey === "vcp" ? r.vcp.score : r[sortKey];
     rows.sort((a, b) => (get(a) > get(b) ? 1 : -1) * sortDir);
     const visible = scope === "sub" ? rows.filter(inSub)
-      : scope === "watch" ? rows.filter(r => watch.has(r.ticker)) : rows;
+      : scope === "watch" ? rows.filter(r => watch.has(r.ticker))
+      : scope === "nh" ? rows.filter(isNH)
+      : scope === "leader" ? rows.filter(isLeader) : rows;
     return `
       <table>
         <thead><tr>
@@ -187,6 +197,7 @@ App.register("filter", async (page) => {
             <tr>
               <td class="star" data-star="${r.ticker}" title="관심종목 토글">${watch.has(r.ticker) ? "★" : "☆"}</td>
               <td><a class="ticker-link" href="#/analysis?ticker=${r.ticker}">${App.tickerDisp(r.ticker)}</a>
+                  ${nameBadges(r)}
                   <span style="color:var(--muted);font-size:11px"> ${App.cleanName(r.name)}</span></td>
               <td><b>${r.rs_rank}</b></td>
               <td>${App.money(r.price, isKR)}</td>
@@ -215,7 +226,7 @@ App.register("filter", async (page) => {
           <button id="mkt-us" class="mode-btn ${isKR ? "" : "active"}">🇺🇸 미국</button><button id="mkt-kr" class="mode-btn ${isKR ? "active" : ""}">🇰🇷 한국</button>
         </span>
         <span class="mode-group" style="margin-left:6px">
-          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sub" class="mode-btn ${scope === "sub" ? "active" : ""}">${subLabel} (${subCount})</button><button id="scope-watch" class="mode-btn ${scope === "watch" ? "active" : ""}">⭐ 관심 (${rows.filter(r => watch.has(r.ticker)).length})</button>
+          <button id="scope-all" class="mode-btn ${scope === "all" ? "active" : ""}">전체 (${data.passed})</button><button id="scope-sub" class="mode-btn ${scope === "sub" ? "active" : ""}">${subLabel} (${subCount})</button><button id="scope-nh" class="mode-btn ${scope === "nh" ? "active" : ""}">신고가 (${rows.filter(isNH).length})</button><button id="scope-leader" class="mode-btn ${scope === "leader" ? "active" : ""}">👑 주도주 (${rows.filter(isLeader).length})</button><button id="scope-watch" class="mode-btn ${scope === "watch" ? "active" : ""}">⭐ 관심 (${rows.filter(r => watch.has(r.ticker)).length})</button>
         </span>
         <span style="margin-left:8px">
           트렌드 템플릿 8조건 통과 —
@@ -239,6 +250,10 @@ App.register("filter", async (page) => {
       () => { scope = "sub"; draw(); });
     document.getElementById("scope-watch").addEventListener("click",
       () => { scope = "watch"; draw(); });
+    document.getElementById("scope-nh").addEventListener("click",
+      () => { scope = "nh"; draw(); });
+    document.getElementById("scope-leader").addEventListener("click",
+      () => { scope = "leader"; draw(); });
     document.getElementById("refresh-data").addEventListener("click", () =>
       Refresh.trigger(document.getElementById("refresh-status"),
                       document.getElementById("refresh-data")));

@@ -167,6 +167,16 @@ def rs_raw_score(close: pd.Series) -> float | None:
     return 2.0 * (c / q1) + (c / q2) + (c / q3) + (c / q4)
 
 
+def rs_line_new_high(close: pd.Series, bench_close: pd.Series) -> bool:
+    """RS 라인(종가/지수)이 52주 신고가 2% 이내인지 — 주도주 선행 신호."""
+    b = bench_close.reindex(close.index).ffill()
+    rs = (close / b).dropna()
+    if len(rs) < 60:
+        return False
+    win = rs.iloc[-252:]
+    return bool(win.iloc[-1] >= win.max() * 0.98)
+
+
 # ---------------------------------------------------------------- 트렌드 템플릿
 def trend_template(df: pd.DataFrame, rs_rank: float) -> dict:
     close, high, low = df["Close"], df["High"], df["Low"]
@@ -272,6 +282,10 @@ def main(market: str) -> None:
     rs_rank = (pd.Series(raw).rank(pct=True) * 98 + 1).round(0)  # 1~99
 
     print("[4/5] 트렌드 템플릿 + VCP 스코어링...", flush=True)
+    bench2 = yf.download(cfg["bench"], period="2y", interval="1d",
+                         auto_adjust=True, progress=False)["Close"].dropna()
+    if isinstance(bench2, pd.DataFrame):
+        bench2 = bench2.iloc[:, 0]
     results = []
     for t, df in data.items():
         if t not in rs_rank.index:
@@ -284,6 +298,7 @@ def main(market: str) -> None:
             "name": names.get(t, ""),
             "rs_rank": int(rs_rank[t]),
             **{k: v for k, v in tt.items() if k != "pass_all"},
+            "rs_nh": rs_line_new_high(df["Close"], bench2),
             "vcp": detect_vcp(df),
         })
 

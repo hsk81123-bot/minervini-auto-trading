@@ -48,7 +48,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 11
-      }
+      },
+      "rs_nh": true
     },
     {
       "ticker": "001210.KS",
@@ -91,7 +92,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "131290.KQ",
@@ -134,7 +136,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 9
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "159010.KQ",
@@ -177,7 +180,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 9
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "317400.KS",
@@ -211,7 +215,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 0
-      }
+      },
+      "rs_nh": true
     },
     {
       "ticker": "003010.KS",
@@ -254,7 +259,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 7
-      }
+      },
+      "rs_nh": true
     },
     {
       "ticker": "161890.KS",
@@ -297,7 +303,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 33
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "078930.KS",
@@ -340,7 +347,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 21
-      }
+      },
+      "rs_nh": true
     },
     {
       "ticker": "181710.KS",
@@ -383,7 +391,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 24
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "222040.KQ",
@@ -426,7 +435,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "041830.KQ",
@@ -477,7 +487,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 41
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "119850.KQ",
@@ -520,7 +531,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 15
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "010950.KS",
@@ -571,7 +583,8 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 25
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "192820.KS",
@@ -630,7 +643,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 75
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "121440.KQ",
@@ -673,7 +687,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 8
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "001450.KS",
@@ -724,7 +739,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 51
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "252990.KQ",
@@ -767,7 +783,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "020120.KS",
@@ -810,7 +827,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "123330.KQ",
@@ -853,7 +871,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "278470.KS",
@@ -896,7 +915,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 40
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "006360.KS",
@@ -930,7 +950,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 0
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "204610.KQ",
@@ -973,7 +994,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "089860.KS",
@@ -1024,7 +1046,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 25
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "011560.KQ",
@@ -1067,7 +1090,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 9
-      }
+      },
+      "rs_nh": true
     },
     {
       "ticker": "071200.KQ",
@@ -1118,7 +1142,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 30
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "088350.KS",
@@ -1169,7 +1194,8 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 51
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "084870.KS",
@@ -1220,7 +1246,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 81
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "244920.KS",
@@ -1271,7 +1298,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 26
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "073240.KS",
@@ -1322,7 +1350,8 @@
         "vol_declining": true,
         "dryup": true,
         "base_days": 33
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "094800.KS",
@@ -1373,7 +1402,8 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 51
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "121890.KQ",
@@ -1424,7 +1454,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 19
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "092730.KQ",
@@ -1467,7 +1498,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 12
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "036800.KQ",
@@ -1510,7 +1542,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 3
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "000810.KS",
@@ -1553,7 +1586,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 30
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "033560.KQ",
@@ -1596,7 +1630,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 15
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "009420.KS",
@@ -1630,7 +1665,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 0
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "086790.KS",
@@ -1689,7 +1725,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 52
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "055550.KS",
@@ -1748,7 +1785,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 53
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "035610.KQ",
@@ -1791,7 +1829,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "017890.KQ",
@@ -1834,7 +1873,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "483650.KS",
@@ -1877,7 +1917,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 12
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "013700.KS",
@@ -1920,7 +1961,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "086670.KQ",
@@ -1963,7 +2005,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "105560.KS",
@@ -2014,7 +2057,8 @@
         "vol_declining": true,
         "dryup": true,
         "base_days": 33
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "194370.KS",
@@ -2057,7 +2101,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 19
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "007070.KS",
@@ -2100,7 +2145,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 14
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "028670.KS",
@@ -2143,7 +2189,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 4
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "282330.KS",
@@ -2194,7 +2241,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "051160.KQ",
@@ -2237,7 +2285,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 15
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "001800.KS",
@@ -2280,7 +2329,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "004770.KS",
@@ -2323,7 +2373,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 30
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "003690.KS",
@@ -2374,7 +2425,8 @@
         "vol_declining": true,
         "dryup": true,
         "base_days": 51
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "950190.KQ",
@@ -2417,7 +2469,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 10
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "420570.KQ",
@@ -2460,7 +2513,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 12
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "101160.KQ",
@@ -2511,7 +2565,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 30
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "439090.KQ",
@@ -2562,7 +2617,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 36
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "003490.KS",
@@ -2605,7 +2661,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 17
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "340570.KQ",
@@ -2648,7 +2705,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 15
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "033780.KS",
@@ -2691,7 +2749,8 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 14
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "021240.KS",
@@ -2734,7 +2793,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 12
-      }
+      },
+      "rs_nh": false
     },
     {
       "ticker": "036000.KQ",
@@ -2777,7 +2837,8 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 4
-      }
+      },
+      "rs_nh": false
     }
   ]
 }

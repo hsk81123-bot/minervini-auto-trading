@@ -100,6 +100,8 @@ tbody tr:hover { background: var(--panel2); }
 }
 .badge.on { background: rgba(46, 204, 113, .15); color: var(--green); }
 .badge.off { background: var(--panel2); color: var(--muted); }
+.badge.lead { background: rgba(245, 176, 65, .18); color: var(--amber); }
+.badge.nh { background: rgba(79, 140, 255, .15); color: var(--accent); }
 .pos { color: var(--green); }
 .neg { color: var(--red); }
 .vcp-3 { color: var(--green); font-weight: 700; }
