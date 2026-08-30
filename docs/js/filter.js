@@ -148,8 +148,12 @@ App.register("filter", async (page) => {
   const spSet = isKR ? null : new Set(
     await fetch("data/sp500.json").then(r => r.ok ? r.json() : []).catch(() => []));
   const watch = new Set(await Watchlist.load());
+  const noteMap = await Watchlist.notes(); // ⭐ 관심 탭의 노트 컬럼용
+  const esc = s => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/"/g, "&quot;");
   let rows = [...data.results];
-  let scope = "all"; // "all" | "sub"(S&P500·KOSPI) | "watch"(관심종목)
+  // 기본 범위: 미국은 S&P 500, 한국은 전체
+  let scope = isKR ? "all" : "sub"; // "all" | "sub" | "nh" | "leader" | "watch"
   let sortKey = "vcp", sortDir = -1; // 기본 정렬: VCP 점수 내림차순
 
   const inSub = r => isKR ? r.ticker.endsWith(".KS") : spSet.has(r.ticker);
@@ -191,6 +195,7 @@ App.register("filter", async (page) => {
           <th data-k="pct_above_low">저점대비</th>
           <th data-k="vcp">VCP</th>
           <th>셋업 플래그</th>
+          ${scope === "watch" ? '<th style="cursor:default;text-align:left">노트 (클릭해서 편집)</th>' : ""}
         </tr></thead>
         <tbody>
           ${visible.map(r => `
@@ -206,6 +211,7 @@ App.register("filter", async (page) => {
               <td class="${vcpCls(r.vcp.score)}">${r.vcp.score}</td>
               <td style="text-align:left">${vcpFlags(r.vcp, r.price).map(f =>
                 `<span class="badge on">${f}</span>`).join("") || "<span class='badge off'>-</span>"}</td>
+              ${scope === "watch" ? `<td data-note="${r.ticker}" style="text-align:left;max-width:240px;white-space:normal;cursor:pointer" title="클릭해서 편집">${noteMap[r.ticker] ? esc(noteMap[r.ticker]) : "<span style='color:var(--muted)'>+ 메모</span>"}</td>` : ""}
             </tr>`).join("")}
         </tbody>
       </table>`;
@@ -257,6 +263,26 @@ App.register("filter", async (page) => {
     document.getElementById("refresh-data").addEventListener("click", () =>
       Refresh.trigger(document.getElementById("refresh-status"),
                       document.getElementById("refresh-data")));
+    page.querySelectorAll("[data-note]").forEach(td =>
+      td.addEventListener("click", () => {
+        if (td.querySelector("input")) return; // 이미 편집 중
+        const t = td.dataset.note;
+        const cur = noteMap[t] || "";
+        td.innerHTML = `<input value="${esc(cur)}" maxlength="200"
+          placeholder="메모 입력 후 Enter" style="width:100%;min-width:180px">`;
+        const inp = td.querySelector("input");
+        inp.focus();
+        inp.addEventListener("keydown", e => {
+          if (e.key === "Enter") inp.blur();
+          if (e.key === "Escape") { inp.value = cur; inp.blur(); }
+        });
+        inp.addEventListener("blur", async () => {
+          const v = inp.value.trim();
+          if (v) noteMap[t] = v; else delete noteMap[t];
+          await Watchlist.setNote(t, v);
+          draw();
+        });
+      }));
     page.querySelectorAll("[data-star]").forEach(el =>
       el.addEventListener("click", async () => {
         const t = el.dataset.star;
