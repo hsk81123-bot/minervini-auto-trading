@@ -162,19 +162,36 @@ App.register("analysis", async (page, params) => {
     };
     const rows = h.time.map((t, i) => i);
 
+    // 52주 구간 (일봉 252개 / 주봉 52개)
+    const look = Math.min(mode === "W" ? 52 : 252, h.time.length);
+    const line52 = (series, arr, title52 = "52주") => {
+      const hi = Math.max(...arr.slice(-look));
+      const lo = Math.min(...arr.slice(-look));
+      const pl = (price, color, title) => series.createPriceLine({
+        price, color, lineWidth: 1,
+        lineStyle: LightweightCharts.LineStyle.Dashed,
+        axisLabelVisible: true, title,
+      });
+      pl(hi, "#f5b041", `${title52} 고점`);
+      pl(lo, "#8b93a7", `${title52} 저점`);
+    };
+
     // ① 상대강도 (종가/SPX 원시 비율 — 책의 StockCharts 표기와 동일)
     const rsMax = Math.max(...h.rs);
     const prec = rsMax < 0.01 ? 6 : rsMax < 0.1 ? 5 : rsMax < 10 ? 4 : 2;
     const cRS = mk("pane-rs", 110, { timeScale: { ...base.timeScale, visible: false } });
-    cRS.addLineSeries({
+    const sRS = cRS.addLineSeries({
       color: "#2ecc71", lineWidth: 2,
       priceFormat: { type: "price", precision: prec, minMove: Math.pow(10, -prec) },
-    }).setData(rows.map(i => ({ time: h.time[i], value: h.rs[i] })));
+    });
+    sRS.setData(rows.map(i => ({ time: h.time[i], value: h.rs[i] })));
+    line52(sRS, h.rs);
 
-    // ② S&P 500
+    // ② 벤치마크 지수 (S&P 500 / KOSPI)
     const cSPX = mk("pane-spx", 110, { timeScale: { ...base.timeScale, visible: false } });
-    cSPX.addLineSeries({ color: "#8b93a7", lineWidth: 2 })
-      .setData(rows.map(i => ({ time: h.time[i], value: h.spx[i] })));
+    const sSPX = cSPX.addLineSeries({ color: "#8b93a7", lineWidth: 2 });
+    sSPX.setData(rows.map(i => ({ time: h.time[i], value: h.spx[i] })));
+    line52(sSPX, h.spx);
 
     // ③ 가격(캔들) + 이동평균 + 거래량
     const cPx = mk("pane-price", 360);
