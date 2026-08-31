@@ -74,6 +74,26 @@ python -m http.server 8000 -d docs # http://localhost:8000
 (UI 게이트 + firestore.rules의 이메일 검증 이중 방어). 정적 호스팅 특성상 스크리닝 결과
 JSON 자체는 공개 접근 가능하지만 개인 데이터는 Firestore 규칙이 서버에서 보호한다.
 
+## 토스증권 체결내역 연동 (선택, 로컬 실행)
+
+토스 Open API는 **허용 IP 등록제**라서 본인 PC에서 실행한다 (클라우드 불가).
+
+1. 토스증권 PC 웹(WTS) → 설정 → Open API: `client_id`/`client_secret` 발급,
+   **허용 IP 관리에 본인 공인 IP 등록** (IP가 바뀌면 갱신 필요)
+2. [sync/config.example.json](sync/config.example.json)을 `sync/config.local.json`으로 복사해 값 입력
+3. Firebase 콘솔 → 프로젝트 설정 → 서비스 계정 → **새 비공개 키 생성** →
+   JSON을 `sync/serviceAccount.json`으로 저장 (둘 다 .gitignore에 포함됨)
+4. 실행:
+   ```bash
+   pip install -r sync/requirements.txt
+   python sync/toss_sync.py --dry-run   # 먼저 확인
+   python sync/toss_sync.py             # Firestore 동기화
+   ```
+
+체결내역이 매매기록(`users/{uid}/trades`)에 `toss-{주문ID}` 문서로 추가된다.
+이미 있는 문서는 건너뛰므로 앱에서 보완 입력한 손절가·셋업 유형은 보존된다.
+조회 전용 — 주문 실행 API는 사용하지 않는다.
+
 ## 배포
 
 GitHub 저장소 Settings → Pages → Source: `main` 브랜치 `/docs` 폴더.

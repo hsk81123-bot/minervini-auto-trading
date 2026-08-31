@@ -3,6 +3,10 @@ __pycache__/
 .venv/
 prototype/results.json
 
+# 토스증권 연동 비밀키 (절대 커밋 금지)
+sync/config.local.json
+sync/serviceAccount.json
+
 # Windows 예약 장치 이름 티커 (git이 열지 못함, 스크리너도 생성하지 않음)
 **/CON.json
 **/PRN.json

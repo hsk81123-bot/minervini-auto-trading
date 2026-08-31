@@ -1,0 +1,9 @@
+{
+  "_안내": "이 파일을 config.local.json 으로 복사한 뒤 값을 채우세요. config.local.json 은 git에 커밋되지 않습니다.",
+  "toss_client_id": "토스 WTS → 설정 → Open API 에서 발급한 client_id",
+  "toss_client_secret": "같은 곳에서 발급한 client_secret",
+  "firebase_uid": "Firebase 콘솔 → Authentication → Users 에서 본인 계정의 UID 복사",
+  "service_account_path": "serviceAccount.json",
+  "account_seq": "",
+  "days_back": 30
+}
