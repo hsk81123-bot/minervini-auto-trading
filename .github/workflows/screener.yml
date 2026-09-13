@@ -24,22 +24,47 @@ jobs:
       - name: Install dependencies
         run: pip install -r screener/requirements.txt
 
+      # 한쪽 시장이 외부 데이터 소스 문제로 실패해도 다른 쪽 결과는 살린다.
+      # (실제 판정은 아래 "Check screener outcomes" 스텝에서)
       - name: Run screener (US)
+        id: us
+        continue-on-error: true
         run: python screener/screener.py us
 
       - name: Run screener (KR)
+        id: kr
+        continue-on-error: true
         run: python screener/screener.py kr
 
       - name: Commit results
+        if: always()
         run: |
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
-          git add docs/data
-          if git diff --cached --quiet; then
+
+          # 성공한 시장의 산출물만 스테이징 (실패한 시장의 중간 산출물은 커밋하지 않음)
+          markets=""
+          if [ "${{ steps.us.outcome }}" = "success" ]; then
+            git add docs/data/results.json docs/data/history \
+                    docs/data/tickers_us.json docs/data/rs_dist.json \
+                    docs/data/sp500.json
+            markets="US"
+          fi
+          if [ "${{ steps.kr.outcome }}" = "success" ]; then
+            git add docs/data/results_kr.json docs/data/history_kr \
+                    docs/data/tickers_kr.json docs/data/rs_dist_kr.json
+            markets="${markets:+$markets+}KR"
+          fi
+
+          # 실패한 시장이 남긴 변경은 되돌린다 (rebase 전에 작업트리가 깨끗해야 함)
+          git checkout -- docs/data || true
+          git clean -fdq docs/data
+
+          if [ -z "$markets" ] || git diff --cached --quiet; then
             echo "no changes to commit"
             exit 0
           fi
-          git commit -m "screener: update results $(date -u +%F)"
+          git commit -m "screener: update results $(date -u +%F) ($markets)"
           # 실행 중 다른 커밋이 푸시됐을 수 있으므로 rebase 후 푸시 (최대 3회 재시도)
           for i in 1 2 3; do
             git pull --rebase origin main && git push && exit 0
@@ -47,3 +72,20 @@ jobs:
             sleep 10
           done
           exit 1
+
+      - name: Check screener outcomes
+        if: always()
+        run: |
+          us="${{ steps.us.outcome }}"
+          kr="${{ steps.kr.outcome }}"
+          echo "US=$us / KR=$kr"
+          if [ "$us" != "success" ] && [ "$kr" != "success" ]; then
+            echo "::error::미국·한국 스크리닝이 모두 실패했습니다 — 데이터가 갱신되지 않았습니다"
+            exit 1
+          fi
+          if [ "$us" != "success" ]; then
+            echo "::warning::미국 스크리닝 실패 — 한국 결과만 커밋되었습니다"
+          fi
+          if [ "$kr" != "success" ]; then
+            echo "::warning::한국 스크리닝 실패 — 미국 결과만 커밋되었습니다"
+          fi

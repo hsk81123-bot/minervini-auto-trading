@@ -24,6 +24,7 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
 DATA_DIR = Path(__file__).resolve().parent.parent / "docs" / "data"
 
 TOP_EXPORT = 1000       # 차트 이력(5년) 내보낼 상위 종목 수 (사실상 통과 전체)
+MIN_KR_UNIVERSE = 500   # KRX 상장목록이 이보다 적으면 응답이 깨진 것으로 간주
 
 # 시장별 설정
 CFG = {
@@ -89,11 +90,57 @@ def get_universe_us() -> dict[str, str]:
     return names
 
 
+def load_cached_universe(market: str) -> dict[str, str]:
+    """직전 실행이 저장해 둔 유니버스(tickers_{market}.json). 조회 실패 시 폴백용."""
+    path = DATA_DIR / f"tickers_{market}.json"
+    if not path.exists():
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            cached = json.load(f)
+        return cached if isinstance(cached, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def fetch_kr_listing(retries: int = 3):
+    """KRX 상장목록 조회. data.krx.co.kr이 간헐적으로 403(Access Denied)/404를
+    돌려주므로 지수 백오프로 재시도한다."""
+    import FinanceDataReader as fdr
+    for attempt in range(1, retries + 1):
+        try:
+            return fdr.StockListing("KRX")
+        except Exception as e:  # 네트워크/파싱 계열 예외가 제각각이라 광범위하게
+            print(f"  KRX 상장목록 조회 실패 ({attempt}/{retries}): "
+                  f"{type(e).__name__}: {e}", flush=True)
+            if attempt == retries:
+                raise
+            time.sleep(5 * 2 ** (attempt - 1))
+
+
 def get_universe_kr() -> dict[str, str]:
     """KRX 상장 목록(FinanceDataReader)에서 KOSPI·KOSDAQ 보통주 수집.
-    yfinance 심볼: 005930.KS(KOSPI) / 247540.KQ(KOSDAQ)"""
-    import FinanceDataReader as fdr
-    df = fdr.StockListing("KRX")
+    yfinance 심볼: 005930.KS(KOSPI) / 247540.KQ(KOSDAQ)
+
+    조회에 실패하면 직전 실행의 유니버스를 재사용한다 — 상장목록은 하루 이틀
+    묵어도 스크리닝 결과에 거의 영향이 없고, 전체 실행이 날아가는 것보다 낫다."""
+    try:
+        df = fetch_kr_listing()
+        names = parse_kr_listing(df)
+        if len(names) < MIN_KR_UNIVERSE:
+            raise ValueError(f"상장목록이 비정상적으로 적음 ({len(names)}종목)")
+        return names
+    except Exception as e:
+        cached = load_cached_universe("kr")
+        if not cached:
+            raise
+        print(f"  경고: KRX 상장목록 사용 불가 ({type(e).__name__}: {e})\n"
+              f"  → 직전 유니버스 {len(cached)}종목 재사용", flush=True)
+        return cached
+
+
+def parse_kr_listing(df) -> dict[str, str]:
+    """상장목록 DataFrame → {yfinance 심볼: 종목명} (보통주만)."""
     names: dict[str, str] = {}
     for _, row in df.iterrows():
         code = str(row["Code"]).zfill(6)

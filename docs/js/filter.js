@@ -39,6 +39,32 @@ const Refresh = (() => {
     if (ref) await ref.set({ ghToken: null }, { merge: true });
   }
 
+  /** 실행 결과 요약 — 어느 시장이 왜 실패했는지까지 보여준다.
+      워크플로우가 시장별로 continue-on-error라 run.conclusion이 success여도
+      한쪽이 실패했을 수 있으므로 스텝 단위로 확인한다. */
+  async function describeRun(run) {
+    let failed = [];
+    try {
+      const r = await fetch(
+        `https://api.github.com/repos/${REPO}/actions/runs/${run.id}/jobs`);
+      failed = ((await r.json()).jobs || []).flatMap(j => (j.steps || [])
+        .filter(s => s.conclusion === "failure" &&
+                     s.name.startsWith("Run screener"))
+        .map(s => (s.name.includes("(KR)") ? "한국" : "미국")));
+    } catch { /* 상세 조회 실패 시 아래 기본 문구로 */ }
+    failed = [...new Set(failed)];
+    if (failed.length >= 2)
+      return "❌ 미국·한국 모두 스크리닝 실패 — 데이터가 갱신되지 않았습니다 " +
+             "(GitHub Actions 로그 확인)";
+    if (failed.length === 1)
+      return `⚠️ ${failed[0]} 스크리닝 실패 (외부 데이터 소스 오류) — ` +
+             `${failed[0] === "한국" ? "미국" : "한국"} 데이터는 갱신됐습니다. ` +
+             "1~2분 후 F5";
+    if (run.conclusion === "success")
+      return "✅ 완료! 1~2분 후 페이지를 새로고침(F5)하면 새 데이터가 보입니다";
+    return `❌ 실패 (${run.conclusion}) — GitHub Actions 로그 확인 필요`;
+  }
+
   function poll(statusEl, btn) {
     if (polling) return;
     polling = true;
@@ -56,9 +82,7 @@ const Refresh = (() => {
         } else {
           clearInterval(timer);
           polling = false;
-          el.textContent = run.conclusion === "success"
-            ? "✅ 완료! 1~2분 후 페이지를 새로고침(F5)하면 새 데이터가 보입니다"
-            : `❌ 실패 (${run.conclusion}) — GitHub Actions 로그 확인 필요`;
+          el.textContent = await describeRun(run);
           const b = document.getElementById("refresh-data");
           if (b) b.disabled = false;
         }

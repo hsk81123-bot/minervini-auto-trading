@@ -99,6 +99,11 @@ JSON 자체는 공개 접근 가능하지만 개인 데이터는 Firestore 규�
 GitHub 저장소 Settings → Pages → Source: `main` 브랜치 `/docs` 폴더.
 스크리너는 GitHub Actions가 평일마다 자동 실행 (수동 실행: Actions 탭 → Daily Screener → Run workflow).
 
+**부분 실패 처리:** 미국·한국 스크리닝은 서로 독립적으로 돌고, 성공한 시장의 결과만 커밋된다
+(한쪽이 외부 데이터 소스 장애로 죽어도 다른 쪽 데이터는 살아남는다). 둘 다 실패할 때만 워크플로가
+빨간불이 되고, 한쪽만 실패하면 경고 주석으로 남는다. 한국 유니버스(KRX 상장목록)는 조회가 실패하면
+3회 재시도 후 직전 실행의 `tickers_kr.json`을 재사용한다.
+
 ## 로드맵
 
 - [x] 유니버스 전 종목 확장 (NASDAQ/NYSE 공식 리스트)
