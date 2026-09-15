@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-09-12T00:00:57.626661",
-  "data_date": "2026-09-11",
+  "generated_at": "2026-09-15T00:28:24.155539",
+  "data_date": "2026-09-14",
   "market": "us",
   "universe": "US 전 종목 ($10+, 유동성 필터)",
-  "universe_size": 5152,
+  "universe_size": 5153,
   "analyzed": 2429,
-  "passed": 367,
+  "passed": 372,
   "results": [
     {
       "ticker": "TXG",
@@ -21,17 +21,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 66.38,
-      "ma50": 52.61,
-      "ma150": 33.35,
-      "ma200": 29.7,
-      "high52": 67.7,
+      "price": 68.59,
+      "ma50": 53.2,
+      "ma150": 33.69,
+      "ma200": 29.95,
+      "high52": 69.67,
       "low52": 11.16,
-      "pct_off_high": -1.9,
-      "pct_above_low": 494.8,
+      "pct_off_high": -1.6,
+      "pct_above_low": 514.6,
       "rs_nh": true,
       "vcp": {
-        "score": 54,
+        "score": 44,
         "count": 2,
         "contractions": [
           {
@@ -56,7 +56,7 @@
         "final_depth_pct": 12.3,
         "vol_declining": true,
         "dryup": false,
-        "base_days": 68
+        "base_days": 69
       }
     },
     {
@@ -164,6 +164,50 @@
       }
     },
     {
+      "ticker": "NFE",
+      "name": "New Fortress Energy Inc.",
+      "rs_rank": 99,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 16.48,
+      "ma50": 2.42,
+      "ma150": 1.49,
+      "ma200": 1.47,
+      "high52": 17.5,
+      "low52": 0.32,
+      "pct_off_high": -5.8,
+      "pct_above_low": 5082.4,
+      "rs_nh": true,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-02",
+            "lo_date": "2026-09-09",
+            "high": 14.68,
+            "low": 11.25,
+            "depth_pct": 23.4,
+            "vol_ratio": 0.01
+          }
+        ],
+        "pivot": 14.68,
+        "stop": 11.25,
+        "final_depth_pct": 23.4,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 7
+      }
+    },
+    {
       "ticker": "ANRO",
       "name": "Alto Neuroscience, Inc. Common Stock",
       "rs_rank": 99,
@@ -202,13 +246,13 @@
             "hi_date": "2026-08-25",
             "lo_date": "2026-09-11",
             "high": 37.48,
-            "low": 31.12,
+            "low": 31.11,
             "depth_pct": 17.0,
             "vol_ratio": 0.87
           }
         ],
         "pivot": 37.48,
-        "stop": 31.12,
+        "stop": 31.11,
         "final_depth_pct": 17.0,
         "vol_declining": false,
         "dryup": false,
@@ -260,6 +304,41 @@
       }
     },
     {
+      "ticker": "XHLD",
+      "name": "TEN Holdings, Inc.",
+      "rs_rank": 99,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 12.53,
+      "ma50": 4.77,
+      "ma150": 2.59,
+      "ma200": 2.42,
+      "high52": 13.84,
+      "low52": 0.76,
+      "pct_off_high": -9.5,
+      "pct_above_low": 1540.1,
+      "rs_nh": true,
+      "vcp": {
+        "score": 15,
+        "count": 0,
+        "contractions": [],
+        "pivot": null,
+        "stop": null,
+        "final_depth_pct": null,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 0
+      }
+    },
+    {
       "ticker": "CLYM",
       "name": "Climb Bio, Inc.",
       "rs_rank": 99,
@@ -301,41 +380,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
-      }
-    },
-    {
-      "ticker": "XHLD",
-      "name": "TEN Holdings, Inc.",
-      "rs_rank": 99,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 10.84,
-      "ma50": 4.56,
-      "ma150": 2.53,
-      "ma200": 2.37,
-      "high52": 13.47,
-      "low52": 0.76,
-      "pct_off_high": -19.5,
-      "pct_above_low": 1318.8,
-      "rs_nh": true,
-      "vcp": {
-        "score": 0,
-        "count": 0,
-        "contractions": [],
-        "pivot": null,
-        "stop": null,
-        "final_depth_pct": null,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 0
       }
     },
     {
@@ -824,14 +868,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 126.85,
-      "ma50": 112.5,
-      "ma150": 76.39,
-      "ma200": 66.27,
+      "price": 127.22,
+      "ma50": 113.0,
+      "ma150": 76.93,
+      "ma200": 66.76,
       "high52": 155.44,
       "low52": 23.3,
-      "pct_off_high": -18.4,
-      "pct_above_low": 444.4,
+      "pct_off_high": -18.2,
+      "pct_above_low": 446.0,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -851,7 +895,7 @@
         "final_depth_pct": 22.7,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 10
+        "base_days": 11
       }
     },
     {
@@ -877,41 +921,6 @@
       "pct_off_high": -2.7,
       "pct_above_low": 665.9,
       "rs_nh": true,
-      "vcp": {
-        "score": 0,
-        "count": 0,
-        "contractions": [],
-        "pivot": null,
-        "stop": null,
-        "final_depth_pct": null,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 0
-      }
-    },
-    {
-      "ticker": "TOP",
-      "name": "TOP Financial Group Limited",
-      "rs_rank": 98,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 14.94,
-      "ma50": 12.19,
-      "ma150": 7.31,
-      "ma200": 6.8,
-      "high52": 17.42,
-      "low52": 3.06,
-      "pct_off_high": -14.2,
-      "pct_above_low": 388.2,
-      "rs_nh": false,
       "vcp": {
         "score": 0,
         "count": 0,
@@ -1106,7 +1115,7 @@
       "ma50": 45.32,
       "ma150": 36.38,
       "ma200": 32.38,
-      "high52": 58.39,
+      "high52": 58.4,
       "low52": 17.08,
       "pct_off_high": -2.7,
       "pct_above_low": 232.6,
@@ -1465,6 +1474,41 @@
       }
     },
     {
+      "ticker": "TOP",
+      "name": "TOP Financial Group Limited",
+      "rs_rank": 97,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 14.63,
+      "ma50": 12.29,
+      "ma150": 7.37,
+      "ma200": 6.85,
+      "high52": 17.42,
+      "low52": 3.06,
+      "pct_off_high": -16.0,
+      "pct_above_low": 378.1,
+      "rs_nh": false,
+      "vcp": {
+        "score": 0,
+        "count": 0,
+        "contractions": [],
+        "pivot": null,
+        "stop": null,
+        "final_depth_pct": null,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 0
+      }
+    },
+    {
       "ticker": "INSW",
       "name": "International Seaways, Inc. Common Stock",
       "rs_rank": 96,
@@ -1598,14 +1642,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 67.51,
-      "ma50": 60.78,
-      "ma150": 45.85,
-      "ma200": 42.89,
-      "high52": 68.59,
+      "price": 66.17,
+      "ma50": 60.98,
+      "ma150": 46.09,
+      "ma200": 43.04,
+      "high52": 68.73,
       "low52": 22.06,
-      "pct_off_high": -1.6,
-      "pct_above_low": 206.1,
+      "pct_off_high": -3.7,
+      "pct_above_low": 200.0,
       "rs_nh": true,
       "vcp": {
         "score": 51,
@@ -1633,7 +1677,7 @@
         "final_depth_pct": 6.7,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 35
+        "base_days": 36
       }
     },
     {
@@ -1650,14 +1694,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 385.43,
-      "ma50": 321.95,
-      "ma150": 263.58,
-      "ma200": 241.16,
-      "high52": 393.54,
-      "low52": 150.41,
-      "pct_off_high": -2.1,
-      "pct_above_low": 156.3,
+      "price": 390.42,
+      "ma50": 324.39,
+      "ma150": 264.9,
+      "ma200": 242.25,
+      "high52": 399.26,
+      "low52": 152.07,
+      "pct_off_high": -2.2,
+      "pct_above_low": 156.7,
       "rs_nh": true,
       "vcp": {
         "score": 51,
@@ -1685,7 +1729,7 @@
         "final_depth_pct": 8.1,
         "vol_declining": true,
         "dryup": false,
-        "base_days": 69
+        "base_days": 70
       }
     },
     {
@@ -1950,9 +1994,9 @@
       "ma50": 91.0,
       "ma150": 71.77,
       "ma200": 66.0,
-      "high52": 112.11,
+      "high52": 112.17,
       "low52": 44.66,
-      "pct_off_high": -3.8,
+      "pct_off_high": -3.9,
       "pct_above_low": 141.4,
       "rs_nh": true,
       "vcp": {
@@ -1994,7 +2038,7 @@
       "ma50": 11.64,
       "ma150": 8.83,
       "ma200": 8.37,
-      "high52": 13.27,
+      "high52": 13.28,
       "low52": 4.77,
       "pct_off_high": -2.3,
       "pct_above_low": 171.9,
@@ -2126,7 +2170,7 @@
       "ma50": 65.29,
       "ma150": 50.06,
       "ma200": 45.39,
-      "high52": 78.42,
+      "high52": 78.43,
       "low52": 25.44,
       "pct_off_high": -3.0,
       "pct_above_low": 199.1,
@@ -2210,14 +2254,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 24.26,
-      "ma50": 21.62,
-      "ma150": 15.38,
-      "ma200": 15.28,
+      "price": 24.41,
+      "ma50": 21.8,
+      "ma150": 15.47,
+      "ma200": 15.32,
       "high52": 30.61,
-      "low52": 8.25,
-      "pct_off_high": -20.7,
-      "pct_above_low": 194.1,
+      "low52": 8.26,
+      "pct_off_high": -20.3,
+      "pct_above_low": 195.5,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -2237,7 +2281,7 @@
         "final_depth_pct": 22.1,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 12
+        "base_days": 13
       }
     },
     {
@@ -3129,14 +3173,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 19.12,
-      "ma50": 17.24,
-      "ma150": 14.72,
-      "ma200": 13.01,
+      "price": 19.25,
+      "ma50": 17.23,
+      "ma150": 14.8,
+      "ma200": 13.07,
       "high52": 20.85,
       "low52": 5.97,
-      "pct_off_high": -8.3,
-      "pct_above_low": 220.3,
+      "pct_off_high": -7.7,
+      "pct_above_low": 222.4,
       "rs_nh": false,
       "vcp": {
         "score": 16,
@@ -3156,7 +3200,7 @@
         "final_depth_pct": 32.5,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 53
+        "base_days": 54
       }
     },
     {
@@ -3236,7 +3280,7 @@
             "high": 115.78,
             "low": 99.54,
             "depth_pct": 14.0,
-            "vol_ratio": 0.8
+            "vol_ratio": 0.81
           }
         ],
         "pivot": 115.78,
@@ -3615,7 +3659,7 @@
       "ma200": 15.49,
       "high52": 22.28,
       "low52": 9.56,
-      "pct_off_high": -1.2,
+      "pct_off_high": -1.3,
       "pct_above_low": 130.2,
       "rs_nh": true,
       "vcp": {
@@ -3645,58 +3689,6 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 56
-      }
-    },
-    {
-      "ticker": "FORR",
-      "name": "Forrester Research, Inc.",
-      "rs_rank": 93,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 11.75,
-      "ma50": 11.02,
-      "ma150": 7.93,
-      "ma200": 7.84,
-      "high52": 12.75,
-      "low52": 4.88,
-      "pct_off_high": -7.8,
-      "pct_above_low": 140.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 44,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-16",
-            "lo_date": "2026-07-23",
-            "high": 11.33,
-            "low": 8.72,
-            "depth_pct": 23.0,
-            "vol_ratio": 0.93
-          },
-          {
-            "hi_date": "2026-09-04",
-            "lo_date": "2026-09-11",
-            "high": 12.75,
-            "low": 11.71,
-            "depth_pct": 8.1,
-            "vol_ratio": 1.02
-          }
-        ],
-        "pivot": 12.75,
-        "stop": 11.71,
-        "final_depth_pct": 8.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 41
       }
     },
     {
@@ -3752,50 +3744,6 @@
       }
     },
     {
-      "ticker": "WT",
-      "name": "WisdomTree, Inc. Common Stock",
-      "rs_rank": 93,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 24.26,
-      "ma50": 21.52,
-      "ma150": 18.46,
-      "ma200": 17.13,
-      "high52": 25.91,
-      "low52": 10.64,
-      "pct_off_high": -6.4,
-      "pct_above_low": 128.0,
-      "rs_nh": true,
-      "vcp": {
-        "score": 28,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-10",
-            "high": 25.91,
-            "low": 23.55,
-            "depth_pct": 9.1,
-            "vol_ratio": 0.96
-          }
-        ],
-        "pivot": 25.91,
-        "stop": 23.55,
-        "final_depth_pct": 9.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 5
-      }
-    },
-    {
       "ticker": "BWLP",
       "name": "BW LPG Limited Common Shares",
       "rs_rank": 93,
@@ -3813,7 +3761,7 @@
       "ma50": 21.46,
       "ma150": 18.6,
       "ma200": 16.96,
-      "high52": 25.36,
+      "high52": 25.37,
       "low52": 10.52,
       "pct_off_high": -0.9,
       "pct_above_low": 138.8,
@@ -3901,7 +3849,7 @@
       "ma50": 220.58,
       "ma150": 185.66,
       "ma200": 173.08,
-      "high52": 265.33,
+      "high52": 265.43,
       "low52": 123.09,
       "pct_off_high": -2.2,
       "pct_above_low": 110.8,
@@ -3925,6 +3873,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 30
+      }
+    },
+    {
+      "ticker": "TEN",
+      "name": "Tsakos Energy Navigation Ltd Common Shares",
+      "rs_rank": 93,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 47.9,
+      "ma50": 40.35,
+      "ma150": 37.89,
+      "ma200": 34.36,
+      "high52": 48.24,
+      "low52": 19.98,
+      "pct_off_high": -0.7,
+      "pct_above_low": 139.7,
+      "rs_nh": true,
+      "vcp": {
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-26",
+            "high": 44.0,
+            "low": 40.02,
+            "depth_pct": 9.0,
+            "vol_ratio": 1.07
+          }
+        ],
+        "pivot": 44.0,
+        "stop": 40.02,
+        "final_depth_pct": 9.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 15
       }
     },
     {
@@ -4073,14 +4065,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 370.19,
-      "ma50": 366.64,
-      "ma150": 355.49,
-      "ma200": 319.27,
+      "price": 379.72,
+      "ma50": 365.69,
+      "ma150": 356.22,
+      "ma200": 320.37,
       "high52": 487.72,
       "low52": 109.35,
-      "pct_off_high": -24.1,
-      "pct_above_low": 238.5,
+      "pct_off_high": -22.1,
+      "pct_above_low": 247.3,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -4100,7 +4092,7 @@
         "final_depth_pct": 26.6,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 18
+        "base_days": 19
       }
     },
     {
@@ -4336,8 +4328,8 @@
       }
     },
     {
-      "ticker": "MAKO",
-      "name": "Mako Mining Corp",
+      "ticker": "FORR",
+      "name": "Forrester Research, Inc.",
       "rs_rank": 92,
       "checks": {
         "price_above_150_200": true,
@@ -4349,42 +4341,42 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 10.08,
-      "ma50": 8.79,
+      "price": 11.75,
+      "ma50": 11.02,
       "ma150": 7.93,
-      "ma200": 7.51,
-      "high52": 11.1,
-      "low52": 4.66,
-      "pct_off_high": -9.2,
-      "pct_above_low": 116.3,
+      "ma200": 7.84,
+      "high52": 12.75,
+      "low52": 4.88,
+      "pct_off_high": -7.8,
+      "pct_above_low": 140.8,
       "rs_nh": false,
       "vcp": {
-        "score": 37,
+        "score": 44,
         "count": 2,
         "contractions": [
           {
-            "hi_date": "2026-07-06",
-            "lo_date": "2026-07-17",
-            "high": 7.97,
-            "low": 6.58,
-            "depth_pct": 17.4,
-            "vol_ratio": 0.88
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-23",
+            "high": 11.33,
+            "low": 8.72,
+            "depth_pct": 23.0,
+            "vol_ratio": 0.93
           },
           {
-            "hi_date": "2026-08-25",
-            "lo_date": "2026-09-01",
-            "high": 11.1,
-            "low": 9.49,
-            "depth_pct": 14.5,
-            "vol_ratio": 1.03
+            "hi_date": "2026-09-04",
+            "lo_date": "2026-09-11",
+            "high": 12.75,
+            "low": 11.71,
+            "depth_pct": 8.2,
+            "vol_ratio": 1.02
           }
         ],
-        "pivot": 11.1,
-        "stop": 9.49,
-        "final_depth_pct": 14.5,
+        "pivot": 12.75,
+        "stop": 11.71,
+        "final_depth_pct": 8.2,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 49
+        "base_days": 41
       }
     },
     {
@@ -4498,13 +4490,13 @@
         "rs_rank_70plus": true
       },
       "price": 91.02,
-      "ma50": 87.61,
-      "ma150": 71.37,
-      "ma200": 65.91,
-      "high52": 98.52,
-      "low52": 41.33,
-      "pct_off_high": -7.6,
-      "pct_above_low": 120.2,
+      "ma50": 87.51,
+      "ma150": 71.29,
+      "ma200": 65.84,
+      "high52": 98.41,
+      "low52": 41.28,
+      "pct_off_high": -7.5,
+      "pct_above_low": 120.5,
       "rs_nh": false,
       "vcp": {
         "score": 28,
@@ -4513,14 +4505,14 @@
           {
             "hi_date": "2026-08-28",
             "lo_date": "2026-09-02",
-            "high": 98.52,
-            "low": 89.38,
+            "high": 98.41,
+            "low": 89.28,
             "depth_pct": 9.3,
             "vol_ratio": 1.21
           }
         ],
-        "pivot": 98.52,
-        "stop": 89.38,
+        "pivot": 98.41,
+        "stop": 89.28,
         "final_depth_pct": 9.3,
         "vol_declining": false,
         "dryup": false,
@@ -4569,6 +4561,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
+      }
+    },
+    {
+      "ticker": "WT",
+      "name": "WisdomTree, Inc. Common Stock",
+      "rs_rank": 92,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 23.93,
+      "ma50": 21.65,
+      "ma150": 18.52,
+      "ma200": 17.19,
+      "high52": 25.91,
+      "low52": 10.64,
+      "pct_off_high": -7.6,
+      "pct_above_low": 124.9,
+      "rs_nh": true,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-10",
+            "high": 25.91,
+            "low": 23.55,
+            "depth_pct": 9.1,
+            "vol_ratio": 0.96
+          }
+        ],
+        "pivot": 25.91,
+        "stop": 23.55,
+        "final_depth_pct": 9.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -4721,9 +4757,9 @@
       "ma50": 36.31,
       "ma150": 32.02,
       "ma200": 30.77,
-      "high52": 52.35,
+      "high52": 52.4,
       "low52": 19.5,
-      "pct_off_high": -5.1,
+      "pct_off_high": -5.2,
       "pct_above_low": 154.7,
       "rs_nh": true,
       "vcp": {
@@ -4932,6 +4968,66 @@
       }
     },
     {
+      "ticker": "ZETA",
+      "name": "Zeta Global Holdings Corp. Class A Common Stock",
+      "rs_rank": 91,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 30.18,
+      "ma50": 25.71,
+      "ma150": 20.56,
+      "ma200": 20.36,
+      "high52": 32.81,
+      "low52": 14.36,
+      "pct_off_high": -8.0,
+      "pct_above_low": 110.1,
+      "rs_nh": false,
+      "vcp": {
+        "score": 61,
+        "count": 3,
+        "contractions": [
+          {
+            "hi_date": "2026-06-02",
+            "lo_date": "2026-06-18",
+            "high": 25.95,
+            "low": 17.82,
+            "depth_pct": 31.3,
+            "vol_ratio": 0.98
+          },
+          {
+            "hi_date": "2026-07-15",
+            "lo_date": "2026-07-24",
+            "high": 23.34,
+            "low": 19.07,
+            "depth_pct": 18.3,
+            "vol_ratio": 0.72
+          },
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-07",
+            "high": 28.5,
+            "low": 25.0,
+            "depth_pct": 12.3,
+            "vol_ratio": 2.09
+          }
+        ],
+        "pivot": 28.5,
+        "stop": 25.0,
+        "final_depth_pct": 12.3,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 71
+      }
+    },
+    {
       "ticker": "TWLO",
       "name": "Twilio Inc. Class A Common Stock",
       "rs_rank": 91,
@@ -4945,14 +5041,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 231.13,
-      "ma50": 217.31,
-      "ma150": 176.18,
-      "ma200": 164.86,
+      "price": 227.35,
+      "ma50": 217.67,
+      "ma150": 176.97,
+      "ma200": 165.4,
       "high52": 258.35,
       "low52": 98.44,
-      "pct_off_high": -10.5,
-      "pct_above_low": 134.8,
+      "pct_off_high": -12.0,
+      "pct_above_low": 131.0,
       "rs_nh": false,
       "vcp": {
         "score": 56,
@@ -4988,7 +5084,7 @@
         "final_depth_pct": 9.1,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 44
+        "base_days": 45
       }
     },
     {
@@ -5044,66 +5140,6 @@
       }
     },
     {
-      "ticker": "ZETA",
-      "name": "Zeta Global Holdings Corp. Class A Common Stock",
-      "rs_rank": 91,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 30.56,
-      "ma50": 25.52,
-      "ma150": 20.47,
-      "ma200": 20.3,
-      "high52": 32.81,
-      "low52": 14.36,
-      "pct_off_high": -6.9,
-      "pct_above_low": 112.7,
-      "rs_nh": true,
-      "vcp": {
-        "score": 46,
-        "count": 3,
-        "contractions": [
-          {
-            "hi_date": "2026-06-02",
-            "lo_date": "2026-06-18",
-            "high": 25.95,
-            "low": 17.82,
-            "depth_pct": 31.3,
-            "vol_ratio": 0.98
-          },
-          {
-            "hi_date": "2026-07-15",
-            "lo_date": "2026-07-24",
-            "high": 23.34,
-            "low": 19.07,
-            "depth_pct": 18.3,
-            "vol_ratio": 0.72
-          },
-          {
-            "hi_date": "2026-08-05",
-            "lo_date": "2026-08-07",
-            "high": 28.5,
-            "low": 25.0,
-            "depth_pct": 12.3,
-            "vol_ratio": 2.09
-          }
-        ],
-        "pivot": 28.5,
-        "stop": 25.0,
-        "final_depth_pct": 12.3,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 70
-      }
-    },
-    {
       "ticker": "PVLA",
       "name": "Palvella Therapeutics, Inc.",
       "rs_rank": 91,
@@ -5153,6 +5189,102 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 40
+      }
+    },
+    {
+      "ticker": "MAKO",
+      "name": "Mako Mining Corp",
+      "rs_rank": 91,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 10.08,
+      "ma50": 8.79,
+      "ma150": 7.93,
+      "ma200": 7.51,
+      "high52": 11.1,
+      "low52": 4.66,
+      "pct_off_high": -9.2,
+      "pct_above_low": 116.3,
+      "rs_nh": false,
+      "vcp": {
+        "score": 37,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-06",
+            "lo_date": "2026-07-17",
+            "high": 7.97,
+            "low": 6.58,
+            "depth_pct": 17.4,
+            "vol_ratio": 0.88
+          },
+          {
+            "hi_date": "2026-08-25",
+            "lo_date": "2026-09-01",
+            "high": 11.1,
+            "low": 9.49,
+            "depth_pct": 14.5,
+            "vol_ratio": 1.03
+          }
+        ],
+        "pivot": 11.1,
+        "stop": 9.49,
+        "final_depth_pct": 14.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 49
+      }
+    },
+    {
+      "ticker": "TRMD",
+      "name": "TORM plc",
+      "rs_rank": 91,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 35.08,
+      "ma50": 28.65,
+      "ma150": 27.2,
+      "ma200": 25.2,
+      "high52": 35.94,
+      "low52": 16.72,
+      "pct_off_high": -2.4,
+      "pct_above_low": 109.9,
+      "rs_nh": true,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-09",
+            "lo_date": "2026-09-10",
+            "high": 35.94,
+            "low": 33.28,
+            "depth_pct": 7.4,
+            "vol_ratio": 2.53
+          }
+        ],
+        "pivot": 35.94,
+        "stop": 33.28,
+        "final_depth_pct": 7.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 3
       }
     },
     {
@@ -5389,14 +5521,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 20.36,
-      "ma50": 19.77,
-      "ma150": 17.29,
-      "ma200": 15.71,
+      "price": 20.64,
+      "ma50": 19.81,
+      "ma150": 17.35,
+      "ma200": 15.77,
       "high52": 22.47,
-      "low52": 8.25,
-      "pct_off_high": -9.4,
-      "pct_above_low": 146.9,
+      "low52": 8.58,
+      "pct_off_high": -8.2,
+      "pct_above_low": 140.7,
       "rs_nh": false,
       "vcp": {
         "score": 16,
@@ -5416,7 +5548,7 @@
         "final_depth_pct": 18.2,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 26
+        "base_days": 27
       }
     },
     {
@@ -5461,50 +5593,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 11
-      }
-    },
-    {
-      "ticker": "SEPN",
-      "name": "Septerna, Inc.",
-      "rs_rank": 91,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 38.51,
-      "ma50": 37.74,
-      "ma150": 31.11,
-      "ma200": 29.99,
-      "high52": 51.1,
-      "low52": 13.67,
-      "pct_off_high": -24.6,
-      "pct_above_low": 181.7,
-      "rs_nh": false,
-      "vcp": {
-        "score": 8,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-12",
-            "lo_date": "2026-09-08",
-            "high": 51.1,
-            "low": 36.01,
-            "depth_pct": 29.5,
-            "vol_ratio": 0.95
-          }
-        ],
-        "pivot": 51.1,
-        "stop": 36.01,
-        "final_depth_pct": 29.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 22
       }
     },
     {
@@ -5577,9 +5665,9 @@
       "ma50": 34.05,
       "ma150": 31.35,
       "ma200": 29.1,
-      "high52": 41.78,
+      "high52": 41.81,
       "low52": 19.1,
-      "pct_off_high": -1.5,
+      "pct_off_high": -1.6,
       "pct_above_low": 115.4,
       "rs_nh": true,
       "vcp": {
@@ -5961,7 +6049,7 @@
       "ma50": 18.48,
       "ma150": 15.54,
       "ma200": 15.42,
-      "high52": 24.13,
+      "high52": 24.14,
       "low52": 10.26,
       "pct_off_high": -0.2,
       "pct_above_low": 134.6,
@@ -5988,8 +6076,8 @@
       }
     },
     {
-      "ticker": "MCS",
-      "name": "Marcus Corporation (The) Common Stock",
+      "ticker": "VCTR",
+      "name": "Victory Capital Holdings, Inc.",
       "rs_rank": 90,
       "checks": {
         "price_above_150_200": true,
@@ -6001,34 +6089,78 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 27.14,
-      "ma50": 26.85,
-      "ma150": 21.19,
-      "ma200": 19.71,
-      "high52": 32.33,
-      "low52": 12.63,
-      "pct_off_high": -16.0,
-      "pct_above_low": 115.0,
+      "price": 110.3,
+      "ma50": 105.43,
+      "ma150": 85.87,
+      "ma200": 80.51,
+      "high52": 123.0,
+      "low52": 55.62,
+      "pct_off_high": -10.3,
+      "pct_above_low": 98.3,
       "rs_nh": false,
       "vcp": {
         "score": 13,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-08-25",
-            "lo_date": "2026-09-08",
-            "high": 31.15,
-            "low": 26.52,
-            "depth_pct": 14.9,
-            "vol_ratio": 0.77
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-09-11",
+            "high": 123.0,
+            "low": 109.26,
+            "depth_pct": 11.2,
+            "vol_ratio": 1.17
           }
         ],
-        "pivot": 31.15,
-        "stop": 26.52,
-        "final_depth_pct": 14.9,
+        "pivot": 123.0,
+        "stop": 109.26,
+        "final_depth_pct": 11.2,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 13
+        "base_days": 10
+      }
+    },
+    {
+      "ticker": "SEPN",
+      "name": "Septerna, Inc.",
+      "rs_rank": 90,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 38.51,
+      "ma50": 37.74,
+      "ma150": 31.11,
+      "ma200": 29.99,
+      "high52": 51.1,
+      "low52": 13.67,
+      "pct_off_high": -24.6,
+      "pct_above_low": 181.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 8,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-09-08",
+            "high": 51.1,
+            "low": 36.01,
+            "depth_pct": 29.5,
+            "vol_ratio": 0.95
+          }
+        ],
+        "pivot": 51.1,
+        "stop": 36.01,
+        "final_depth_pct": 29.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
       }
     },
     {
@@ -6276,138 +6408,6 @@
       }
     },
     {
-      "ticker": "TWIN",
-      "name": "Twin Disc, Incorporated",
-      "rs_rank": 89,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 24.34,
-      "ma50": 23.24,
-      "ma150": 19.47,
-      "ma200": 18.73,
-      "high52": 25.5,
-      "low52": 12.67,
-      "pct_off_high": -4.5,
-      "pct_above_low": 92.1,
-      "rs_nh": true,
-      "vcp": {
-        "score": 28,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-19",
-            "lo_date": "2026-08-20",
-            "high": 25.5,
-            "low": 22.15,
-            "depth_pct": 13.1,
-            "vol_ratio": 1.36
-          }
-        ],
-        "pivot": 25.5,
-        "stop": 22.15,
-        "final_depth_pct": 13.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 16
-      }
-    },
-    {
-      "ticker": "TEN",
-      "name": "Tsakos Energy Navigation Ltd Common Shares",
-      "rs_rank": 89,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 44.71,
-      "ma50": 40.08,
-      "ma150": 37.74,
-      "ma200": 34.24,
-      "high52": 46.65,
-      "low52": 19.98,
-      "pct_off_high": -4.2,
-      "pct_above_low": 123.8,
-      "rs_nh": true,
-      "vcp": {
-        "score": 25,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-21",
-            "lo_date": "2026-08-26",
-            "high": 44.0,
-            "low": 40.02,
-            "depth_pct": 9.0,
-            "vol_ratio": 1.07
-          }
-        ],
-        "pivot": 44.0,
-        "stop": 40.02,
-        "final_depth_pct": 9.0,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 14
-      }
-    },
-    {
-      "ticker": "VCTR",
-      "name": "Victory Capital Holdings, Inc.",
-      "rs_rank": 89,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 111.06,
-      "ma50": 104.94,
-      "ma150": 85.59,
-      "ma200": 80.26,
-      "high52": 123.0,
-      "low52": 55.62,
-      "pct_off_high": -9.7,
-      "pct_above_low": 99.7,
-      "rs_nh": false,
-      "vcp": {
-        "score": 21,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-28",
-            "lo_date": "2026-09-10",
-            "high": 123.0,
-            "low": 109.6,
-            "depth_pct": 10.9,
-            "vol_ratio": 1.2
-          }
-        ],
-        "pivot": 123.0,
-        "stop": 109.6,
-        "final_depth_pct": 10.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 9
-      }
-    },
-    {
       "ticker": "HPQ",
       "name": "HP Inc. Common Stock",
       "rs_rank": 89,
@@ -6425,7 +6425,7 @@
       "ma50": 27.8,
       "ma150": 22.9,
       "ma200": 22.54,
-      "high52": 36.22,
+      "high52": 36.23,
       "low52": 16.91,
       "pct_off_high": -2.1,
       "pct_above_low": 109.8,
@@ -6537,6 +6537,94 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 60
+      }
+    },
+    {
+      "ticker": "VBNK",
+      "name": "VersaBank",
+      "rs_rank": 89,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 22.62,
+      "ma50": 20.39,
+      "ma150": 18.15,
+      "ma200": 17.24,
+      "high52": 25.03,
+      "low52": 11.23,
+      "pct_off_high": -9.6,
+      "pct_above_low": 101.4,
+      "rs_nh": false,
+      "vcp": {
+        "score": 18,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-27",
+            "lo_date": "2026-09-03",
+            "high": 20.52,
+            "low": 18.31,
+            "depth_pct": 10.8,
+            "vol_ratio": 1.24
+          }
+        ],
+        "pivot": 20.52,
+        "stop": 18.31,
+        "final_depth_pct": 10.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 11
+      }
+    },
+    {
+      "ticker": "MCS",
+      "name": "Marcus Corporation (The) Common Stock",
+      "rs_rank": 89,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 27.14,
+      "ma50": 26.85,
+      "ma150": 21.19,
+      "ma200": 19.71,
+      "high52": 32.33,
+      "low52": 12.63,
+      "pct_off_high": -16.0,
+      "pct_above_low": 115.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-25",
+            "lo_date": "2026-09-08",
+            "high": 31.15,
+            "low": 26.52,
+            "depth_pct": 14.9,
+            "vol_ratio": 0.77
+          }
+        ],
+        "pivot": 31.15,
+        "stop": 26.52,
+        "final_depth_pct": 14.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 13
       }
     },
     {
@@ -7052,50 +7140,6 @@
       }
     },
     {
-      "ticker": "TRMD",
-      "name": "TORM plc",
-      "rs_rank": 88,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 34.6,
-      "ma50": 28.43,
-      "ma150": 27.11,
-      "ma200": 25.12,
-      "high52": 35.94,
-      "low52": 16.72,
-      "pct_off_high": -3.7,
-      "pct_above_low": 107.0,
-      "rs_nh": true,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-09",
-            "lo_date": "2026-09-10",
-            "high": 35.94,
-            "low": 33.28,
-            "depth_pct": 7.4,
-            "vol_ratio": 2.53
-          }
-        ],
-        "pivot": 35.94,
-        "stop": 33.28,
-        "final_depth_pct": 7.4,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 2
-      }
-    },
-    {
       "ticker": "APA",
       "name": "APA Corporation",
       "rs_rank": 88,
@@ -7360,50 +7404,6 @@
       }
     },
     {
-      "ticker": "VBNK",
-      "name": "VersaBank",
-      "rs_rank": 88,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 22.3,
-      "ma50": 20.41,
-      "ma150": 18.11,
-      "ma200": 17.19,
-      "high52": 25.03,
-      "low52": 11.23,
-      "pct_off_high": -10.9,
-      "pct_above_low": 98.6,
-      "rs_nh": false,
-      "vcp": {
-        "score": 18,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-27",
-            "lo_date": "2026-09-03",
-            "high": 20.52,
-            "low": 18.31,
-            "depth_pct": 10.8,
-            "vol_ratio": 1.24
-          }
-        ],
-        "pivot": 20.52,
-        "stop": 18.31,
-        "final_depth_pct": 10.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 10
-      }
-    },
-    {
       "ticker": "CODI",
       "name": "D/B/A Compass Diversified Holdings Shares of Beneficial Interest",
       "rs_rank": 88,
@@ -7522,13 +7522,13 @@
             "hi_date": "2026-09-02",
             "lo_date": "2026-09-11",
             "high": 27.24,
-            "low": 22.97,
+            "low": 22.95,
             "depth_pct": 15.7,
             "vol_ratio": 0.81
           }
         ],
         "pivot": 27.24,
-        "stop": 22.97,
+        "stop": 22.95,
         "final_depth_pct": 15.7,
         "vol_declining": false,
         "dryup": false,
@@ -7765,6 +7765,110 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 55
+      }
+    },
+    {
+      "ticker": "ZBRA",
+      "name": "Zebra Technologies Corporation",
+      "rs_rank": 87,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 350.37,
+      "ma50": 321.91,
+      "ma150": 262.21,
+      "ma200": 259.55,
+      "high52": 386.23,
+      "low52": 199.05,
+      "pct_off_high": -9.3,
+      "pct_above_low": 76.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 51,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-09-02",
+            "high": 386.23,
+            "low": 341.97,
+            "depth_pct": 11.5,
+            "vol_ratio": 0.81
+          },
+          {
+            "hi_date": "2026-09-04",
+            "lo_date": "2026-09-10",
+            "high": 365.0,
+            "low": 336.4,
+            "depth_pct": 7.8,
+            "vol_ratio": 0.67
+          }
+        ],
+        "pivot": 365.0,
+        "stop": 336.4,
+        "final_depth_pct": 7.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
+      }
+    },
+    {
+      "ticker": "ZIM",
+      "name": "ZIM Integrated Shipping Services Ltd. Ordinary Shares",
+      "rs_rank": 87,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 29.57,
+      "ma50": 26.31,
+      "ma150": 26.01,
+      "ma200": 24.6,
+      "high52": 30.4,
+      "low52": 11.93,
+      "pct_off_high": -2.7,
+      "pct_above_low": 147.9,
+      "rs_nh": false,
+      "vcp": {
+        "score": 51,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-08-18",
+            "lo_date": "2026-08-19",
+            "high": 29.56,
+            "low": 26.51,
+            "depth_pct": 10.3,
+            "vol_ratio": 2.99
+          },
+          {
+            "hi_date": "2026-08-24",
+            "lo_date": "2026-09-02",
+            "high": 29.03,
+            "low": 27.02,
+            "depth_pct": 6.9,
+            "vol_ratio": 0.73
+          }
+        ],
+        "pivot": 29.03,
+        "stop": 27.02,
+        "final_depth_pct": 6.9,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 18
       }
     },
     {
@@ -8185,14 +8289,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 47.14,
-      "ma50": 44.47,
-      "ma150": 43.19,
-      "ma200": 39.78,
+      "price": 49.75,
+      "ma50": 44.53,
+      "ma150": 43.36,
+      "ma200": 39.91,
       "high52": 61.54,
-      "low52": 20.83,
-      "pct_off_high": -23.4,
-      "pct_above_low": 126.3,
+      "low52": 21.03,
+      "pct_off_high": -19.2,
+      "pct_above_low": 136.6,
       "rs_nh": false,
       "vcp": {
         "score": 23,
@@ -8212,7 +8316,7 @@
         "final_depth_pct": 32.2,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 21
+        "base_days": 22
       }
     },
     {
@@ -8361,14 +8465,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 10.58,
-      "ma50": 9.78,
-      "ma150": 9.39,
-      "ma200": 8.67,
+      "price": 10.62,
+      "ma50": 9.8,
+      "ma150": 9.42,
+      "ma200": 8.69,
       "high52": 11.94,
       "low52": 4.75,
-      "pct_off_high": -11.4,
-      "pct_above_low": 122.7,
+      "pct_off_high": -11.1,
+      "pct_above_low": 123.6,
       "rs_nh": false,
       "vcp": {
         "score": 13,
@@ -8376,19 +8480,19 @@
         "contractions": [
           {
             "hi_date": "2026-09-02",
-            "lo_date": "2026-09-10",
+            "lo_date": "2026-09-11",
             "high": 11.94,
-            "low": 10.45,
-            "depth_pct": 12.5,
-            "vol_ratio": 1.18
+            "low": 10.38,
+            "depth_pct": 13.1,
+            "vol_ratio": 1.19
           }
         ],
         "pivot": 11.94,
-        "stop": 10.45,
-        "final_depth_pct": 12.5,
+        "stop": 10.38,
+        "final_depth_pct": 13.1,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 6
+        "base_days": 7
       }
     },
     {
@@ -8572,110 +8676,6 @@
       }
     },
     {
-      "ticker": "ZIM",
-      "name": "ZIM Integrated Shipping Services Ltd. Ordinary Shares",
-      "rs_rank": 86,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 29.47,
-      "ma50": 26.22,
-      "ma150": 25.95,
-      "ma200": 24.53,
-      "high52": 30.4,
-      "low52": 11.93,
-      "pct_off_high": -3.1,
-      "pct_above_low": 147.1,
-      "rs_nh": false,
-      "vcp": {
-        "score": 51,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-08-18",
-            "lo_date": "2026-08-19",
-            "high": 29.56,
-            "low": 26.51,
-            "depth_pct": 10.3,
-            "vol_ratio": 2.99
-          },
-          {
-            "hi_date": "2026-08-24",
-            "lo_date": "2026-09-02",
-            "high": 29.03,
-            "low": 27.02,
-            "depth_pct": 6.9,
-            "vol_ratio": 0.73
-          }
-        ],
-        "pivot": 29.03,
-        "stop": 27.02,
-        "final_depth_pct": 6.9,
-        "vol_declining": true,
-        "dryup": false,
-        "base_days": 17
-      }
-    },
-    {
-      "ticker": "ZBRA",
-      "name": "Zebra Technologies Corporation",
-      "rs_rank": 86,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 344.01,
-      "ma50": 320.26,
-      "ma150": 261.48,
-      "ma200": 259.0,
-      "high52": 386.23,
-      "low52": 199.05,
-      "pct_off_high": -10.9,
-      "pct_above_low": 72.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 44,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-08-12",
-            "lo_date": "2026-09-02",
-            "high": 386.23,
-            "low": 341.97,
-            "depth_pct": 11.5,
-            "vol_ratio": 0.81
-          },
-          {
-            "hi_date": "2026-09-04",
-            "lo_date": "2026-09-10",
-            "high": 365.0,
-            "low": 336.4,
-            "depth_pct": 7.8,
-            "vol_ratio": 0.67
-          }
-        ],
-        "pivot": 365.0,
-        "stop": 336.4,
-        "final_depth_pct": 7.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 21
-      }
-    },
-    {
       "ticker": "ATKR",
       "name": "Atkore Inc. Common Stock",
       "rs_rank": 86,
@@ -8777,6 +8777,58 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 38
+      }
+    },
+    {
+      "ticker": "VG",
+      "name": "Venture Global, Inc. Class A common stock",
+      "rs_rank": 86,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 15.8,
+      "ma50": 13.69,
+      "ma150": 12.85,
+      "ma200": 11.52,
+      "high52": 17.6,
+      "low52": 5.7,
+      "pct_off_high": -10.2,
+      "pct_above_low": 177.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 29,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-06-11",
+            "lo_date": "2026-06-25",
+            "high": 13.8,
+            "low": 10.26,
+            "depth_pct": 25.7,
+            "vol_ratio": 0.94
+          },
+          {
+            "hi_date": "2026-07-23",
+            "lo_date": "2026-07-28",
+            "high": 15.45,
+            "low": 12.11,
+            "depth_pct": 21.6,
+            "vol_ratio": 1.28
+          }
+        ],
+        "pivot": 15.45,
+        "stop": 12.11,
+        "final_depth_pct": 21.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 64
       }
     },
     {
@@ -8887,7 +8939,7 @@
       "ma200": 10.2,
       "high52": 13.19,
       "low52": 6.37,
-      "pct_off_high": -0.0,
+      "pct_off_high": -0.1,
       "pct_above_low": 106.9,
       "rs_nh": true,
       "vcp": {
@@ -8929,9 +8981,9 @@
       "ma50": 16.37,
       "ma150": 15.57,
       "ma200": 14.38,
-      "high52": 18.88,
+      "high52": 18.92,
       "low52": 9.56,
-      "pct_off_high": -1.1,
+      "pct_off_high": -1.3,
       "pct_above_low": 95.2,
       "rs_nh": true,
       "vcp": {
@@ -9013,14 +9065,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 11.32,
-      "ma50": 9.7,
-      "ma150": 8.38,
-      "ma200": 8.19,
+      "price": 11.31,
+      "ma50": 9.73,
+      "ma150": 8.41,
+      "ma200": 8.22,
       "high52": 13.28,
       "low52": 4.62,
       "pct_off_high": -14.8,
-      "pct_above_low": 145.2,
+      "pct_above_low": 145.0,
       "rs_nh": false,
       "vcp": {
         "score": 13,
@@ -9040,51 +9092,7 @@
         "final_depth_pct": 23.0,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 51
-      }
-    },
-    {
-      "ticker": "VIRT",
-      "name": "Virtu Financial, Inc. Class A Common Stock",
-      "rs_rank": 86,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 61.57,
-      "ma50": 60.87,
-      "ma150": 52.07,
-      "ma200": 47.72,
-      "high52": 68.51,
-      "low52": 31.1,
-      "pct_off_high": -10.1,
-      "pct_above_low": 97.9,
-      "rs_nh": false,
-      "vcp": {
-        "score": 13,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-28",
-            "lo_date": "2026-09-10",
-            "high": 68.51,
-            "low": 61.28,
-            "depth_pct": 10.5,
-            "vol_ratio": 0.74
-          }
-        ],
-        "pivot": 68.51,
-        "stop": 61.28,
-        "final_depth_pct": 10.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 9
+        "base_days": 52
       }
     },
     {
@@ -9348,8 +9356,8 @@
       }
     },
     {
-      "ticker": "VG",
-      "name": "Venture Global, Inc. Class A common stock",
+      "ticker": "VIRT",
+      "name": "Virtu Financial, Inc. Class A Common Stock",
       "rs_rank": 85,
       "checks": {
         "price_above_150_200": true,
@@ -9361,42 +9369,34 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 15.5,
-      "ma50": 13.59,
-      "ma150": 12.81,
-      "ma200": 11.48,
-      "high52": 17.6,
-      "low52": 5.7,
-      "pct_off_high": -11.9,
-      "pct_above_low": 171.7,
+      "price": 60.86,
+      "ma50": 60.85,
+      "ma150": 52.22,
+      "ma200": 47.86,
+      "high52": 68.51,
+      "low52": 31.1,
+      "pct_off_high": -11.2,
+      "pct_above_low": 95.7,
       "rs_nh": false,
       "vcp": {
-        "score": 29,
-        "count": 2,
+        "score": 28,
+        "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-06-11",
-            "lo_date": "2026-06-25",
-            "high": 13.8,
-            "low": 10.26,
-            "depth_pct": 25.7,
-            "vol_ratio": 0.94
-          },
-          {
-            "hi_date": "2026-07-23",
-            "lo_date": "2026-07-28",
-            "high": 15.45,
-            "low": 12.11,
-            "depth_pct": 21.6,
-            "vol_ratio": 1.28
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-09-11",
+            "high": 68.51,
+            "low": 60.81,
+            "depth_pct": 11.2,
+            "vol_ratio": 0.72
           }
         ],
-        "pivot": 15.45,
-        "stop": 12.11,
-        "final_depth_pct": 21.6,
+        "pivot": 68.51,
+        "stop": 60.81,
+        "final_depth_pct": 11.2,
         "vol_declining": false,
-        "dryup": false,
-        "base_days": 63
+        "dryup": true,
+        "base_days": 10
       }
     },
     {
@@ -9441,6 +9441,50 @@
         "vol_declining": false,
         "dryup": true,
         "base_days": 19
+      }
+    },
+    {
+      "ticker": "WHD",
+      "name": "Cactus, Inc. Class A Common Stock",
+      "rs_rank": 85,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 69.54,
+      "ma50": 63.26,
+      "ma150": 57.06,
+      "ma200": 55.0,
+      "high52": 73.91,
+      "low52": 32.86,
+      "pct_off_high": -5.9,
+      "pct_above_low": 111.7,
+      "rs_nh": true,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-08-26",
+            "high": 73.91,
+            "low": 65.56,
+            "depth_pct": 11.3,
+            "vol_ratio": 0.65
+          }
+        ],
+        "pivot": 73.91,
+        "stop": 65.56,
+        "final_depth_pct": 11.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
       }
     },
     {
@@ -9608,66 +9652,6 @@
       }
     },
     {
-      "ticker": "THC",
-      "name": "Tenet Healthcare Corporation Common Stock",
-      "rs_rank": 84,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 263.46,
-      "ma50": 242.26,
-      "ma150": 212.46,
-      "ma200": 209.34,
-      "high52": 283.05,
-      "low52": 157.58,
-      "pct_off_high": -6.9,
-      "pct_above_low": 67.2,
-      "rs_nh": false,
-      "vcp": {
-        "score": 59,
-        "count": 3,
-        "contractions": [
-          {
-            "hi_date": "2026-05-14",
-            "lo_date": "2026-06-08",
-            "high": 200.89,
-            "low": 157.58,
-            "depth_pct": 21.6,
-            "vol_ratio": 1.05
-          },
-          {
-            "hi_date": "2026-07-07",
-            "lo_date": "2026-07-14",
-            "high": 210.41,
-            "low": 179.91,
-            "depth_pct": 14.5,
-            "vol_ratio": 0.85
-          },
-          {
-            "hi_date": "2026-08-24",
-            "lo_date": "2026-09-02",
-            "high": 283.05,
-            "low": 253.51,
-            "depth_pct": 10.4,
-            "vol_ratio": 0.74
-          }
-        ],
-        "pivot": 283.05,
-        "stop": 253.51,
-        "final_depth_pct": 10.4,
-        "vol_declining": true,
-        "dryup": false,
-        "base_days": 82
-      }
-    },
-    {
       "ticker": "KB",
       "name": "KB Financial Group Inc",
       "rs_rank": 84,
@@ -9816,6 +9800,50 @@
       }
     },
     {
+      "ticker": "ZD",
+      "name": "Ziff Davis, Inc.",
+      "rs_rank": 84,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 56.22,
+      "ma50": 54.1,
+      "ma150": 46.15,
+      "ma200": 43.57,
+      "high52": 58.06,
+      "low52": 22.45,
+      "pct_off_high": -3.2,
+      "pct_above_low": 150.4,
+      "rs_nh": true,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-08",
+            "high": 57.68,
+            "low": 54.75,
+            "depth_pct": 5.1,
+            "vol_ratio": 0.78
+          }
+        ],
+        "pivot": 57.68,
+        "stop": 54.75,
+        "final_depth_pct": 5.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
+      }
+    },
+    {
       "ticker": "FTI",
       "name": "TechnipFMC plc Ordinary Share",
       "rs_rank": 84,
@@ -9890,13 +9918,13 @@
             "hi_date": "2026-08-25",
             "lo_date": "2026-09-11",
             "high": 156.92,
-            "low": 143.69,
+            "low": 143.68,
             "depth_pct": 8.4,
             "vol_ratio": 0.93
           }
         ],
         "pivot": 156.92,
-        "stop": 143.69,
+        "stop": 143.68,
         "final_depth_pct": 8.4,
         "vol_declining": false,
         "dryup": false,
@@ -9942,50 +9970,6 @@
         "pivot": 18.44,
         "stop": 15.98,
         "final_depth_pct": 13.3,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 16
-      }
-    },
-    {
-      "ticker": "WHD",
-      "name": "Cactus, Inc. Class A Common Stock",
-      "rs_rank": 84,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 68.4,
-      "ma50": 62.84,
-      "ma150": 56.97,
-      "ma200": 54.85,
-      "high52": 73.91,
-      "low52": 32.86,
-      "pct_off_high": -7.5,
-      "pct_above_low": 108.2,
-      "rs_nh": false,
-      "vcp": {
-        "score": 21,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-19",
-            "lo_date": "2026-08-26",
-            "high": 73.91,
-            "low": 65.56,
-            "depth_pct": 11.3,
-            "vol_ratio": 0.65
-          }
-        ],
-        "pivot": 73.91,
-        "stop": 65.56,
-        "final_depth_pct": 11.3,
         "vol_declining": false,
         "dryup": false,
         "base_days": 16
@@ -10080,8 +10064,8 @@
       }
     },
     {
-      "ticker": "UVE",
-      "name": "UNIVERSAL INSURANCE HOLDINGS INC Common Stock",
+      "ticker": "THC",
+      "name": "Tenet Healthcare Corporation Common Stock",
       "rs_rank": 83,
       "checks": {
         "price_above_150_200": true,
@@ -10093,42 +10077,50 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 44.22,
-      "ma50": 42.48,
-      "ma150": 38.02,
-      "ma200": 36.36,
-      "high52": 45.14,
-      "low52": 23.62,
-      "pct_off_high": -2.0,
-      "pct_above_low": 87.2,
-      "rs_nh": true,
+      "price": 263.69,
+      "ma50": 243.71,
+      "ma150": 212.91,
+      "ma200": 209.69,
+      "high52": 283.05,
+      "low52": 157.58,
+      "pct_off_high": -6.8,
+      "pct_above_low": 67.3,
+      "rs_nh": false,
       "vcp": {
-        "score": 76,
-        "count": 2,
+        "score": 74,
+        "count": 3,
         "contractions": [
           {
-            "hi_date": "2026-07-02",
-            "lo_date": "2026-07-15",
-            "high": 43.8,
-            "low": 36.46,
-            "depth_pct": 16.8,
-            "vol_ratio": 1.23
+            "hi_date": "2026-05-14",
+            "lo_date": "2026-06-08",
+            "high": 200.89,
+            "low": 157.58,
+            "depth_pct": 21.6,
+            "vol_ratio": 1.05
           },
           {
-            "hi_date": "2026-08-06",
-            "lo_date": "2026-08-20",
-            "high": 45.11,
-            "low": 41.72,
-            "depth_pct": 7.5,
-            "vol_ratio": 0.84
+            "hi_date": "2026-07-07",
+            "lo_date": "2026-07-14",
+            "high": 210.41,
+            "low": 179.91,
+            "depth_pct": 14.5,
+            "vol_ratio": 0.85
+          },
+          {
+            "hi_date": "2026-08-24",
+            "lo_date": "2026-09-02",
+            "high": 283.05,
+            "low": 253.51,
+            "depth_pct": 10.4,
+            "vol_ratio": 0.74
           }
         ],
-        "pivot": 45.11,
-        "stop": 41.72,
-        "final_depth_pct": 7.5,
+        "pivot": 283.05,
+        "stop": 253.51,
+        "final_depth_pct": 10.4,
         "vol_declining": true,
         "dryup": true,
-        "base_days": 49
+        "base_days": 83
       }
     },
     {
@@ -10184,6 +10176,58 @@
       }
     },
     {
+      "ticker": "UVE",
+      "name": "UNIVERSAL INSURANCE HOLDINGS INC Common Stock",
+      "rs_rank": 83,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 44.33,
+      "ma50": 42.52,
+      "ma150": 38.1,
+      "ma200": 36.42,
+      "high52": 45.14,
+      "low52": 23.99,
+      "pct_off_high": -1.8,
+      "pct_above_low": 84.8,
+      "rs_nh": false,
+      "vcp": {
+        "score": 61,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-02",
+            "lo_date": "2026-07-15",
+            "high": 43.8,
+            "low": 36.46,
+            "depth_pct": 16.8,
+            "vol_ratio": 1.23
+          },
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-20",
+            "high": 45.11,
+            "low": 41.72,
+            "depth_pct": 7.5,
+            "vol_ratio": 0.84
+          }
+        ],
+        "pivot": 45.11,
+        "stop": 41.72,
+        "final_depth_pct": 7.5,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 50
+      }
+    },
+    {
       "ticker": "MUFG",
       "name": "Mitsubishi UFJ Financial Group, Inc. Common Stock",
       "rs_rank": 83,
@@ -10233,58 +10277,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 20
-      }
-    },
-    {
-      "ticker": "TRGP",
-      "name": "Targa Resources, Inc. Common Stock",
-      "rs_rank": 83,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 291.91,
-      "ma50": 278.53,
-      "ma150": 257.1,
-      "ma200": 238.1,
-      "high52": 307.94,
-      "low52": 141.11,
-      "pct_off_high": -5.2,
-      "pct_above_low": 106.9,
-      "rs_nh": true,
-      "vcp": {
-        "score": 44,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-24",
-            "lo_date": "2026-08-07",
-            "high": 289.68,
-            "low": 255.08,
-            "depth_pct": 11.9,
-            "vol_ratio": 1.07
-          },
-          {
-            "hi_date": "2026-08-21",
-            "lo_date": "2026-08-26",
-            "high": 307.94,
-            "low": 284.0,
-            "depth_pct": 7.8,
-            "vol_ratio": 1.01
-          }
-        ],
-        "pivot": 307.94,
-        "stop": 284.0,
-        "final_depth_pct": 7.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 34
       }
     },
     {
@@ -10428,6 +10420,50 @@
       }
     },
     {
+      "ticker": "HBT",
+      "name": "HBT Financial, Inc.",
+      "rs_rank": 83,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 36.51,
+      "ma50": 34.78,
+      "ma150": 30.2,
+      "ma200": 29.08,
+      "high52": 37.51,
+      "low52": 21.66,
+      "pct_off_high": -2.7,
+      "pct_above_low": 68.6,
+      "rs_nh": true,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-14",
+            "lo_date": "2026-08-27",
+            "high": 37.51,
+            "low": 34.93,
+            "depth_pct": 6.9,
+            "vol_ratio": 0.69
+          }
+        ],
+        "pivot": 37.51,
+        "stop": 34.93,
+        "final_depth_pct": 6.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 20
+      }
+    },
+    {
       "ticker": "IMAX",
       "name": "Imax Corporation Common Stock",
       "rs_rank": 83,
@@ -10529,14 +10565,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 91.99,
-      "ma50": 83.46,
-      "ma150": 79.85,
-      "ma200": 73.96,
+      "price": 92.97,
+      "ma50": 83.98,
+      "ma150": 80.05,
+      "ma200": 74.15,
       "high52": 101.58,
       "low52": 46.65,
-      "pct_off_high": -9.4,
-      "pct_above_low": 97.2,
+      "pct_off_high": -8.5,
+      "pct_above_low": 99.3,
       "rs_nh": false,
       "vcp": {
         "score": 21,
@@ -10556,7 +10592,7 @@
         "final_depth_pct": 11.0,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 6
+        "base_days": 7
       }
     },
     {
@@ -10836,6 +10872,110 @@
       }
     },
     {
+      "ticker": "PCVX",
+      "name": "Vaxcyte, Inc.",
+      "rs_rank": 82,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 59.47,
+      "ma50": 58.38,
+      "ma150": 56.35,
+      "ma200": 54.28,
+      "high52": 65.0,
+      "low52": 30.81,
+      "pct_off_high": -8.5,
+      "pct_above_low": 93.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 44,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-07",
+            "lo_date": "2026-07-29",
+            "high": 61.77,
+            "low": 52.47,
+            "depth_pct": 15.1,
+            "vol_ratio": 0.67
+          },
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-09-11",
+            "high": 63.98,
+            "low": 58.21,
+            "depth_pct": 9.0,
+            "vol_ratio": 1.06
+          }
+        ],
+        "pivot": 63.98,
+        "stop": 58.21,
+        "final_depth_pct": 9.0,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 48
+      }
+    },
+    {
+      "ticker": "TRGP",
+      "name": "Targa Resources, Inc. Common Stock",
+      "rs_rank": 82,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 290.25,
+      "ma50": 279.21,
+      "ma150": 257.68,
+      "ma200": 238.71,
+      "high52": 307.94,
+      "low52": 141.11,
+      "pct_off_high": -5.7,
+      "pct_above_low": 105.7,
+      "rs_nh": true,
+      "vcp": {
+        "score": 44,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-24",
+            "lo_date": "2026-08-07",
+            "high": 289.68,
+            "low": 255.08,
+            "depth_pct": 11.9,
+            "vol_ratio": 1.07
+          },
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-26",
+            "high": 307.94,
+            "low": 284.0,
+            "depth_pct": 7.8,
+            "vol_ratio": 1.01
+          }
+        ],
+        "pivot": 307.94,
+        "stop": 284.0,
+        "final_depth_pct": 7.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 35
+      }
+    },
+    {
       "ticker": "JXN",
       "name": "Jackson Financial Inc. Class A Common Stock",
       "rs_rank": 82,
@@ -10888,58 +11028,6 @@
       }
     },
     {
-      "ticker": "VOYA",
-      "name": "Voya Financial, Inc. Common Stock",
-      "rs_rank": 82,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 102.67,
-      "ma50": 99.21,
-      "ma150": 83.98,
-      "ma200": 81.29,
-      "high52": 105.64,
-      "low52": 63.83,
-      "pct_off_high": -2.8,
-      "pct_above_low": 60.8,
-      "rs_nh": true,
-      "vcp": {
-        "score": 41,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-16",
-            "lo_date": "2026-07-23",
-            "high": 103.36,
-            "low": 95.63,
-            "depth_pct": 7.5,
-            "vol_ratio": 0.83
-          },
-          {
-            "hi_date": "2026-08-10",
-            "lo_date": "2026-08-20",
-            "high": 102.57,
-            "low": 96.63,
-            "depth_pct": 5.8,
-            "vol_ratio": 0.78
-          }
-        ],
-        "pivot": 102.57,
-        "stop": 96.63,
-        "final_depth_pct": 5.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 40
-      }
-    },
-    {
       "ticker": "AMTB",
       "name": "Amerant Bancorp Inc. Class A Common Stock",
       "rs_rank": 82,
@@ -10981,94 +11069,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 33
-      }
-    },
-    {
-      "ticker": "HBT",
-      "name": "HBT Financial, Inc.",
-      "rs_rank": 82,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 36.51,
-      "ma50": 34.78,
-      "ma150": 30.2,
-      "ma200": 29.08,
-      "high52": 37.51,
-      "low52": 21.66,
-      "pct_off_high": -2.7,
-      "pct_above_low": 68.6,
-      "rs_nh": true,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-14",
-            "lo_date": "2026-08-27",
-            "high": 37.51,
-            "low": 34.93,
-            "depth_pct": 6.9,
-            "vol_ratio": 0.69
-          }
-        ],
-        "pivot": 37.51,
-        "stop": 34.93,
-        "final_depth_pct": 6.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 20
-      }
-    },
-    {
-      "ticker": "ZD",
-      "name": "Ziff Davis, Inc.",
-      "rs_rank": 82,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 55.29,
-      "ma50": 54.02,
-      "ma150": 45.99,
-      "ma200": 43.45,
-      "high52": 58.06,
-      "low52": 22.45,
-      "pct_off_high": -4.8,
-      "pct_above_low": 146.3,
-      "rs_nh": true,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-08",
-            "high": 57.68,
-            "low": 54.75,
-            "depth_pct": 5.1,
-            "vol_ratio": 0.78
-          }
-        ],
-        "pivot": 57.68,
-        "stop": 54.75,
-        "final_depth_pct": 5.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 5
       }
     },
     {
@@ -11165,6 +11165,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 45
+      }
+    },
+    {
+      "ticker": "JHX",
+      "name": "James Hardie Industries plc. Ordinary Shares",
+      "rs_rank": 82,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 28.47,
+      "ma50": 27.97,
+      "ma150": 24.03,
+      "ma200": 23.41,
+      "high52": 31.43,
+      "low52": 16.46,
+      "pct_off_high": -9.4,
+      "pct_above_low": 73.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-08",
+            "lo_date": "2026-09-11",
+            "high": 31.43,
+            "low": 27.99,
+            "depth_pct": 10.9,
+            "vol_ratio": 1.38
+          }
+        ],
+        "pivot": 31.43,
+        "stop": 27.99,
+        "final_depth_pct": 10.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 4
       }
     },
     {
@@ -11368,58 +11412,6 @@
       }
     },
     {
-      "ticker": "PCVX",
-      "name": "Vaxcyte, Inc.",
-      "rs_rank": 81,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 59.47,
-      "ma50": 58.38,
-      "ma150": 56.35,
-      "ma200": 54.28,
-      "high52": 65.0,
-      "low52": 30.81,
-      "pct_off_high": -8.5,
-      "pct_above_low": 93.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 44,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-07",
-            "lo_date": "2026-07-29",
-            "high": 61.77,
-            "low": 52.47,
-            "depth_pct": 15.1,
-            "vol_ratio": 0.67
-          },
-          {
-            "hi_date": "2026-08-21",
-            "lo_date": "2026-09-11",
-            "high": 63.98,
-            "low": 58.22,
-            "depth_pct": 9.0,
-            "vol_ratio": 1.06
-          }
-        ],
-        "pivot": 63.98,
-        "stop": 58.22,
-        "final_depth_pct": 9.0,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 48
-      }
-    },
-    {
       "ticker": "ALRS",
       "name": "Alerus Financial Corporation",
       "rs_rank": 81,
@@ -11464,6 +11456,58 @@
       }
     },
     {
+      "ticker": "VOYA",
+      "name": "Voya Financial, Inc. Common Stock",
+      "rs_rank": 81,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 103.41,
+      "ma50": 99.44,
+      "ma150": 84.2,
+      "ma200": 81.47,
+      "high52": 105.64,
+      "low52": 63.83,
+      "pct_off_high": -2.1,
+      "pct_above_low": 62.0,
+      "rs_nh": true,
+      "vcp": {
+        "score": 41,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-16",
+            "lo_date": "2026-07-23",
+            "high": 103.36,
+            "low": 95.63,
+            "depth_pct": 7.5,
+            "vol_ratio": 0.83
+          },
+          {
+            "hi_date": "2026-08-10",
+            "lo_date": "2026-08-20",
+            "high": 102.57,
+            "low": 96.63,
+            "depth_pct": 5.8,
+            "vol_ratio": 0.78
+          }
+        ],
+        "pivot": 102.57,
+        "stop": 96.63,
+        "final_depth_pct": 5.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 41
+      }
+    },
+    {
       "ticker": "KSPI",
       "name": "Joint Stock Company Kaspi.kz",
       "rs_rank": 81,
@@ -11478,11 +11522,11 @@
         "rs_rank_70plus": true
       },
       "price": 99.89,
-      "ma50": 93.47,
-      "ma150": 82.25,
-      "ma200": 79.91,
-      "high52": 107.55,
-      "low52": 64.23,
+      "ma50": 93.5,
+      "ma150": 82.27,
+      "ma200": 79.93,
+      "high52": 107.58,
+      "low52": 64.24,
       "pct_off_high": -7.1,
       "pct_above_low": 55.5,
       "rs_nh": false,
@@ -11493,15 +11537,15 @@
           {
             "hi_date": "2026-09-08",
             "lo_date": "2026-09-10",
-            "high": 106.63,
+            "high": 106.66,
             "low": 96.88,
-            "depth_pct": 9.1,
+            "depth_pct": 9.2,
             "vol_ratio": 2.33
           }
         ],
-        "pivot": 106.63,
+        "pivot": 106.66,
         "stop": 96.88,
-        "final_depth_pct": 9.1,
+        "final_depth_pct": 9.2,
         "vol_declining": false,
         "dryup": false,
         "base_days": 4
@@ -11552,50 +11596,6 @@
       }
     },
     {
-      "ticker": "JHX",
-      "name": "James Hardie Industries plc. Ordinary Shares",
-      "rs_rank": 81,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 28.47,
-      "ma50": 27.97,
-      "ma150": 24.03,
-      "ma200": 23.41,
-      "high52": 31.43,
-      "low52": 16.46,
-      "pct_off_high": -9.4,
-      "pct_above_low": 73.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 21,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-08",
-            "lo_date": "2026-09-11",
-            "high": 31.43,
-            "low": 28.0,
-            "depth_pct": 10.9,
-            "vol_ratio": 1.38
-          }
-        ],
-        "pivot": 31.43,
-        "stop": 28.0,
-        "final_depth_pct": 10.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 4
-      }
-    },
-    {
       "ticker": "SCCO",
       "name": "Southern Copper Corporation Common Stock",
       "rs_rank": 81,
@@ -11626,14 +11626,14 @@
             "hi_date": "2026-09-09",
             "lo_date": "2026-09-11",
             "high": 213.83,
-            "low": 192.18,
-            "depth_pct": 10.1,
+            "low": 192.1,
+            "depth_pct": 10.2,
             "vol_ratio": 1.24
           }
         ],
         "pivot": 213.83,
-        "stop": 192.18,
-        "final_depth_pct": 10.1,
+        "stop": 192.1,
+        "final_depth_pct": 10.2,
         "vol_declining": false,
         "dryup": false,
         "base_days": 3
@@ -11725,6 +11725,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 6
+      }
+    },
+    {
+      "ticker": "HBM",
+      "name": "Hudbay Minerals Inc. Ordinary Shares (Canada)",
+      "rs_rank": 81,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 26.52,
+      "ma50": 25.3,
+      "ma150": 24.75,
+      "ma200": 23.77,
+      "high52": 32.13,
+      "low52": 12.99,
+      "pct_off_high": -17.5,
+      "pct_above_low": 104.2,
+      "rs_nh": false,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-09",
+            "lo_date": "2026-09-10",
+            "high": 29.72,
+            "low": 26.11,
+            "depth_pct": 12.1,
+            "vol_ratio": 0.85
+          }
+        ],
+        "pivot": 29.72,
+        "stop": 26.11,
+        "final_depth_pct": 12.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 3
       }
     },
     {
@@ -11956,7 +12000,7 @@
       "high52": 70.25,
       "low52": 37.0,
       "pct_off_high": -2.0,
-      "pct_above_low": 86.1,
+      "pct_above_low": 86.0,
       "rs_nh": false,
       "vcp": {
         "score": 51,
@@ -12296,50 +12340,6 @@
       }
     },
     {
-      "ticker": "TECK",
-      "name": "Teck Resources Ltd Ordinary Shares",
-      "rs_rank": 80,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 65.9,
-      "ma50": 63.39,
-      "ma150": 59.96,
-      "ma200": 56.99,
-      "high52": 72.56,
-      "low52": 37.88,
-      "pct_off_high": -9.2,
-      "pct_above_low": 74.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 21,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-08",
-            "lo_date": "2026-09-10",
-            "high": 72.56,
-            "low": 64.46,
-            "depth_pct": 11.2,
-            "vol_ratio": 1.28
-          }
-        ],
-        "pivot": 72.56,
-        "stop": 64.46,
-        "final_depth_pct": 11.2,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 3
-      }
-    },
-    {
       "ticker": "ABNB",
       "name": "Airbnb, Inc.",
       "rs_rank": 80,
@@ -12381,50 +12381,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 14
-      }
-    },
-    {
-      "ticker": "HBM",
-      "name": "Hudbay Minerals Inc. Ordinary Shares (Canada)",
-      "rs_rank": 80,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 26.52,
-      "ma50": 25.3,
-      "ma150": 24.75,
-      "ma200": 23.77,
-      "high52": 32.13,
-      "low52": 12.99,
-      "pct_off_high": -17.5,
-      "pct_above_low": 104.2,
-      "rs_nh": false,
-      "vcp": {
-        "score": 13,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-09",
-            "lo_date": "2026-09-10",
-            "high": 29.72,
-            "low": 26.11,
-            "depth_pct": 12.1,
-            "vol_ratio": 0.85
-          }
-        ],
-        "pivot": 29.72,
-        "stop": 26.11,
-        "final_depth_pct": 12.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 3
       }
     },
     {
@@ -12588,7 +12544,7 @@
             "high": 56.92,
             "low": 54.0,
             "depth_pct": 5.1,
-            "vol_ratio": 1.33
+            "vol_ratio": 1.39
           }
         ],
         "pivot": 56.92,
@@ -12597,6 +12553,94 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 32
+      }
+    },
+    {
+      "ticker": "SMBK",
+      "name": "SmartFinancial, Inc. Common Stock",
+      "rs_rank": 79,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 52.24,
+      "ma50": 50.37,
+      "ma150": 44.36,
+      "ma200": 42.85,
+      "high52": 54.14,
+      "low52": 32.74,
+      "pct_off_high": -3.5,
+      "pct_above_low": 59.5,
+      "rs_nh": false,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-03",
+            "lo_date": "2026-08-27",
+            "high": 54.14,
+            "low": 49.75,
+            "depth_pct": 8.1,
+            "vol_ratio": 0.87
+          }
+        ],
+        "pivot": 54.14,
+        "stop": 49.75,
+        "final_depth_pct": 8.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 29
+      }
+    },
+    {
+      "ticker": "TEVA",
+      "name": "Teva Pharmaceutical Industries Limited Ordinary Shares",
+      "rs_rank": 79,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 37.09,
+      "ma50": 34.88,
+      "ma150": 33.46,
+      "ma200": 32.82,
+      "high52": 38.37,
+      "low52": 18.21,
+      "pct_off_high": -3.3,
+      "pct_above_low": 103.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-08",
+            "high": 38.06,
+            "low": 35.42,
+            "depth_pct": 6.9,
+            "vol_ratio": 1.0
+          }
+        ],
+        "pivot": 38.06,
+        "stop": 35.42,
+        "final_depth_pct": 6.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -13044,6 +13088,110 @@
       }
     },
     {
+      "ticker": "TRV",
+      "name": "The Travelers Companies, Inc. Common Stock",
+      "rs_rank": 78,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 375.2,
+      "ma50": 364.97,
+      "ma150": 321.71,
+      "ma200": 311.73,
+      "high52": 397.34,
+      "low52": 248.46,
+      "pct_off_high": -5.6,
+      "pct_above_low": 51.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 59,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-28",
+            "lo_date": "2026-08-20",
+            "high": 397.34,
+            "low": 357.66,
+            "depth_pct": 10.0,
+            "vol_ratio": 0.91
+          },
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-09",
+            "high": 375.29,
+            "low": 358.64,
+            "depth_pct": 4.4,
+            "vol_ratio": 0.78
+          }
+        ],
+        "pivot": 375.29,
+        "stop": 358.64,
+        "final_depth_pct": 4.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 33
+      }
+    },
+    {
+      "ticker": "UBS",
+      "name": "UBS Group AG Registered Ordinary Shares",
+      "rs_rank": 78,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 54.58,
+      "ma50": 53.33,
+      "ma150": 46.43,
+      "ma200": 45.76,
+      "high52": 55.99,
+      "low52": 35.38,
+      "pct_off_high": -2.5,
+      "pct_above_low": 54.3,
+      "rs_nh": true,
+      "vcp": {
+        "score": 59,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-15",
+            "lo_date": "2026-07-28",
+            "high": 55.15,
+            "low": 51.35,
+            "depth_pct": 6.9,
+            "vol_ratio": 0.91
+          },
+          {
+            "hi_date": "2026-08-31",
+            "lo_date": "2026-09-01",
+            "high": 55.99,
+            "low": 53.62,
+            "depth_pct": 4.2,
+            "vol_ratio": 1.68
+          }
+        ],
+        "pivot": 55.99,
+        "stop": 53.62,
+        "final_depth_pct": 4.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 42
+      }
+    },
+    {
       "ticker": "ANGO",
       "name": "AngioDynamics, Inc.",
       "rs_rank": 78,
@@ -13192,50 +13340,6 @@
       }
     },
     {
-      "ticker": "SMBK",
-      "name": "SmartFinancial, Inc. Common Stock",
-      "rs_rank": 78,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 52.24,
-      "ma50": 50.37,
-      "ma150": 44.36,
-      "ma200": 42.85,
-      "high52": 54.14,
-      "low52": 32.74,
-      "pct_off_high": -3.5,
-      "pct_above_low": 59.5,
-      "rs_nh": false,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-03",
-            "lo_date": "2026-08-27",
-            "high": 54.14,
-            "low": 49.75,
-            "depth_pct": 8.1,
-            "vol_ratio": 0.87
-          }
-        ],
-        "pivot": 54.14,
-        "stop": 49.75,
-        "final_depth_pct": 8.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 29
-      }
-    },
-    {
       "ticker": "LFUS",
       "name": "Littelfuse, Inc.",
       "rs_rank": 78,
@@ -13310,13 +13414,13 @@
             "hi_date": "2026-09-02",
             "lo_date": "2026-09-11",
             "high": 67.51,
-            "low": 62.78,
+            "low": 62.79,
             "depth_pct": 7.0,
             "vol_ratio": 1.02
           }
         ],
         "pivot": 67.51,
-        "stop": 62.78,
+        "stop": 62.79,
         "final_depth_pct": 7.0,
         "vol_declining": false,
         "dryup": false,
@@ -13368,6 +13472,50 @@
       }
     },
     {
+      "ticker": "TECK",
+      "name": "Teck Resources Ltd Ordinary Shares",
+      "rs_rank": 78,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 66.44,
+      "ma50": 63.54,
+      "ma150": 60.05,
+      "ma200": 57.12,
+      "high52": 72.56,
+      "low52": 37.88,
+      "pct_off_high": -8.4,
+      "pct_above_low": 75.4,
+      "rs_nh": false,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-08",
+            "lo_date": "2026-09-10",
+            "high": 72.56,
+            "low": 64.46,
+            "depth_pct": 11.2,
+            "vol_ratio": 1.28
+          }
+        ],
+        "pivot": 72.56,
+        "stop": 64.46,
+        "final_depth_pct": 11.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 4
+      }
+    },
+    {
       "ticker": "ENTG",
       "name": "Entegris, Inc.",
       "rs_rank": 78,
@@ -13409,74 +13557,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 19
-      }
-    },
-    {
-      "ticker": "TSM",
-      "name": "Taiwan Semiconductor Manufacturing Company Ltd.",
-      "rs_rank": 77,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 428.03,
-      "ma50": 419.15,
-      "ma150": 395.99,
-      "ma200": 374.19,
-      "high52": 479.0,
-      "low52": 254.93,
-      "pct_off_high": -10.6,
-      "pct_above_low": 67.9,
-      "rs_nh": false,
-      "vcp": {
-        "score": 77,
-        "count": 4,
-        "contractions": [
-          {
-            "hi_date": "2026-06-30",
-            "lo_date": "2026-07-17",
-            "high": 479.0,
-            "low": 386.02,
-            "depth_pct": 19.4,
-            "vol_ratio": 1.09
-          },
-          {
-            "hi_date": "2026-07-21",
-            "lo_date": "2026-07-29",
-            "high": 425.4,
-            "low": 372.72,
-            "depth_pct": 12.4,
-            "vol_ratio": 1.09
-          },
-          {
-            "hi_date": "2026-08-13",
-            "lo_date": "2026-08-24",
-            "high": 436.04,
-            "low": 405.15,
-            "depth_pct": 7.1,
-            "vol_ratio": 0.7
-          },
-          {
-            "hi_date": "2026-08-27",
-            "lo_date": "2026-09-03",
-            "high": 429.64,
-            "low": 407.82,
-            "depth_pct": 5.1,
-            "vol_ratio": 0.66
-          }
-        ],
-        "pivot": 429.64,
-        "stop": 407.82,
-        "final_depth_pct": 5.1,
-        "vol_declining": true,
-        "dryup": false,
-        "base_days": 51
       }
     },
     {
@@ -13540,6 +13620,74 @@
       }
     },
     {
+      "ticker": "TSM",
+      "name": "Taiwan Semiconductor Manufacturing Company Ltd.",
+      "rs_rank": 77,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 433.24,
+      "ma50": 418.93,
+      "ma150": 396.69,
+      "ma200": 374.99,
+      "high52": 479.0,
+      "low52": 255.41,
+      "pct_off_high": -9.6,
+      "pct_above_low": 69.6,
+      "rs_nh": false,
+      "vcp": {
+        "score": 67,
+        "count": 4,
+        "contractions": [
+          {
+            "hi_date": "2026-06-30",
+            "lo_date": "2026-07-17",
+            "high": 479.0,
+            "low": 386.02,
+            "depth_pct": 19.4,
+            "vol_ratio": 1.09
+          },
+          {
+            "hi_date": "2026-07-21",
+            "lo_date": "2026-07-29",
+            "high": 425.4,
+            "low": 372.72,
+            "depth_pct": 12.4,
+            "vol_ratio": 1.09
+          },
+          {
+            "hi_date": "2026-08-13",
+            "lo_date": "2026-08-24",
+            "high": 436.04,
+            "low": 405.15,
+            "depth_pct": 7.1,
+            "vol_ratio": 0.7
+          },
+          {
+            "hi_date": "2026-08-27",
+            "lo_date": "2026-09-03",
+            "high": 429.64,
+            "low": 407.82,
+            "depth_pct": 5.1,
+            "vol_ratio": 0.66
+          }
+        ],
+        "pivot": 429.64,
+        "stop": 407.82,
+        "final_depth_pct": 5.1,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 52
+      }
+    },
+    {
       "ticker": "MD",
       "name": "Pediatrix Medical Group, Inc. Common Stock",
       "rs_rank": 77,
@@ -13589,58 +13737,6 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 29
-      }
-    },
-    {
-      "ticker": "UBS",
-      "name": "UBS Group AG Registered Ordinary Shares",
-      "rs_rank": 77,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 54.01,
-      "ma50": 53.23,
-      "ma150": 46.35,
-      "ma200": 45.67,
-      "high52": 55.99,
-      "low52": 35.38,
-      "pct_off_high": -3.5,
-      "pct_above_low": 52.6,
-      "rs_nh": true,
-      "vcp": {
-        "score": 59,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-15",
-            "lo_date": "2026-07-28",
-            "high": 55.15,
-            "low": 51.35,
-            "depth_pct": 6.9,
-            "vol_ratio": 0.91
-          },
-          {
-            "hi_date": "2026-08-31",
-            "lo_date": "2026-09-01",
-            "high": 55.99,
-            "low": 53.62,
-            "depth_pct": 4.2,
-            "vol_ratio": 1.68
-          }
-        ],
-        "pivot": 55.99,
-        "stop": 53.62,
-        "final_depth_pct": 4.2,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 41
       }
     },
     {
@@ -13797,6 +13893,50 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 58
+      }
+    },
+    {
+      "ticker": "CNQ",
+      "name": "Canadian Natural Resources Limited Common Stock",
+      "rs_rank": 77,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 50.07,
+      "ma50": 46.46,
+      "ma150": 45.03,
+      "ma200": 42.04,
+      "high52": 51.84,
+      "low52": 28.84,
+      "pct_off_high": -3.4,
+      "pct_above_low": 73.6,
+      "rs_nh": false,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-21",
+            "lo_date": "2026-08-28",
+            "high": 51.02,
+            "low": 48.18,
+            "depth_pct": 5.6,
+            "vol_ratio": 0.75
+          }
+        ],
+        "pivot": 51.02,
+        "stop": 48.18,
+        "final_depth_pct": 5.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 15
       }
     },
     {
@@ -14064,8 +14204,52 @@
       }
     },
     {
-      "ticker": "FFIV",
-      "name": "F5, Inc.",
+      "ticker": "WCC",
+      "name": "WESCO International, Inc. Common Stock",
+      "rs_rank": 77,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 356.32,
+      "ma50": 341.87,
+      "ma150": 324.76,
+      "ma200": 310.92,
+      "high52": 384.81,
+      "low52": 202.08,
+      "pct_off_high": -7.4,
+      "pct_above_low": 76.3,
+      "rs_nh": false,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-09-02",
+            "high": 384.81,
+            "low": 327.36,
+            "depth_pct": 14.9,
+            "vol_ratio": 0.72
+          }
+        ],
+        "pivot": 384.81,
+        "stop": 327.36,
+        "final_depth_pct": 14.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 26
+      }
+    },
+    {
+      "ticker": "WEX",
+      "name": "WEX Inc. common stock",
       "rs_rank": 76,
       "checks": {
         "price_above_150_200": true,
@@ -14077,50 +14261,42 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 411.71,
-      "ma50": 403.84,
-      "ma150": 353.84,
-      "ma200": 330.67,
-      "high52": 435.0,
-      "low52": 223.76,
-      "pct_off_high": -5.4,
-      "pct_above_low": 84.0,
+      "price": 191.52,
+      "ma50": 180.88,
+      "ma150": 161.15,
+      "ma200": 159.16,
+      "high52": 203.99,
+      "low52": 125.29,
+      "pct_off_high": -6.1,
+      "pct_above_low": 52.9,
       "rs_nh": false,
       "vcp": {
-        "score": 73,
-        "count": 3,
+        "score": 76,
+        "count": 2,
         "contractions": [
           {
-            "hi_date": "2026-07-15",
-            "lo_date": "2026-07-28",
-            "high": 435.0,
-            "low": 366.93,
-            "depth_pct": 15.6,
-            "vol_ratio": 1.1
+            "hi_date": "2026-08-25",
+            "lo_date": "2026-09-01",
+            "high": 203.99,
+            "low": 186.11,
+            "depth_pct": 8.8,
+            "vol_ratio": 0.9
           },
           {
-            "hi_date": "2026-08-12",
-            "lo_date": "2026-08-20",
-            "high": 425.61,
-            "low": 376.21,
-            "depth_pct": 11.6,
-            "vol_ratio": 0.73
-          },
-          {
-            "hi_date": "2026-08-27",
-            "lo_date": "2026-09-02",
-            "high": 414.17,
-            "low": 384.95,
-            "depth_pct": 7.1,
-            "vol_ratio": 0.84
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-08",
+            "high": 196.79,
+            "low": 185.17,
+            "depth_pct": 5.9,
+            "vol_ratio": 0.57
           }
         ],
-        "pivot": 414.17,
-        "stop": 384.95,
-        "final_depth_pct": 7.1,
+        "pivot": 196.79,
+        "stop": 185.17,
+        "final_depth_pct": 5.9,
         "vol_declining": true,
-        "dryup": false,
-        "base_days": 42
+        "dryup": true,
+        "base_days": 13
       }
     },
     {
@@ -14392,94 +14568,6 @@
       }
     },
     {
-      "ticker": "CNQ",
-      "name": "Canadian Natural Resources Limited Common Stock",
-      "rs_rank": 76,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 50.07,
-      "ma50": 46.87,
-      "ma150": 45.44,
-      "ma200": 42.41,
-      "high52": 52.31,
-      "low52": 29.1,
-      "pct_off_high": -4.3,
-      "pct_above_low": 72.1,
-      "rs_nh": false,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-10",
-            "lo_date": "2026-09-11",
-            "high": 52.31,
-            "low": 49.3,
-            "depth_pct": 5.8,
-            "vol_ratio": 2.02
-          }
-        ],
-        "pivot": 52.31,
-        "stop": 49.3,
-        "final_depth_pct": 5.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 2
-      }
-    },
-    {
-      "ticker": "ADM",
-      "name": "Archer-Daniels-Midland Company Common Stock",
-      "rs_rank": 76,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 86.72,
-      "ma50": 81.39,
-      "ma150": 75.64,
-      "ma200": 71.86,
-      "high52": 88.75,
-      "low52": 54.0,
-      "pct_off_high": -2.3,
-      "pct_above_low": 60.6,
-      "rs_nh": true,
-      "vcp": {
-        "score": 25,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-20",
-            "lo_date": "2026-08-25",
-            "high": 83.84,
-            "low": 75.86,
-            "depth_pct": 9.5,
-            "vol_ratio": 1.0
-          }
-        ],
-        "pivot": 83.84,
-        "stop": 75.86,
-        "final_depth_pct": 9.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 16
-      }
-    },
-    {
       "ticker": "TPC",
       "name": "Tutor Perini Corporation Common Stock",
       "rs_rank": 76,
@@ -14493,14 +14581,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 86.23,
-      "ma50": 86.13,
-      "ma150": 81.44,
-      "ma200": 78.83,
+      "price": 89.13,
+      "ma50": 86.33,
+      "ma150": 81.51,
+      "ma200": 78.98,
       "high52": 102.2,
       "low52": 57.7,
-      "pct_off_high": -15.6,
-      "pct_above_low": 49.4,
+      "pct_off_high": -12.8,
+      "pct_above_low": 54.5,
       "rs_nh": false,
       "vcp": {
         "score": 23,
@@ -14520,7 +14608,7 @@
         "final_depth_pct": 16.0,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 25
+        "base_days": 26
       }
     },
     {
@@ -14636,8 +14724,8 @@
       }
     },
     {
-      "ticker": "TD",
-      "name": "Toronto Dominion Bank (The) Common Stock",
+      "ticker": "FFIV",
+      "name": "F5, Inc.",
       "rs_rank": 75,
       "checks": {
         "price_above_150_200": true,
@@ -14649,42 +14737,50 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 120.97,
-      "ma50": 120.62,
-      "ma150": 109.15,
-      "ma200": 104.52,
-      "high52": 125.47,
-      "low52": 74.91,
-      "pct_off_high": -3.6,
-      "pct_above_low": 61.5,
-      "rs_nh": true,
+      "price": 411.71,
+      "ma50": 403.84,
+      "ma150": 353.84,
+      "ma200": 330.67,
+      "high52": 435.0,
+      "low52": 223.76,
+      "pct_off_high": -5.4,
+      "pct_above_low": 84.0,
+      "rs_nh": false,
       "vcp": {
-        "score": 74,
-        "count": 2,
+        "score": 73,
+        "count": 3,
         "contractions": [
           {
-            "hi_date": "2026-08-17",
-            "lo_date": "2026-08-24",
-            "high": 125.47,
-            "low": 115.12,
-            "depth_pct": 8.2,
-            "vol_ratio": 0.76
+            "hi_date": "2026-07-15",
+            "lo_date": "2026-07-28",
+            "high": 435.0,
+            "low": 366.93,
+            "depth_pct": 15.6,
+            "vol_ratio": 1.1
           },
           {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-09",
-            "high": 123.72,
-            "low": 118.55,
-            "depth_pct": 4.2,
-            "vol_ratio": 0.63
+            "hi_date": "2026-08-12",
+            "lo_date": "2026-08-20",
+            "high": 425.61,
+            "low": 376.21,
+            "depth_pct": 11.6,
+            "vol_ratio": 0.73
+          },
+          {
+            "hi_date": "2026-08-27",
+            "lo_date": "2026-09-02",
+            "high": 414.17,
+            "low": 384.95,
+            "depth_pct": 7.1,
+            "vol_ratio": 0.84
           }
         ],
-        "pivot": 123.72,
-        "stop": 118.55,
-        "final_depth_pct": 4.2,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 19
+        "pivot": 414.17,
+        "stop": 384.95,
+        "final_depth_pct": 7.1,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 42
       }
     },
     {
@@ -14740,8 +14836,8 @@
       }
     },
     {
-      "ticker": "TRV",
-      "name": "The Travelers Companies, Inc. Common Stock",
+      "ticker": "TD",
+      "name": "Toronto Dominion Bank (The) Common Stock",
       "rs_rank": 75,
       "checks": {
         "price_above_150_200": true,
@@ -14753,42 +14849,42 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 367.56,
-      "ma50": 364.14,
-      "ma150": 321.19,
-      "ma200": 311.29,
-      "high52": 397.34,
-      "low52": 248.46,
-      "pct_off_high": -7.5,
-      "pct_above_low": 47.9,
-      "rs_nh": false,
+      "price": 120.97,
+      "ma50": 120.62,
+      "ma150": 109.15,
+      "ma200": 104.52,
+      "high52": 125.47,
+      "low52": 74.91,
+      "pct_off_high": -3.6,
+      "pct_above_low": 61.5,
+      "rs_nh": true,
       "vcp": {
         "score": 59,
         "count": 2,
         "contractions": [
           {
-            "hi_date": "2026-07-28",
-            "lo_date": "2026-08-20",
-            "high": 397.34,
-            "low": 357.66,
-            "depth_pct": 10.0,
-            "vol_ratio": 0.91
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-24",
+            "high": 125.47,
+            "low": 115.12,
+            "depth_pct": 8.2,
+            "vol_ratio": 0.76
           },
           {
             "hi_date": "2026-09-03",
             "lo_date": "2026-09-09",
-            "high": 375.29,
-            "low": 358.64,
-            "depth_pct": 4.4,
-            "vol_ratio": 0.78
+            "high": 123.72,
+            "low": 118.55,
+            "depth_pct": 4.2,
+            "vol_ratio": 0.63
           }
         ],
-        "pivot": 375.29,
-        "stop": 358.64,
-        "final_depth_pct": 4.4,
+        "pivot": 123.72,
+        "stop": 118.55,
+        "final_depth_pct": 4.2,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 32
+        "base_days": 19
       }
     },
     {
@@ -14841,6 +14937,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 41
+      }
+    },
+    {
+      "ticker": "HQH",
+      "name": "abrdn Healthcare Investors Shares of Beneficial Interest",
+      "rs_rank": 75,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 21.98,
+      "ma50": 21.98,
+      "ma150": 19.6,
+      "ma200": 19.07,
+      "high52": 24.18,
+      "low52": 14.5,
+      "pct_off_high": -9.1,
+      "pct_above_low": 51.6,
+      "rs_nh": false,
+      "vcp": {
+        "score": 36,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-19",
+            "lo_date": "2026-09-14",
+            "high": 24.18,
+            "low": 21.65,
+            "depth_pct": 10.5,
+            "vol_ratio": 0.76
+          }
+        ],
+        "pivot": 24.18,
+        "stop": 21.65,
+        "final_depth_pct": 10.5,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 18
       }
     },
     {
@@ -14932,50 +15072,6 @@
       }
     },
     {
-      "ticker": "OSBC",
-      "name": "Old Second Bancorp, Inc.",
-      "rs_rank": 75,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 25.58,
-      "ma50": 24.73,
-      "ma150": 22.1,
-      "ma200": 21.54,
-      "high52": 26.06,
-      "low52": 16.43,
-      "pct_off_high": -1.8,
-      "pct_above_low": 55.7,
-      "rs_nh": true,
-      "vcp": {
-        "score": 35,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-17",
-            "lo_date": "2026-08-20",
-            "high": 26.06,
-            "low": 24.7,
-            "depth_pct": 5.2,
-            "vol_ratio": 0.93
-          }
-        ],
-        "pivot": 26.06,
-        "stop": 24.7,
-        "final_depth_pct": 5.2,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 19
-      }
-    },
-    {
       "ticker": "PFG",
       "name": "Principal Financial Group Inc",
       "rs_rank": 75,
@@ -15064,50 +15160,6 @@
       }
     },
     {
-      "ticker": "RBCAA",
-      "name": "Republic Bancorp, Inc.",
-      "rs_rank": 75,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 96.27,
-      "ma50": 94.77,
-      "ma150": 81.87,
-      "ma200": 78.89,
-      "high52": 102.22,
-      "low52": 62.76,
-      "pct_off_high": -5.8,
-      "pct_above_low": 53.4,
-      "rs_nh": false,
-      "vcp": {
-        "score": 28,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-06",
-            "lo_date": "2026-08-20",
-            "high": 102.22,
-            "low": 92.5,
-            "depth_pct": 9.5,
-            "vol_ratio": 0.78
-          }
-        ],
-        "pivot": 102.22,
-        "stop": 92.5,
-        "final_depth_pct": 9.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 26
-      }
-    },
-    {
       "ticker": "SCL",
       "name": "Stepan Company Common Stock",
       "rs_rank": 75,
@@ -15152,9 +15204,9 @@
       }
     },
     {
-      "ticker": "WEX",
-      "name": "WEX Inc. common stock",
-      "rs_rank": 74,
+      "ticker": "ADM",
+      "name": "Archer-Daniels-Midland Company Common Stock",
+      "rs_rank": 75,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -15165,94 +15217,34 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 190.03,
-      "ma50": 179.9,
-      "ma150": 160.86,
-      "ma200": 158.93,
-      "high52": 203.99,
-      "low52": 125.29,
-      "pct_off_high": -6.8,
-      "pct_above_low": 51.7,
-      "rs_nh": false,
+      "price": 86.72,
+      "ma50": 81.39,
+      "ma150": 75.64,
+      "ma200": 71.86,
+      "high52": 88.75,
+      "low52": 54.0,
+      "pct_off_high": -2.3,
+      "pct_above_low": 60.6,
+      "rs_nh": true,
       "vcp": {
-        "score": 76,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-08-25",
-            "lo_date": "2026-09-01",
-            "high": 203.99,
-            "low": 186.11,
-            "depth_pct": 8.8,
-            "vol_ratio": 0.9
-          },
-          {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-08",
-            "high": 196.79,
-            "low": 185.17,
-            "depth_pct": 5.9,
-            "vol_ratio": 0.57
-          }
-        ],
-        "pivot": 196.79,
-        "stop": 185.17,
-        "final_depth_pct": 5.9,
-        "vol_declining": true,
-        "dryup": true,
-        "base_days": 12
-      }
-    },
-    {
-      "ticker": "XOM",
-      "name": "ExxonMobil Holdings Corporation Common Stock",
-      "rs_rank": 74,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 165.23,
-      "ma50": 153.96,
-      "ma150": 151.18,
-      "ma200": 143.79,
-      "high52": 174.09,
-      "low52": 107.28,
-      "pct_off_high": -5.1,
-      "pct_above_low": 54.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 59,
-        "count": 2,
+        "score": 25,
+        "count": 1,
         "contractions": [
           {
             "hi_date": "2026-08-20",
-            "lo_date": "2026-08-28",
-            "high": 168.64,
-            "low": 155.32,
-            "depth_pct": 7.9,
-            "vol_ratio": 0.9
-          },
-          {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-08",
-            "high": 165.65,
-            "low": 158.75,
-            "depth_pct": 4.2,
-            "vol_ratio": 0.98
+            "lo_date": "2026-08-25",
+            "high": 83.84,
+            "low": 75.86,
+            "depth_pct": 9.5,
+            "vol_ratio": 1.0
           }
         ],
-        "pivot": 165.65,
-        "stop": 158.75,
-        "final_depth_pct": 4.2,
+        "pivot": 83.84,
+        "stop": 75.86,
+        "final_depth_pct": 9.5,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 15
+        "base_days": 16
       }
     },
     {
@@ -15308,6 +15300,58 @@
       }
     },
     {
+      "ticker": "XOM",
+      "name": "ExxonMobil Holdings Corporation Common Stock",
+      "rs_rank": 74,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 165.99,
+      "ma50": 154.57,
+      "ma150": 151.33,
+      "ma200": 144.05,
+      "high52": 174.09,
+      "low52": 107.28,
+      "pct_off_high": -4.7,
+      "pct_above_low": 54.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 49,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-28",
+            "high": 168.64,
+            "low": 155.32,
+            "depth_pct": 7.9,
+            "vol_ratio": 0.9
+          },
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-08",
+            "high": 165.65,
+            "low": 158.75,
+            "depth_pct": 4.2,
+            "vol_ratio": 0.98
+          }
+        ],
+        "pivot": 165.65,
+        "stop": 158.75,
+        "final_depth_pct": 4.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
+      }
+    },
+    {
       "ticker": "CPAY",
       "name": "Corpay, Inc. Common Stock",
       "rs_rank": 74,
@@ -15349,6 +15393,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 6
+      }
+    },
+    {
+      "ticker": "OSBC",
+      "name": "Old Second Bancorp, Inc.",
+      "rs_rank": 74,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 25.58,
+      "ma50": 24.73,
+      "ma150": 22.1,
+      "ma200": 21.54,
+      "high52": 26.06,
+      "low52": 16.43,
+      "pct_off_high": -1.8,
+      "pct_above_low": 55.7,
+      "rs_nh": true,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-08-20",
+            "high": 26.06,
+            "low": 24.7,
+            "depth_pct": 5.2,
+            "vol_ratio": 0.93
+          }
+        ],
+        "pivot": 26.06,
+        "stop": 24.7,
+        "final_depth_pct": 5.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 19
       }
     },
     {
@@ -15409,15 +15497,15 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 79.94,
-      "ma50": 79.36,
-      "ma150": 72.4,
-      "ma200": 68.66,
+      "price": 79.73,
+      "ma50": 79.39,
+      "ma150": 72.47,
+      "ma200": 68.78,
       "high52": 82.74,
       "low52": 49.38,
-      "pct_off_high": -3.4,
-      "pct_above_low": 61.9,
-      "rs_nh": true,
+      "pct_off_high": -3.6,
+      "pct_above_low": 61.5,
+      "rs_nh": false,
       "vcp": {
         "score": 35,
         "count": 1,
@@ -15436,7 +15524,7 @@
         "final_depth_pct": 7.7,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 25
+        "base_days": 26
       }
     },
     {
@@ -15470,17 +15558,61 @@
             "hi_date": "2026-09-03",
             "lo_date": "2026-09-11",
             "high": 59.72,
-            "low": 54.54,
+            "low": 54.55,
             "depth_pct": 8.7,
             "vol_ratio": 0.87
           }
         ],
         "pivot": 59.72,
-        "stop": 54.54,
+        "stop": 54.55,
         "final_depth_pct": 8.7,
         "vol_declining": false,
         "dryup": false,
         "base_days": 6
+      }
+    },
+    {
+      "ticker": "RBCAA",
+      "name": "Republic Bancorp, Inc.",
+      "rs_rank": 74,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 96.27,
+      "ma50": 94.77,
+      "ma150": 81.87,
+      "ma200": 78.89,
+      "high52": 102.22,
+      "low52": 62.76,
+      "pct_off_high": -5.8,
+      "pct_above_low": 53.4,
+      "rs_nh": false,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-06",
+            "lo_date": "2026-08-20",
+            "high": 102.22,
+            "low": 92.5,
+            "depth_pct": 9.5,
+            "vol_ratio": 0.78
+          }
+        ],
+        "pivot": 102.22,
+        "stop": 92.5,
+        "final_depth_pct": 9.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 26
       }
     },
     {
@@ -15927,7 +16059,7 @@
             "high": 281.07,
             "low": 265.25,
             "depth_pct": 5.6,
-            "vol_ratio": 0.84
+            "vol_ratio": 0.85
           }
         ],
         "pivot": 281.07,
@@ -15936,50 +16068,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 7
-      }
-    },
-    {
-      "ticker": "AAPL",
-      "name": "Apple Inc.",
-      "rs_rank": 73,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 332.27,
-      "ma50": 317.83,
-      "ma150": 290.07,
-      "ma200": 284.54,
-      "high52": 344.27,
-      "low52": 225.82,
-      "pct_off_high": -3.5,
-      "pct_above_low": 47.1,
-      "rs_nh": false,
-      "vcp": {
-        "score": 25,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-03",
-            "lo_date": "2026-09-09",
-            "high": 330.81,
-            "low": 309.9,
-            "depth_pct": 6.3,
-            "vol_ratio": 0.91
-          }
-        ],
-        "pivot": 330.81,
-        "stop": 309.9,
-        "final_depth_pct": 6.3,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 6
       }
     },
     {
@@ -16085,77 +16173,33 @@
         "rs_rank_70plus": true
       },
       "price": 282.67,
-      "ma50": 275.73,
-      "ma150": 251.18,
-      "ma200": 239.04,
-      "high52": 314.28,
-      "low52": 184.35,
-      "pct_off_high": -10.1,
-      "pct_above_low": 53.3,
+      "ma50": 274.69,
+      "ma150": 250.22,
+      "ma200": 238.12,
+      "high52": 313.07,
+      "low52": 183.64,
+      "pct_off_high": -9.7,
+      "pct_above_low": 53.9,
       "rs_nh": false,
       "vcp": {
-        "score": 13,
+        "score": 21,
         "count": 1,
         "contractions": [
           {
             "hi_date": "2026-08-10",
             "lo_date": "2026-09-02",
-            "high": 314.28,
-            "low": 268.01,
+            "high": 313.07,
+            "low": 266.98,
             "depth_pct": 14.7,
             "vol_ratio": 0.88
           }
         ],
-        "pivot": 314.28,
-        "stop": 268.01,
+        "pivot": 313.07,
+        "stop": 266.98,
         "final_depth_pct": 14.7,
         "vol_declining": false,
         "dryup": false,
         "base_days": 24
-      }
-    },
-    {
-      "ticker": "WCC",
-      "name": "WESCO International, Inc. Common Stock",
-      "rs_rank": 73,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 344.0,
-      "ma50": 341.65,
-      "ma150": 324.84,
-      "ma200": 310.84,
-      "high52": 385.37,
-      "low52": 202.38,
-      "pct_off_high": -10.7,
-      "pct_above_low": 70.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 13,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-06",
-            "lo_date": "2026-09-02",
-            "high": 385.37,
-            "low": 327.84,
-            "depth_pct": 14.9,
-            "vol_ratio": 0.72
-          }
-        ],
-        "pivot": 385.37,
-        "stop": 327.84,
-        "final_depth_pct": 14.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 25
       }
     },
     {
@@ -16173,13 +16217,13 @@
         "rs_rank_70plus": true
       },
       "price": 225.84,
-      "ma50": 222.52,
-      "ma150": 196.19,
-      "ma200": 191.31,
-      "high52": 236.07,
-      "low52": 164.24,
-      "pct_off_high": -4.3,
-      "pct_above_low": 37.5,
+      "ma50": 221.59,
+      "ma150": 195.37,
+      "ma200": 190.51,
+      "high52": 235.07,
+      "low52": 163.54,
+      "pct_off_high": -3.9,
+      "pct_above_low": 38.1,
       "rs_nh": false,
       "vcp": {
         "score": 81,
@@ -16188,30 +16232,30 @@
           {
             "hi_date": "2026-07-07",
             "lo_date": "2026-07-16",
-            "high": 225.29,
-            "low": 203.36,
+            "high": 224.33,
+            "low": 202.5,
             "depth_pct": 9.7,
             "vol_ratio": 1.15
           },
           {
             "hi_date": "2026-08-03",
             "lo_date": "2026-08-20",
-            "high": 236.07,
-            "low": 217.0,
+            "high": 235.07,
+            "low": 216.08,
             "depth_pct": 8.1,
             "vol_ratio": 0.85
           },
           {
             "hi_date": "2026-09-04",
             "lo_date": "2026-09-09",
-            "high": 233.28,
-            "low": 222.05,
+            "high": 232.29,
+            "low": 221.11,
             "depth_pct": 4.8,
             "vol_ratio": 0.75
           }
         ],
-        "pivot": 233.28,
-        "stop": 222.05,
+        "pivot": 232.29,
+        "stop": 221.11,
         "final_depth_pct": 4.8,
         "vol_declining": true,
         "dryup": false,
@@ -16323,8 +16367,8 @@
       }
     },
     {
-      "ticker": "MBWM",
-      "name": "Mercantile Bank Corporation",
+      "ticker": "TTE",
+      "name": "TotalEnergies SE Ordinary Shares",
       "rs_rank": 72,
       "checks": {
         "price_above_150_200": true,
@@ -16336,86 +16380,34 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 61.74,
-      "ma50": 59.32,
-      "ma150": 54.22,
-      "ma200": 52.74,
-      "high52": 62.32,
-      "low52": 41.51,
-      "pct_off_high": -0.9,
-      "pct_above_low": 48.7,
-      "rs_nh": true,
-      "vcp": {
-        "score": 51,
-        "count": 2,
-        "contractions": [
-          {
-            "hi_date": "2026-07-30",
-            "lo_date": "2026-08-27",
-            "high": 61.99,
-            "low": 58.11,
-            "depth_pct": 6.3,
-            "vol_ratio": 0.8
-          },
-          {
-            "hi_date": "2026-09-04",
-            "lo_date": "2026-09-09",
-            "high": 62.32,
-            "low": 59.16,
-            "depth_pct": 5.1,
-            "vol_ratio": 0.72
-          }
-        ],
-        "pivot": 62.32,
-        "stop": 59.16,
-        "final_depth_pct": 5.1,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 31
-      }
-    },
-    {
-      "ticker": "BY",
-      "name": "Byline Bancorp, Inc. Common Stock",
-      "rs_rank": 72,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 38.67,
-      "ma50": 38.31,
-      "ma150": 34.6,
-      "ma200": 33.43,
-      "high52": 40.03,
-      "low52": 25.2,
-      "pct_off_high": -3.4,
-      "pct_above_low": 53.5,
+      "price": 91.89,
+      "ma50": 85.76,
+      "ma150": 85.58,
+      "ma200": 80.6,
+      "high52": 94.17,
+      "low52": 55.92,
+      "pct_off_high": -2.4,
+      "pct_above_low": 64.3,
       "rs_nh": false,
       "vcp": {
         "score": 35,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-08-04",
-            "lo_date": "2026-09-01",
-            "high": 40.03,
-            "low": 37.47,
-            "depth_pct": 6.4,
-            "vol_ratio": 0.72
+            "hi_date": "2026-08-20",
+            "lo_date": "2026-08-27",
+            "high": 92.16,
+            "low": 86.0,
+            "depth_pct": 6.7,
+            "vol_ratio": 1.0
           }
         ],
-        "pivot": 40.03,
-        "stop": 37.47,
-        "final_depth_pct": 6.4,
+        "pivot": 92.16,
+        "stop": 86.0,
+        "final_depth_pct": 6.7,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 28
+        "base_days": 16
       }
     },
     {
@@ -16504,6 +16496,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 13
+      }
+    },
+    {
+      "ticker": "AAPL",
+      "name": "Apple Inc.",
+      "rs_rank": 72,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 332.27,
+      "ma50": 317.83,
+      "ma150": 290.07,
+      "ma200": 284.54,
+      "high52": 344.27,
+      "low52": 225.82,
+      "pct_off_high": -3.5,
+      "pct_above_low": 47.1,
+      "rs_nh": false,
+      "vcp": {
+        "score": 25,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-09",
+            "high": 330.81,
+            "low": 309.9,
+            "depth_pct": 6.3,
+            "vol_ratio": 0.91
+          }
+        ],
+        "pivot": 330.81,
+        "stop": 309.9,
+        "final_depth_pct": 6.3,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
       }
     },
     {
@@ -16691,6 +16727,58 @@
       }
     },
     {
+      "ticker": "TRIN",
+      "name": "Trinity Capital Inc. Common Stock",
+      "rs_rank": 71,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 17.93,
+      "ma50": 17.67,
+      "ma150": 15.99,
+      "ma200": 15.49,
+      "high52": 18.72,
+      "low52": 12.54,
+      "pct_off_high": -4.2,
+      "pct_above_low": 43.0,
+      "rs_nh": true,
+      "vcp": {
+        "score": 61,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-08-04",
+            "lo_date": "2026-08-05",
+            "high": 17.91,
+            "low": 16.62,
+            "depth_pct": 7.2,
+            "vol_ratio": 2.19
+          },
+          {
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-09-09",
+            "high": 18.72,
+            "low": 17.71,
+            "depth_pct": 5.4,
+            "vol_ratio": 0.96
+          }
+        ],
+        "pivot": 18.72,
+        "stop": 17.71,
+        "final_depth_pct": 5.4,
+        "vol_declining": true,
+        "dryup": false,
+        "base_days": 28
+      }
+    },
+    {
       "ticker": "IMO",
       "name": "Imperial Oil Limited Common Stock",
       "rs_rank": 71,
@@ -16839,8 +16927,8 @@
       }
     },
     {
-      "ticker": "CFR",
-      "name": "Cullen/Frost Bankers, Inc. Common Stock",
+      "ticker": "BY",
+      "name": "Byline Bancorp, Inc. Common Stock",
       "rs_rank": 71,
       "checks": {
         "price_above_150_200": true,
@@ -16852,34 +16940,34 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 162.92,
-      "ma50": 162.04,
-      "ma150": 146.68,
-      "ma200": 142.36,
-      "high52": 169.71,
-      "low52": 115.6,
-      "pct_off_high": -4.0,
-      "pct_above_low": 40.9,
+      "price": 38.67,
+      "ma50": 38.31,
+      "ma150": 34.6,
+      "ma200": 33.43,
+      "high52": 40.03,
+      "low52": 25.2,
+      "pct_off_high": -3.4,
+      "pct_above_low": 53.5,
       "rs_nh": false,
       "vcp": {
         "score": 35,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-08-17",
-            "lo_date": "2026-09-02",
-            "high": 169.71,
-            "low": 157.64,
-            "depth_pct": 7.1,
-            "vol_ratio": 0.79
+            "hi_date": "2026-08-04",
+            "lo_date": "2026-09-01",
+            "high": 40.03,
+            "low": 37.47,
+            "depth_pct": 6.4,
+            "vol_ratio": 0.72
           }
         ],
-        "pivot": 169.71,
-        "stop": 157.64,
-        "final_depth_pct": 7.1,
+        "pivot": 40.03,
+        "stop": 37.47,
+        "final_depth_pct": 6.4,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 19
+        "base_days": 28
       }
     },
     {
@@ -17117,13 +17205,13 @@
         "rs_rank_70plus": true
       },
       "price": 21.1,
-      "ma50": 20.14,
-      "ma150": 19.72,
-      "ma200": 18.94,
-      "high52": 21.93,
-      "low52": 12.07,
-      "pct_off_high": -3.8,
-      "pct_above_low": 74.8,
+      "ma50": 20.06,
+      "ma150": 19.64,
+      "ma200": 18.86,
+      "high52": 21.84,
+      "low52": 12.02,
+      "pct_off_high": -3.4,
+      "pct_above_low": 75.6,
       "rs_nh": false,
       "vcp": {
         "score": 28,
@@ -17132,18 +17220,70 @@
           {
             "hi_date": "2026-08-18",
             "lo_date": "2026-08-25",
-            "high": 21.67,
-            "low": 19.42,
+            "high": 21.58,
+            "low": 19.34,
             "depth_pct": 10.4,
             "vol_ratio": 0.87
           }
         ],
-        "pivot": 21.67,
-        "stop": 19.42,
+        "pivot": 21.58,
+        "stop": 19.34,
         "final_depth_pct": 10.4,
         "vol_declining": false,
         "dryup": false,
         "base_days": 18
+      }
+    },
+    {
+      "ticker": "ZYME",
+      "name": "Zymeworks Inc.",
+      "rs_rank": 71,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 26.24,
+      "ma50": 25.66,
+      "ma150": 25.08,
+      "ma200": 25.05,
+      "high52": 31.34,
+      "low52": 14.88,
+      "pct_off_high": -16.3,
+      "pct_above_low": 76.3,
+      "rs_nh": false,
+      "vcp": {
+        "score": 24,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-07-09",
+            "lo_date": "2026-08-03",
+            "high": 27.41,
+            "low": 21.52,
+            "depth_pct": 21.5,
+            "vol_ratio": 0.65
+          },
+          {
+            "hi_date": "2026-09-03",
+            "lo_date": "2026-09-11",
+            "high": 31.34,
+            "low": 26.03,
+            "depth_pct": 16.9,
+            "vol_ratio": 1.06
+          }
+        ],
+        "pivot": 31.34,
+        "stop": 26.03,
+        "final_depth_pct": 16.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 46
       }
     },
     {
@@ -17347,6 +17487,50 @@
       }
     },
     {
+      "ticker": "CFR",
+      "name": "Cullen/Frost Bankers, Inc. Common Stock",
+      "rs_rank": 70,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 162.92,
+      "ma50": 162.04,
+      "ma150": 146.68,
+      "ma200": 142.36,
+      "high52": 169.71,
+      "low52": 115.6,
+      "pct_off_high": -4.0,
+      "pct_above_low": 40.9,
+      "rs_nh": false,
+      "vcp": {
+        "score": 35,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-17",
+            "lo_date": "2026-09-02",
+            "high": 169.71,
+            "low": 157.64,
+            "depth_pct": 7.1,
+            "vol_ratio": 0.79
+          }
+        ],
+        "pivot": 169.71,
+        "stop": 157.64,
+        "final_depth_pct": 7.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 19
+      }
+    },
+    {
       "ticker": "DCOM",
       "name": "Dime Commercial Bancshares, Inc. Common Stock",
       "rs_rank": 70,
@@ -17523,6 +17707,50 @@
       }
     },
     {
+      "ticker": "AVNT",
+      "name": "Avient Corporation Common Stock",
+      "rs_rank": 70,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 41.41,
+      "ma50": 40.35,
+      "ma150": 37.68,
+      "ma200": 36.33,
+      "high52": 46.33,
+      "low52": 26.64,
+      "pct_off_high": -10.6,
+      "pct_above_low": 55.4,
+      "rs_nh": false,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-11",
+            "lo_date": "2026-09-10",
+            "high": 46.33,
+            "low": 40.85,
+            "depth_pct": 11.8,
+            "vol_ratio": 0.91
+          }
+        ],
+        "pivot": 46.33,
+        "stop": 40.85,
+        "final_depth_pct": 11.8,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
+      }
+    },
+    {
       "ticker": "HCC",
       "name": "Warrior Met Coal, Inc. Common Stock",
       "rs_rank": 70,
@@ -17555,7 +17783,7 @@
             "high": 111.42,
             "low": 96.0,
             "depth_pct": 13.8,
-            "vol_ratio": 0.71
+            "vol_ratio": 0.72
           }
         ],
         "pivot": 111.42,
