@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-25T00:29:43.988811",
+  "generated_at": "2026-09-26T00:34:57.889197",
   "data_date": "2026-09-23",
   "market": "kr",
   "universe": "한국 전 종목 (KOSPI·KOSDAQ, 1,000원+, 유동성 필터)",
   "universe_size": 2553,
-  "analyzed": 1452,
+  "analyzed": 1453,
   "passed": 69,
   "results": [
     {
@@ -961,7 +961,7 @@
       "ma150": 251945.35,
       "ma200": 222131.75,
       "high52": 374087.45,
-      "low52": 70712.63,
+      "low52": 70712.62,
       "pct_off_high": -23.7,
       "pct_above_low": 303.7,
       "rs_nh": true,
@@ -1049,7 +1049,7 @@
     {
       "ticker": "241710.KQ",
       "name": "코스메카코리아",
-      "rs_rank": 95,
+      "rs_rank": 94,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1519,50 +1519,6 @@
       }
     },
     {
-      "ticker": "053260.KQ",
-      "name": "금강철강",
-      "rs_rank": 90,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 6960.0,
-      "ma50": 5736.4,
-      "ma150": 5317.5,
-      "ma200": 4970.23,
-      "high52": 9170.0,
-      "low52": 3720.0,
-      "pct_off_high": -24.1,
-      "pct_above_low": 87.1,
-      "rs_nh": false,
-      "vcp": {
-        "score": 38,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-11",
-            "lo_date": "2026-08-25",
-            "high": 7040.0,
-            "low": 5040.0,
-            "depth_pct": 28.4,
-            "vol_ratio": 1.62
-          }
-        ],
-        "pivot": 7040.0,
-        "stop": 5040.0,
-        "final_depth_pct": 28.4,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 31
-      }
-    },
-    {
       "ticker": "006360.KS",
       "name": "GS건설",
       "rs_rank": 90,
@@ -1656,6 +1612,50 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 8
+      }
+    },
+    {
+      "ticker": "053260.KQ",
+      "name": "금강철강",
+      "rs_rank": 89,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 6960.0,
+      "ma50": 5736.4,
+      "ma150": 5317.5,
+      "ma200": 4970.23,
+      "high52": 9170.0,
+      "low52": 3720.0,
+      "pct_off_high": -24.1,
+      "pct_above_low": 87.1,
+      "rs_nh": false,
+      "vcp": {
+        "score": 38,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-11",
+            "lo_date": "2026-08-25",
+            "high": 7040.0,
+            "low": 5040.0,
+            "depth_pct": 28.4,
+            "vol_ratio": 1.62
+          }
+        ],
+        "pivot": 7040.0,
+        "stop": 5040.0,
+        "final_depth_pct": 28.4,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 31
       }
     },
     {
@@ -2415,9 +2415,53 @@
       }
     },
     {
+      "ticker": "041960.KQ",
+      "name": "코미팜",
+      "rs_rank": 83,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 9850.0,
+      "ma50": 8624.6,
+      "ma150": 8474.33,
+      "ma200": 8176.65,
+      "high52": 10790.0,
+      "low52": 5650.0,
+      "pct_off_high": -8.7,
+      "pct_above_low": 74.3,
+      "rs_nh": false,
+      "vcp": {
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-24",
+            "lo_date": "2026-09-02",
+            "high": 9940.0,
+            "low": 8200.0,
+            "depth_pct": 17.5,
+            "vol_ratio": 1.23
+          }
+        ],
+        "pivot": 9940.0,
+        "stop": 8200.0,
+        "final_depth_pct": 17.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 23
+      }
+    },
+    {
       "ticker": "003490.KS",
       "name": "대한항공",
-      "rs_rank": 83,
+      "rs_rank": 82,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -2464,50 +2508,6 @@
         "vol_declining": false,
         "dryup": false,
         "base_days": 35
-      }
-    },
-    {
-      "ticker": "041960.KQ",
-      "name": "코미팜",
-      "rs_rank": 83,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 9850.0,
-      "ma50": 8624.6,
-      "ma150": 8474.33,
-      "ma200": 8176.65,
-      "high52": 10790.0,
-      "low52": 5650.0,
-      "pct_off_high": -8.7,
-      "pct_above_low": 74.3,
-      "rs_nh": false,
-      "vcp": {
-        "score": 23,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-24",
-            "lo_date": "2026-09-02",
-            "high": 9940.0,
-            "low": 8200.0,
-            "depth_pct": 17.5,
-            "vol_ratio": 1.23
-          }
-        ],
-        "pivot": 9940.0,
-        "stop": 8200.0,
-        "final_depth_pct": 17.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 23
       }
     },
     {
@@ -3095,9 +3095,53 @@
       }
     },
     {
+      "ticker": "443060.KS",
+      "name": "HD현대마린솔루션",
+      "rs_rank": 77,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 239000.0,
+      "ma50": 208517.15,
+      "ma150": 207336.89,
+      "ma200": 201699.71,
+      "high52": 284730.79,
+      "low52": 155394.78,
+      "pct_off_high": -16.1,
+      "pct_above_low": 53.8,
+      "rs_nh": false,
+      "vcp": {
+        "score": 21,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-11",
+            "lo_date": "2026-09-15",
+            "high": 254000.0,
+            "low": 225500.0,
+            "depth_pct": 11.2,
+            "vol_ratio": 1.84
+          }
+        ],
+        "pivot": 254000.0,
+        "stop": 225500.0,
+        "final_depth_pct": 11.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 9
+      }
+    },
+    {
       "ticker": "294870.KS",
       "name": "IPARK현대산업개발",
-      "rs_rank": 77,
+      "rs_rank": 76,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -3144,50 +3188,6 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 42
-      }
-    },
-    {
-      "ticker": "443060.KS",
-      "name": "HD현대마린솔루션",
-      "rs_rank": 77,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 239000.0,
-      "ma50": 208517.15,
-      "ma150": 207336.89,
-      "ma200": 201699.71,
-      "high52": 284730.79,
-      "low52": 155394.79,
-      "pct_off_high": -16.1,
-      "pct_above_low": 53.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 21,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-11",
-            "lo_date": "2026-09-15",
-            "high": 254000.0,
-            "low": 225500.0,
-            "depth_pct": 11.2,
-            "vol_ratio": 1.84
-          }
-        ],
-        "pivot": 254000.0,
-        "stop": 225500.0,
-        "final_depth_pct": 11.2,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 9
       }
     },
     {
