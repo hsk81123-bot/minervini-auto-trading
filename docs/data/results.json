@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-29T01:36:24.206838",
-  "data_date": "2026-09-28",
+  "generated_at": "2026-09-30T01:14:46.191050",
+  "data_date": "2026-09-29",
   "market": "us",
   "universe": "US 전 종목 ($10+, 유동성 필터)",
   "universe_size": 5156,
@@ -3631,6 +3631,50 @@
       }
     },
     {
+      "ticker": "XMTR",
+      "name": "Xometry, Inc.",
+      "rs_rank": 94,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 103.14,
+      "ma50": 91.42,
+      "ma150": 74.73,
+      "ma200": 71.53,
+      "high52": 107.93,
+      "low52": 35.86,
+      "pct_off_high": -4.4,
+      "pct_above_low": 187.6,
+      "rs_nh": true,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-08-27",
+            "lo_date": "2026-09-09",
+            "high": 98.71,
+            "low": 83.0,
+            "depth_pct": 15.9,
+            "vol_ratio": 0.68
+          }
+        ],
+        "pivot": 98.71,
+        "stop": 83.0,
+        "final_depth_pct": 15.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 22
+      }
+    },
+    {
       "ticker": "FIVN",
       "name": "Five9, Inc.",
       "rs_rank": 94,
@@ -4139,50 +4183,6 @@
       }
     },
     {
-      "ticker": "XMTR",
-      "name": "Xometry, Inc.",
-      "rs_rank": 93,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 103.14,
-      "ma50": 91.42,
-      "ma150": 74.73,
-      "ma200": 71.53,
-      "high52": 107.93,
-      "low52": 35.86,
-      "pct_off_high": -4.4,
-      "pct_above_low": 187.6,
-      "rs_nh": true,
-      "vcp": {
-        "score": 13,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-27",
-            "lo_date": "2026-09-09",
-            "high": 98.71,
-            "low": 83.0,
-            "depth_pct": 15.9,
-            "vol_ratio": 0.68
-          }
-        ],
-        "pivot": 98.71,
-        "stop": 83.0,
-        "final_depth_pct": 15.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 22
-      }
-    },
-    {
       "ticker": "MLAB",
       "name": "Mesa Laboratories, Inc.",
       "rs_rank": 92,
@@ -4535,7 +4535,7 @@
             "high": 79.76,
             "low": 74.02,
             "depth_pct": 7.2,
-            "vol_ratio": 0.97
+            "vol_ratio": 1.0
           }
         ],
         "pivot": 79.76,
@@ -5055,66 +5055,6 @@
       }
     },
     {
-      "ticker": "MTRN",
-      "name": "Materion Corporation",
-      "rs_rank": 91,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 261.99,
-      "ma50": 248.79,
-      "ma150": 215.24,
-      "ma200": 196.13,
-      "high52": 304.4,
-      "low52": 109.25,
-      "pct_off_high": -13.9,
-      "pct_above_low": 139.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 61,
-        "count": 3,
-        "contractions": [
-          {
-            "hi_date": "2026-08-05",
-            "lo_date": "2026-08-21",
-            "high": 304.4,
-            "low": 225.58,
-            "depth_pct": 25.9,
-            "vol_ratio": 0.94
-          },
-          {
-            "hi_date": "2026-08-28",
-            "lo_date": "2026-09-01",
-            "high": 259.7,
-            "low": 225.89,
-            "depth_pct": 13.0,
-            "vol_ratio": 0.62
-          },
-          {
-            "hi_date": "2026-09-09",
-            "lo_date": "2026-09-15",
-            "high": 261.24,
-            "low": 234.87,
-            "depth_pct": 10.1,
-            "vol_ratio": 0.89
-          }
-        ],
-        "pivot": 261.24,
-        "stop": 234.87,
-        "final_depth_pct": 10.1,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 38
-      }
-    },
-    {
       "ticker": "PAYC",
       "name": "Paycom Software, Inc. Common Stock",
       "rs_rank": 91,
@@ -5216,6 +5156,66 @@
         "vol_declining": true,
         "dryup": false,
         "base_days": 26
+      }
+    },
+    {
+      "ticker": "MTRN",
+      "name": "Materion Corporation",
+      "rs_rank": 91,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 261.99,
+      "ma50": 248.79,
+      "ma150": 215.24,
+      "ma200": 196.13,
+      "high52": 304.4,
+      "low52": 109.25,
+      "pct_off_high": -13.9,
+      "pct_above_low": 139.8,
+      "rs_nh": false,
+      "vcp": {
+        "score": 46,
+        "count": 3,
+        "contractions": [
+          {
+            "hi_date": "2026-08-05",
+            "lo_date": "2026-08-21",
+            "high": 304.4,
+            "low": 225.58,
+            "depth_pct": 25.9,
+            "vol_ratio": 0.94
+          },
+          {
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-09-01",
+            "high": 259.7,
+            "low": 225.89,
+            "depth_pct": 13.0,
+            "vol_ratio": 0.62
+          },
+          {
+            "hi_date": "2026-09-09",
+            "lo_date": "2026-09-15",
+            "high": 261.24,
+            "low": 234.87,
+            "depth_pct": 10.1,
+            "vol_ratio": 0.89
+          }
+        ],
+        "pivot": 261.24,
+        "stop": 234.87,
+        "final_depth_pct": 10.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 38
       }
     },
     {
@@ -7070,7 +7070,7 @@
             "high": 16.51,
             "low": 15.38,
             "depth_pct": 6.8,
-            "vol_ratio": 0.74
+            "vol_ratio": 0.75
           }
         ],
         "pivot": 16.51,
@@ -9398,7 +9398,7 @@
             "high": 59.41,
             "low": 55.64,
             "depth_pct": 6.3,
-            "vol_ratio": 1.11
+            "vol_ratio": 1.14
           }
         ],
         "pivot": 59.41,
@@ -11578,7 +11578,7 @@
             "high": 90.39,
             "low": 85.27,
             "depth_pct": 5.7,
-            "vol_ratio": 0.79
+            "vol_ratio": 0.8
           }
         ],
         "pivot": 90.39,
@@ -12981,7 +12981,7 @@
             "high": 26.75,
             "low": 22.82,
             "depth_pct": 14.7,
-            "vol_ratio": 1.31
+            "vol_ratio": 1.32
           }
         ],
         "pivot": 26.75,
