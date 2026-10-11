@@ -170,3 +170,29 @@ q4 = qs["2025Q4"]
 assert abs(q4["revenue"]/T - (333.61 - 239.77)) < 0.02, q4["revenue"]/T
 ok(f"복원 후에도 4분기 역산 정상: {q4['revenue']/T:.1f}조")
 print("\n전체 통과")
+
+# 8) 차단기 — 연결이 죽은 호스트를 계속 두드리지 않는다
+class _Timeout(req.RequestException):
+    pass
+
+tries = {"n": 0, "timeouts": set()}
+def _always_timeout(url, headers=None, params=None, timeout=None):
+    tries["n"] += 1
+    tries["timeouts"].add(timeout)
+    raise _Timeout("connect timed out")
+req.get = _always_timeout
+F.time.sleep = lambda s: None
+F._fails.clear(); F._tripped.clear()
+
+URL = "https://opendart.fss.or.kr/api/fnlttSinglAcnt.json"
+for i in range(8):
+    F.http_get(URL, params={"i": i})
+assert F.host_down(URL), "차단기가 열리지 않았다"
+assert tries["n"] == F.FAIL_LIMIT * 2, tries["n"]   # 2회 재시도 x 5건 후 중단
+ok(f"차단기: {F.FAIL_LIMIT}건 연속 실패 후 호출 중단 (8건 요청 → 시도 {tries['n']}회)")
+assert tries["timeouts"] == {F.TIMEOUT} and F.TIMEOUT[0] <= 5
+ok(f"타임아웃 분리: 연결 {F.TIMEOUT[0]}초 / 응답 {F.TIMEOUT[1]}초")
+assert not F.host_down("https://data.sec.gov/x")
+ok("차단기는 호스트별로 독립")
+F._fails.clear(); F._tripped.clear()
+print("\n전체 통과")

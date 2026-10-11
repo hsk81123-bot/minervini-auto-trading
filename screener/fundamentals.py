@@ -39,6 +39,15 @@ SEC_HEADERS = {
 SEC_SLEEP = 0.12          # SEC 권장 초당 10회 → 여유를 둔다
 DART_SLEEP = 0.05         # 일 20,000회라 여유롭다
 
+# 연결이 죽은 호스트를 오래 기다리지 않는다. 연결은 5초, 응답은 30초.
+# (DART가 연결을 받지 않을 때 30초 x 3회를 호출마다 기다려 실행이 1시간으로 늘었다)
+TIMEOUT = (5, 30)
+# 한 호스트가 연속으로 이만큼 실패하면 그 호스트 호출을 그만둔다.
+# 죽은 서버를 400종목 내내 두드리는 것을 막는 차단기다.
+FAIL_LIMIT = 5
+_fails: dict[str, int] = {}
+_tripped: set[str] = set()
+
 QUARTERS_KEEP = 12        # 저장할 분기 수 (성장률 계산에 최소 8개 필요)
 YEARS_KEEP = 5            # 저장할 회계연도 수
 
@@ -75,25 +84,50 @@ def _d(s: str) -> date:
     return date(int(y), int(m), int(dd))
 
 
+def host_of(url: str) -> str:
+    return url.split("/")[2] if "//" in url else url
+
+
+def host_down(url: str) -> bool:
+    """차단기가 열린 호스트인지."""
+    return host_of(url) in _tripped
+
+
 def http_get(url: str, headers: dict | None = None, params: dict | None = None,
-             quiet_404: bool = False, retries: int = 3):
-    """재시도 포함 GET. 404는 재시도하지 않는다 (Phase 0 확인)."""
+             quiet_404: bool = False, retries: int = 2):
+    """재시도 포함 GET.
+
+    - 404는 '없다'는 뜻이므로 재시도하지 않는다 (Phase 0 확인)
+    - 연결 자체가 안 되는 호스트는 FAIL_LIMIT번 연속 실패 후 포기한다.
+      안 그러면 호출마다 타임아웃을 기다려 실행이 몇 시간으로 늘어난다
+    """
+    host = host_of(url)
+    if host in _tripped:
+        return None
     for attempt in range(1, retries + 1):
         try:
-            r = requests.get(url, headers=headers, params=params, timeout=30)
+            r = requests.get(url, headers=headers, params=params,
+                             timeout=TIMEOUT)
             if r.status_code == 200:
+                _fails[host] = 0
                 return r
             if r.status_code == 404:
+                _fails[host] = 0        # 서버는 살아 있다
                 if not quiet_404:
                     print(f"    404 {url[:90]}", flush=True)
                 return None
             print(f"    HTTP {r.status_code} ({attempt}/{retries}) {url[:70]}",
                   flush=True)
         except requests.RequestException as e:
-            print(f"    {type(e).__name__} ({attempt}/{retries}): {e}",
-                  flush=True)
+            print(f"    {type(e).__name__} ({attempt}/{retries}) {host}: "
+                  f"{str(e)[:120]}", flush=True)
         if attempt < retries:
             time.sleep(2 ** attempt)
+    _fails[host] = _fails.get(host, 0) + 1
+    if _fails[host] >= FAIL_LIMIT:
+        _tripped.add(host)
+        print(f"  !! {host} 연속 {FAIL_LIMIT}회 실패 → 이 실행에서는 "
+              f"더 호출하지 않는다", flush=True)
     return None
 
 
@@ -374,6 +408,10 @@ def fetch_kr(ticker: str, corp: str, key: str, years: list[int]) -> dict:
     """
     quarters, annuals, basis_notes = [], [], {}
     for year in years:
+        if host_down("https://opendart.fss.or.kr/"):
+            print(f"  [{ticker}] DART 호출 중단 — 남은 연도 건너뜀", flush=True)
+            break
+        print(f"  [{ticker}] {year} 조회...", flush=True)
         year_q: dict[int, dict] = {}
         year_cum: dict[int, dict] = {}
         for reprt, qno in KR_REPORTS.items():
