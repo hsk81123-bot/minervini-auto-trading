@@ -75,8 +75,10 @@ def main() -> None:
 
     hist_dir = DATA_DIR / cfg["hist"]
     hist_dir.mkdir(parents=True, exist_ok=True)
+    # 지표를 못 뽑은 경우(상장 1년 미만)에도 온디맨드 플래그는 남겨야
+    # 일일 스크리너의 정리 단계에서 살아남는다.
     export_history(ticker, df, bc, hist_dir,
-                   extra={"meta": meta} if meta else None)
+                   extra={"meta": meta} if meta else {"ondemand": True})
     print(f"exported {ticker} -> {cfg['hist']}/{ticker}.json "
           f"(meta={'yes' if meta else 'no'})")
 

@@ -267,6 +267,22 @@ _WIN_RESERVED = ({"CON", "PRN", "AUX", "NUL"}
                  | {f"LPT{i}" for i in range(1, 10)})
 
 
+def is_ondemand_chart(path: Path) -> bool:
+    """온디맨드로 생성된 이력 JSON인지 판별.
+    ondemand.py가 meta.ondemand(지표 포함) 또는 최상위 ondemand(차트만) 플래그를
+    남긴다. 일일 정리에서 이런 파일은 지우지 않는다."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        if not isinstance(d, dict):
+            return False
+        meta = d.get("meta")
+        return bool(d.get("ondemand")
+                    or (isinstance(meta, dict) and meta.get("ondemand")))
+    except (OSError, json.JSONDecodeError):
+        return False
+
+
 def export_history(ticker: str, df: pd.DataFrame, bench_close: pd.Series,
                    hist_dir: Path, extra: dict | None = None) -> None:
     """심층 분석 페이지의 3단 차트(RS/벤치마크/가격·거래량)용 이력 JSON.
@@ -366,9 +382,18 @@ def main(market: str) -> None:
     data5 = download_history([r["ticker"] for r in export],
                              period="5y", min_len=1)
     hist_dir.mkdir(parents=True, exist_ok=True)
-    # 이전 실행의 잔여 파일 제거 (통과 종목이 바뀌므로)
+    # 이전 실행의 잔여 파일 제거 (통과 종목이 바뀌므로).
+    # 단 온디맨드 생성분은 보존한다 — '자체 차트 생성' 버튼은 미통과 종목에만
+    # 뜨므로, 여기서 지우면 사용자가 만든 차트가 다음 실행마다 사라진다.
+    # (통과 종목이 되면 아래 export가 덮어쓰며 스크리너 관리로 넘어간다)
+    kept = 0
     for old in hist_dir.glob("*.json"):
+        if is_ondemand_chart(old):
+            kept += 1
+            continue
         old.unlink()
+    if kept:
+        print(f"  온디맨드 생성 차트 {kept}개 보존", flush=True)
     for r in export:
         export_history(r["ticker"], data5.get(r["ticker"], data[r["ticker"]]),
                        bench_close, hist_dir)
