@@ -65,9 +65,16 @@ jobs:
             exit 0
           fi
           git commit -m "screener: update results $(date -u +%F) ($markets)"
-          # 실행 중 다른 커밋이 푸시됐을 수 있으므로 rebase 후 푸시 (최대 3회 재시도)
+          # 실행 중 다른 커밋(온디맨드 차트 등)이 푸시됐을 수 있으므로 rebase 후 푸시.
+          # 같은 데이터 파일을 양쪽이 건드리면 충돌하는데, 이 경우 방금 돌린
+          # 스크리너 산출물이 최신이므로 그쪽을 택한다
+          # (rebase에서 theirs = 재생되는 커밋 = 이번 실행의 결과).
+          # 충돌로 rebase가 멈춘 상태를 abort하지 않으면 다음 재시도도 바로 실패한다.
           for i in 1 2 3; do
-            git pull --rebase origin main && git push && exit 0
+            if git pull --rebase --strategy-option=theirs origin main && git push; then
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
             echo "push failed, retrying ($i/3)..."
             sleep 10
           done
