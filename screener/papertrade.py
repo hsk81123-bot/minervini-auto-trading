@@ -72,6 +72,11 @@ def fx_series(start: str) -> dict[str, float]:
             for r in fetch_ohlc([FX_TICKER], start).get(FX_TICKER, [])}
 
 
+def price(v: float) -> str:
+    """가격 표기 — 원화 수천원대와 달러 소수점을 한 함수로 읽히게."""
+    return f"{v:,.0f}" if abs(v) >= 1000 else f"{v:,.2f}"
+
+
 def at_or_before(series: dict[str, float], d: str) -> float | None:
     if not series:
         return None
@@ -102,19 +107,22 @@ def simulate(rows: list[dict], entry_date: str, stop_pct: float,
     target = entry * (1 + target_pct / 100)
 
     for r in rows[idx + 1:]:
-        both = r["low"] <= stop and r["high"] >= target
+        # 갭 체결은 시가에서 끝난다. 그 날의 저가·고가는 체결 뒤의 일이므로
+        # '순서 모호'(both_hit) 표시를 붙이지 않는다.
         if r["open"] <= stop:
             return _exit(entry, rows[idx]["date"], r["date"], r["open"],
-                         "손절", "갭하락 시가 체결", both)
+                         "손절", "갭하락 시가 체결", False)
         if r["open"] >= target:
             return _exit(entry, rows[idx]["date"], r["date"], r["open"],
-                         "익절", "갭상승 시가 체결", both)
+                         "익절", "갭상승 시가 체결", False)
+        # 장중 체결은 일봉으로 순서를 알 수 없는 경우가 있다 — 그때만 표시한다.
+        both = r["low"] <= stop and r["high"] >= target
         if r["low"] <= stop:
             return _exit(entry, rows[idx]["date"], r["date"], stop,
-                         "손절", f"저가 {r['low']:.4g} ≤ 손절선", both)
+                         "손절", f"저가 {price(r['low'])} ≤ 손절선", both)
         if r["high"] >= target:
             return _exit(entry, rows[idx]["date"], r["date"], target,
-                         "익절", f"고가 {r['high']:.4g} ≥ 익절선", both)
+                         "익절", f"고가 {price(r['high'])} ≥ 익절선", both)
 
     last = rows[-1]
     return {"status": "보유", "reason": "손절·익절 모두 미도달",
