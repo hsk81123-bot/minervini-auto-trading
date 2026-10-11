@@ -236,6 +236,34 @@ def derive_q4(quarters: list[dict], annuals: list[dict]) -> list[dict]:
     return sorted(out, key=lambda r: r["end"], reverse=True)
 
 
+def flag_anomalies(doc: dict) -> dict:
+    """있을 수 없거나 드문 값에 표시를 남긴다. 값은 고치지 않는다.
+
+    DART 주요계정은 같은 계정이 중복 행으로 오고(지배지분/총액 등) 비경상 손익이
+    섞여, 순이익이 매출을 넘는 분기가 나올 수 있다. 자동으로 고치면 멀쩡한
+    비경상 이익을 지워버리므로, 표시만 하고 판단은 지표 계산 단계로 넘긴다.
+    """
+    flags = []
+    for q in doc.get("quarters", []):
+        rev = q.get("revenue")
+        if not rev or rev <= 0:
+            continue
+        op, ni = q.get("operating_income"), q.get("net_income")
+        if op is not None and op > rev:
+            flags.append(f"{q.get('label') or q['end']}: 영업이익>매출")
+        if ni is not None and abs(ni) > rev:
+            flags.append(f"{q.get('label') or q['end']}: |순이익|>매출")
+        if op is not None and 0 < rev and op / rev > 0.6:
+            flags.append(f"{q.get('label') or q['end']}: 영업이익률 "
+                         f"{op / rev * 100:.0f}%")
+    if flags:
+        doc["anomalies"] = flags
+        print(f"  ! 확인 필요: {'; '.join(flags[:6])}"
+              + (f" (외 {len(flags) - 6}건)" if len(flags) > 6 else ""),
+              flush=True)
+    return doc
+
+
 def round_floats(doc: dict) -> dict:
     """소수 값만 4자리로 맞춘다 (금액은 정수라 영향 없음)."""
     for group in ("quarters", "annuals"):
@@ -496,6 +524,7 @@ def out_path(ticker: str) -> Path:
 
 def save(doc: dict) -> Path:
     round_floats(doc)
+    flag_anomalies(doc)
     path = out_path(doc["ticker"])
     with open(path, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))

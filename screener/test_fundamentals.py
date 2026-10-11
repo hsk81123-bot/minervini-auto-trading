@@ -169,7 +169,7 @@ ok("누적 교차검증: 누적이 들어오면 차분으로 분기값 복원")
 q4 = qs["2025Q4"]
 assert abs(q4["revenue"]/T - (333.61 - 239.77)) < 0.02, q4["revenue"]/T
 ok(f"복원 후에도 4분기 역산 정상: {q4['revenue']/T:.1f}조")
-print("\n전체 통과")
+
 
 # 8) 차단기 — 연결이 죽은 호스트를 계속 두드리지 않는다
 class _Timeout(req.RequestException):
@@ -195,4 +195,25 @@ ok(f"타임아웃 분리: 연결 {F.TIMEOUT[0]}초 / 응답 {F.TIMEOUT[1]}초")
 assert not F.host_down("https://data.sec.gov/x")
 ok("차단기는 호스트별로 독립")
 F._fails.clear(); F._tripped.clear()
+print("\n전체 통과")
+
+# 9) 이상치 표시 — 값은 고치지 않고 표시만 한다
+doc = {"quarters": [
+    {"label": "2026Q2", "revenue": 79.32e12, "operating_income": 60.54e12,
+     "net_income": 93.92e12},                                   # 실제로 나온 사례
+    {"label": "2025Q3", "revenue": 24.45e12, "operating_income": 11.38e12,
+     "net_income": 12.60e12},                                   # 정상 (OPM 47%)
+    {"label": "2024Q1", "revenue": None, "operating_income": 5e12},  # 매출 없음
+]}
+F.flag_anomalies(doc)
+flags = " | ".join(doc["anomalies"])
+assert "2026Q2: |순이익|>매출" in flags, flags
+assert "2026Q2: 영업이익률 76%" in flags, flags
+assert "2025Q3" not in flags, flags          # 정상 분기는 표시하지 않는다
+assert doc["quarters"][0]["net_income"] == 93.92e12   # 값은 그대로
+ok("이상치 표시: |순이익|>매출·영업이익률 60%+ 만 표시하고 값은 보존")
+clean = {"quarters": [{"label": "x", "revenue": 100, "operating_income": 20, "net_income": 15}]}
+F.flag_anomalies(clean)
+assert "anomalies" not in clean
+ok("이상치 표시: 정상 데이터에는 키를 만들지 않는다")
 print("\n전체 통과")
