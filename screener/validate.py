@@ -29,9 +29,13 @@
   6. 미래를 쓰지 않는다
      진입 종목은 그 날 커밋된 스냅샷에서만, 손절선은 전일까지의 고가로만.
      (backtest.py / papertrade.py가 같은 규칙을 공유한다)
-  7. 끝나지 않은 거래를 성과로 세지 않는다
-     아직 보유 중인 거래는 따로 집계한다. 미실현 이익을 실현 성과에 섞으면
-     최근 상승분이 그대로 수익률로 들어온다.
+  7. 실현과 미실현을 둘 다 낸다 — 어느 한쪽만 보면 규칙을 잘못 고른다
+     '실현만'은 미실현 이익이 섞이지 않지만, 고정 익절이 없는 규칙에 불리하다.
+     승자는 창 끝까지 열려 있고 닫히는 건 손절뿐이라 실현 표본이 손실만 모인다
+     (추격손절 규칙의 실현 승률이 3.8%까지 떨어지는 것이 그 때문이다).
+     '전량 청산'은 창 끝 종가로 전부 닫아 규칙끼리 같은 조건에서 비교한다.
+     대신 미실현 평가가 들어간다. 그래서 둘을 나란히 두고, 규칙 간 비교는
+     전량 청산으로, 실제 확정 성과는 실현으로 읽는다. 판정도 둘 다 본다.
 
 사용법:
     python screener/validate.py                      # 미국, 기본 규칙
@@ -113,6 +117,16 @@ def split_closed(trades: list[dict]) -> tuple[list[dict], list[dict]]:
     return closed, open_
 
 
+def marked(trades: list[dict]) -> list[dict]:
+    """전량 청산 기준 — 보유 중인 거래도 창 끝 종가로 닫은 것으로 본다.
+
+    simulate()가 보유 중 거래에도 마지막 종가 기준 R을 넣어주므로 그대로 쓴다.
+    규칙끼리 비교할 때 쓰는 기준이다. 고정 익절이 없는 규칙은 승자가 창 끝까지
+    열려 있어 '실현만'으로 보면 손실 표본만 남는다.
+    """
+    return [t for t in trades if t.get("r_multiple") is not None]
+
+
 def by_cohort(trades: list[dict]) -> dict[str, float]:
     """코호트별 기대값 — 특정 진입일만 좋았는지 본다 (방침 1)."""
     g: dict[str, list[float]] = {}
@@ -123,7 +137,7 @@ def by_cohort(trades: list[dict]) -> dict[str, float]:
 
 
 # ---------------------------------------------------------------- 출력
-def verdict(m: dict) -> str:
+def verdict(m: dict, basis: str = "") -> str:
     """표본이 모자라면 판정을 내지 않는다 (방침 4)."""
     n = m.get("measured", 0)
     if n < MIN_TRADES:
@@ -138,41 +152,59 @@ def verdict(m: dict) -> str:
     return "기대값 음수 — 이 규칙으로는 굴릴 수 없다"
 
 
-def show(label: str, trades: list[dict], bench: float | None = None) -> dict:
-    closed, open_ = split_closed(trades)
-    m = P.perf(closed)
-    print(f"\n  [{label}]  실현 {len(closed)}거래 · 보유 중 {len(open_)}건")
+def _block(basis: str, sims: list[dict], bench: float | None) -> dict:
+    """한 기준(전량 청산 / 실현만)의 수치 한 덩어리."""
+    m = P.perf(sims)
     if "expectancy_r" not in m:
-        print(f"    실현 거래 없음")
-        return {"perf": m, "open": len(open_)}
-    print(f"    기대값 {P.rfmt(m['expectancy_r'])}/거래 · 중앙값 "
-          f"{P.rfmt(m['median_r'])} · 승률 {m['win_rate'] * 100:.1f}%")
-    print(f"    실측 손익비 "
+        print(f"    {basis}: 거래 없음")
+        return {"perf": m}
+    print(f"    {basis} {len(sims)}거래 · 기대값 {P.rfmt(m['expectancy_r'])}"
+          f" · 중앙값 {P.rfmt(m['median_r'])} · 승률 "
+          f"{m['win_rate'] * 100:.1f}%")
+    print(f"      손익비 "
           + ("정의 불가" if m["payoff"] is None else f"{m['payoff']:.2f}:1")
-          + f" (평균이익 {P.rfmt(m['avg_win_r'])} / 평균손실 "
-          + f"{P.rfmt(m['avg_loss_r'])})")
-    print(f"    최고 {P.rfmt(m['best_r'])} · 최저 {P.rfmt(m['worst_r'])} · "
-          f"평균 최대역행 {B.pct(m['avg_mae'])}")
-    ck = by_cohort(closed)
+          + f" (이익 {P.rfmt(m['avg_win_r'])} / 손실 "
+          + f"{P.rfmt(m['avg_loss_r'])}) · 최고 {P.rfmt(m['best_r'])}"
+          + f" · 최저 {P.rfmt(m['worst_r'])}")
+    ck = by_cohort(sims)
     if len(ck) > 1:
         vals = list(ck.values())
         pos = sum(1 for v in vals if v > 0)
-        print(f"    코호트 {len(ck)}개 중 기대값 양수 {pos}개 · 코호트 평균 "
+        print(f"      코호트 {len(ck)}개 중 양수 {pos}개 · 평균 "
               f"{P.rfmt(mean(vals))} · 표준편차 {pstdev(vals):.2f}R")
+    print(f"      → {verdict(m)}")
+    return {"perf": m, "by_cohort": ck, "verdict": verdict(m)}
+
+
+def show(label: str, trades: list[dict], bench: float | None = None) -> dict:
+    """전량 청산 기준과 실현만 기준을 나란히 낸다 (방침 7).
+
+    규칙끼리 비교는 전량 청산으로, 확정 성과는 실현으로 읽는다.
+    """
+    closed, open_ = split_closed(trades)
+    mk = marked(trades)
+    print(f"\n  [{label}]  전체 {len(trades)}건 = 실현 {len(closed)} + "
+          f"보유 중 {len(open_)}")
     if bench is not None:
         print(f"    같은 기간 벤치마크 {B.pct(bench)}")
-    print(f"    → {verdict(m)}")
+    a = _block("전량 청산 기준", mk, bench)
+    b = _block("실현만", closed, bench)
     if open_:
         om = P.perf(open_)
-        print(f"    (보유 중 {len(open_)}건은 위 수치에서 제외 — 평가 "
-              f"{P.rfmt(om.get('expectancy_r'))})")
-    return {"perf": m, "open": len(open_), "by_cohort": ck,
-            "verdict": verdict(m)}
+        print(f"    보유 중 {len(open_)}건 평가 "
+              f"{P.rfmt(om.get('expectancy_r'))} — 고정 익절이 없는 규칙은 "
+              f"승자가 여기 남아 '실현만'이 과소평가된다")
+    return {"marked": a, "realized": b, "open": len(open_),
+            "perf": a["perf"], "verdict": a["verdict"]}
 
 
 def grid(cohort, market, ohlc, o) -> list[dict]:
-    """손절·익절 격자. 한 칸만 좋으면 과최적화다 (방침 3)."""
-    print(f"\n  [파라미터 민감도]  이웃 칸까지 양수인 영역을 찾는다")
+    """손절·익절 격자. 한 칸만 좋으면 과최적화다 (방침 3).
+
+    전량 청산 기준으로 센다. '실현만'으로 세면 고정 익절이 없는 칸이
+    손실 표본만 남아 -1R로 깔리고, 격자 비교가 무의미해진다.
+    """
+    print(f"\n  [파라미터 민감도]  전량 청산 기준 — 이웃 칸까지 양수인 영역")
     hdr = "  " + "손절\\익절".ljust(12) + "".join(
         f"{('없음' if t is None else f'+{t:.0f}%'):>12}" for t in GRID_TARGETS)
     print(hdr)
@@ -181,12 +213,12 @@ def grid(cohort, market, ohlc, o) -> list[dict]:
         cells = []
         for tg in GRID_TARGETS:
             oo = dict(o, stop=st, target=tg)
-            closed, _ = split_closed(run(cohort, market, ohlc, oo))
-            m = P.perf(closed)
+            mk = marked(run(cohort, market, ohlc, oo))
+            m = P.perf(mk)
             e = m.get("expectancy_r")
             cells.append(f"{e:+11.2f}R" if e is not None else "          -")
             rows.append({"stop": st, "target": tg,
-                         "expectancy_r": e, "trades": len(closed),
+                         "expectancy_r": e, "trades": len(mk),
                          "payoff": m.get("payoff")})
         print(f"  {st:+.0f}%".ljust(14) + "".join(cells))
     return rows
@@ -240,8 +272,10 @@ def main(argv: list[str]) -> int:
     a = show(f"상위 {o['top']} — 로직 적용", top_tr, bench)
     b = show(f"무작위 {o['top']} — 통과 종목 중 무작위 (대조군)", rnd_tr, bench)
 
-    ea = a["perf"].get("expectancy_r")
-    eb = b["perf"].get("expectancy_r")
+    # 순위 기여도 비교는 전량 청산 기준으로 — 두 집단의 보유 비중이 다르면
+    # '실현만'끼리 비교하는 것은 서로 다른 표본을 비교하는 셈이 된다.
+    ea = a["marked"]["perf"].get("expectancy_r")
+    eb = b["marked"]["perf"].get("expectancy_r")
     if ea is not None and eb is not None:
         diff = ea - eb
         print(f"\n  [순위의 기여]  상위 {ea:+.2f}R − 무작위 {eb:+.2f}R = "
@@ -249,7 +283,7 @@ def main(argv: list[str]) -> int:
         if diff <= 0:
             print(f"    RS→VCP 순위가 무작위보다 낫지 않다. 통과 필터만 쓰고")
             print(f"    순위는 버리거나 다시 설계해야 한다.")
-        elif a["perf"]["measured"] < MIN_TRADES:
+        elif a["marked"]["perf"]["measured"] < MIN_TRADES:
             print(f"    차이는 양수지만 표본이 모자라 아직 판정할 수 없다.")
         else:
             print(f"    순위가 값을 더한다 — 다만 비용·슬리피지를 넘는지는 "

@@ -29,6 +29,15 @@ assert len(closed) == 2 and len(open_) == 1
 assert abs(P.perf(closed)["expectancy_r"] - 1.0) < 1e-9     # (−1+3)/2
 ok("split_closed: 미실현 +9R이 실현 기대값에 섞이지 않는다 (방침 7)")
 
+# 1b) 전량 청산 기준은 보유 중 거래를 창 끝 종가로 닫아 함께 센다 (방침 7)
+#     고정 익절이 없는 규칙은 승자가 열려 있어 '실현만'이 과소평가된다.
+mk = V.marked(tr)
+assert len(mk) == 3
+assert abs(P.perf(mk)["expectancy_r"] - (-1.0 + 3.0 + 9.0) / 3) < 1e-9
+assert P.perf(mk)["expectancy_r"] > P.perf(closed)["expectancy_r"]
+assert V.marked([{"status": "보유", "r_multiple": None}]) == []
+ok("marked: 전량 청산 기준 — 규칙끼리 같은 조건에서 비교하기 위한 기준 (방침 7)")
+
 # 2) 표본이 모자라면 판정하지 않는다 (방침 4)
 assert "판정 보류" in V.verdict({"measured": 10, "expectancy_r": 5.0})
 assert "판정 보류" in V.verdict({"measured": V.MIN_TRADES - 1,
