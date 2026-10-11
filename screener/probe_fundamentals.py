@@ -54,6 +54,21 @@ OTHER_TAGS = {
 }
 
 
+def why(text: str) -> str:
+    """오류 응답에서 사람이 읽을 부분만. SEC는 거부 이유를 <title>과 본문에 적는다."""
+    flat = " ".join((text or "").split())
+    import re
+    title = re.search(r"<title[^>]*>(.*?)</title>", flat, re.I)
+    if title:
+        msg = title.group(1).strip()
+        # 제목 뒤 본문에서 설명 문장도 한 줄 건진다
+        body = re.sub(r"<[^>]+>", " ", flat)
+        body = " ".join(body.split())
+        hint = body[:220]
+        return f"{msg} | {hint}" if hint else msg
+    return flat[:220] or "(본문 없음)"
+
+
 def get(url: str, **kw):
     """재시도 포함 GET. 실패하면 None."""
     for attempt in range(1, 4):
@@ -61,10 +76,8 @@ def get(url: str, **kw):
             r = requests.get(url, headers=UA, timeout=30, **kw)
             if r.status_code == 200:
                 return r
-            body = " ".join(r.text.split())[:200]
             print(f"    HTTP {r.status_code} ({attempt}/3) {url[:80]}")
-            if body:
-                print(f"      응답: {body}")
+            print(f"      이유: {why(r.text)}")
         except requests.RequestException as e:
             print(f"    {type(e).__name__} ({attempt}/3): {e}")
         time.sleep(2 ** attempt)
@@ -157,6 +170,8 @@ def probe_access() -> None:
             except requests.RequestException as e:
                 code, size = type(e).__name__, 0
             print(f"  {vname:<16} {tname:<48} {code} ({size:,}B)")
+            if code != 200 and size:
+                print(f"      이유: {why(r.text)}")
             time.sleep(0.3)
     print()
 
@@ -286,6 +301,10 @@ if __name__ == "__main__":
     if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
         sys.stdout.reconfigure(encoding="utf-8")
     which = sys.argv[1].lower() if len(sys.argv) > 1 else "all"
+    if which == "access":        # 접근 점검만 (로그가 짧아 원인 보기 쉽다)
+        print(f"User-Agent: {SEC_UA}\n")
+        probe_access()
+        sys.exit(0)
     if which in ("all", "us"):
         probe_us()
     if which in ("all", "kr"):
