@@ -515,6 +515,11 @@ def fetch_kr(ticker: str, corp: str, key: str, years: list[int]) -> dict:
 
 
 # -------------------------------------------------------------------- 저장/CLI
+def fmt_num(v) -> str:
+    """요약 출력용. 값이 없을 수 있다 — 분기 칸은 항목별로 비어 있을 수 있다."""
+    return "-" if v is None else f"{v:,.0f}"
+
+
 def out_path(ticker: str) -> Path:
     is_kr = ticker.endswith((".KS", ".KQ"))
     d = DATA_DIR / ("fundamentals_kr" if is_kr else "fundamentals")
@@ -547,7 +552,12 @@ def main(tickers: list[str], refresh: bool) -> int:
                 print(f"[{t}] CIK 매핑에 없음 — 건너뜀", flush=True)
                 failed += 1
                 continue
-            doc = fetch_us(t.upper(), cik)
+            try:
+                doc = fetch_us(t.upper(), cik)
+            except Exception as e:   # 한 종목의 문제로 전체가 멈추면 안 된다
+                print(f"[{t}] 수집 실패: {type(e).__name__}: {e}", flush=True)
+                failed += 1
+                continue
             if not doc["quarters"]:
                 print(f"[{t}] 분기 데이터를 못 받았다", flush=True)
                 failed += 1
@@ -556,7 +566,7 @@ def main(tickers: list[str], refresh: bool) -> int:
             q = doc["quarters"][0]
             print(f"[{t}] 분기 {len(doc['quarters'])} / 연간 "
                   f"{len(doc['annuals'])} | 최근 {q['end']} "
-                  f"매출 {q.get('revenue'):,.0f} | 태그 {doc['revenue_tag']} "
+                  f"매출 {fmt_num(q.get('revenue'))} | 태그 {doc['revenue_tag']} "
                   f"| 역산분기 {sum(1 for x in doc['quarters'] if x.get('derived'))}개 "
                   f"-> {path.name}", flush=True)
 
@@ -573,7 +583,12 @@ def main(tickers: list[str], refresh: bool) -> int:
                 print(f"[{t}] corp_code 매핑에 없음 — 건너뜀", flush=True)
                 failed += 1
                 continue
-            doc = fetch_kr(t, corp, key, years)
+            try:
+                doc = fetch_kr(t, corp, key, years)
+            except Exception as e:
+                print(f"[{t}] 수집 실패: {type(e).__name__}: {e}", flush=True)
+                failed += 1
+                continue
             if not doc["quarters"]:
                 print(f"[{t}] 분기 데이터를 못 받았다", flush=True)
                 failed += 1
@@ -582,8 +597,10 @@ def main(tickers: list[str], refresh: bool) -> int:
             q = doc["quarters"][0]
             print(f"[{t}] 분기 {len(doc['quarters'])} / 연간 "
                   f"{len(doc['annuals'])} | 최근 {q['label']} "
-                  f"매출 {q.get('revenue'):,.0f} -> {path.name}", flush=True)
+                  f"매출 {fmt_num(q.get('revenue'))} -> {path.name}", flush=True)
 
+    if failed:
+        print(f"\n{failed}/{len(tickers)}종목 실패", flush=True)
     return 1 if failed and failed == len(tickers) else 0
 
 

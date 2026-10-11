@@ -195,7 +195,7 @@ ok(f"타임아웃 분리: 연결 {F.TIMEOUT[0]}초 / 응답 {F.TIMEOUT[1]}초")
 assert not F.host_down("https://data.sec.gov/x")
 ok("차단기는 호스트별로 독립")
 F._fails.clear(); F._tripped.clear()
-print("\n전체 통과")
+
 
 # 9) 이상치 표시 — 값은 고치지 않고 표시만 한다
 doc = {"quarters": [
@@ -216,4 +216,10 @@ clean = {"quarters": [{"label": "x", "revenue": 100, "operating_income": 20, "ne
 F.flag_anomalies(clean)
 assert "anomalies" not in clean
 ok("이상치 표시: 정상 데이터에는 키를 만들지 않는다")
+print("\n전체 통과")
+
+# 10) 요약 출력은 값이 없어도 터지지 않는다 (NVDA에서 실제로 터졌던 경로)
+assert F.fmt_num(None) == "-"
+assert F.fmt_num(109417000000) == "109,417,000,000"
+ok("fmt_num: 값이 없는 항목(None)도 안전하게 출력")
 print("\n전체 통과")
