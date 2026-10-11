@@ -65,19 +65,42 @@ const Refresh = (() => {
     return `❌ 실패 (${run.conclusion}) — GitHub Actions 로그 확인 필요`;
   }
 
-  function poll(statusEl, btn) {
+  /** 워크플로우의 최신 런 ID — 디스패치 전에 찍어두고 새 런 판별에 쓴다. */
+  async function latestRunId(api) {
+    try {
+      const r = await fetch(`${api}/runs?per_page=1`);
+      return (await r.json()).workflow_runs?.[0]?.id ?? null;
+    } catch { return null; }
+  }
+
+  /** 디스패치로 새로 생긴 런을 반환. 아직 생성되지 않았으면 null.
+      GitHub는 dispatch 요청 후 런 생성까지 수십 초가 걸릴 수 있어서,
+      그 사이 조회되는 '이전 런'을 새 런으로 오인하면 안 된다. */
+  async function newRunSince(api, prevId, dispatchedAt) {
+    try {
+      const r = await fetch(`${api}/runs?per_page=1`);
+      const run = (await r.json()).workflow_runs?.[0];
+      if (!run || run.id === prevId) return null;
+      // prevId를 못 찍었을 때만 생성시각으로 판별 (시계 오차 2분 허용)
+      if (prevId === null &&
+          new Date(run.created_at).getTime() < dispatchedAt - 120000) return null;
+      return run;
+    } catch { return null; }
+  }
+
+  function poll(prevId) {
     if (polling) return;
     polling = true;
     const started = Date.now();
     const timer = setInterval(async () => {
       try {
-        const r = await fetch(`${API}/runs?per_page=1`);
-        const run = (await r.json()).workflow_runs?.[0];
-        if (!run) return;
+        const run = await newRunSince(API, prevId, started);
         const el = document.getElementById("refresh-status");
         if (!el) return; // 페이지 이동함
         const mins = Math.round((Date.now() - started) / 60000);
-        if (run.status !== "completed") {
+        if (!run) {
+          el.textContent = `실행 대기 중... ${mins}분 경과`;
+        } else if (run.status !== "completed") {
           el.textContent = `스크리닝 실행 중... ${mins}분 경과 (총 20~30분 소요)`;
         } else {
           clearInterval(timer);
@@ -99,6 +122,7 @@ const Refresh = (() => {
     if (err) { statusEl.textContent = err; return; }
     btn.disabled = true;
     statusEl.textContent = "실행 요청 중...";
+    const prevId = await latestRunId(API);
     try {
       const res = await fetch(`${API}/dispatches`, {
         method: "POST",
@@ -110,7 +134,7 @@ const Refresh = (() => {
       });
       if (res.status === 204) {
         statusEl.textContent = "요청 완료 — 미국+한국 전 종목 스크리닝 시작 (20~30분 소요)";
-        poll(statusEl, btn);
+        poll(prevId);
       } else if (res.status === 401 || res.status === 403) {
         await clearToken();
         statusEl.textContent = "토큰이 유효하지 않습니다 — 다시 눌러 새 토큰을 입력하세요";
@@ -135,6 +159,7 @@ const Refresh = (() => {
     if (err) { onStatus(err); return null; }
     onStatus("실행 요청 중...");
     const api = `https://api.github.com/repos/${REPO}/actions/workflows/${file}`;
+    const prevId = await latestRunId(api);
     try {
       const res = await fetch(`${api}/dispatches`, {
         method: "POST",
@@ -148,15 +173,14 @@ const Refresh = (() => {
       }
       if (res.status !== 204) { onStatus(`요청 실패: HTTP ${res.status}`); return null; }
     } catch (e) { onStatus("요청 실패: " + e.message); return null; }
-    await new Promise(r => setTimeout(r, 8000));
     const started = Date.now();
+    await new Promise(r => setTimeout(r, 8000));
     while (Date.now() - started < 15 * 60000) {
-      try {
-        const r = await fetch(`${api}/runs?per_page=1`);
-        const run = (await r.json()).workflow_runs?.[0];
-        if (run && run.status === "completed") return run.conclusion;
-        onStatus(`GitHub에서 실행 중... ${Math.round((Date.now() - started) / 1000)}초 경과`);
-      } catch { /* 일시 오류 무시 */ }
+      const run = await newRunSince(api, prevId, started);
+      if (run && run.status === "completed") return run.conclusion;
+      const sec = Math.round((Date.now() - started) / 1000);
+      onStatus(run ? `GitHub에서 실행 중... ${sec}초 경과`
+                   : `실행 대기 중... ${sec}초 경과`);
       await new Promise(r => setTimeout(r, pollSec * 1000));
     }
     onStatus("시간 초과");
