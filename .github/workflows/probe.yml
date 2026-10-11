@@ -1,0 +1,37 @@
+name: Probe Fundamentals
+
+# Phase 0 전용 — 펀더멘털 데이터 소스의 필드와 응답 모양을 확인한다.
+# 개발 환경에서는 금융 API가 네트워크 정책으로 막혀 있어 여기서만 실제 응답을 볼 수 있다.
+# 읽기 전용이라 커밋하지 않는다 (permissions: contents: read).
+
+on:
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "us | kr | all"
+        required: false
+        default: "all"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Probe
+        env:
+          # 없으면 스크립트가 한국 검증만 건너뛴다 (실패하지 않는다)
+          DART_API_KEY: ${{ secrets.DART_API_KEY }}
+        run: python screener/probe_fundamentals.py "${{ github.event.inputs.market || 'all' }}"
