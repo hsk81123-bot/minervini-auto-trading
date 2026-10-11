@@ -8,6 +8,11 @@
 ├─ .github/workflows/screener.yml   # 평일 22:00 UTC(장 마감 후) 자동 스크리닝 → results.json 커밋
 ├─ screener/
 │  ├─ screener.py                   # 트렌드 템플릿 8조건 + RS 랭킹 + VCP 후보 점수
+│  ├─ vcp.py                        # VCP(변동성 수축) 패턴 탐지
+│  ├─ fundamentals.py               # SEC EDGAR / DART 재무 수집
+│  ├─ code33.py                     # 재무 지표 + 코드33 점수
+│  ├─ ondemand.py                   # 미통과 종목 차트 온디맨드 생성
+│  ├─ backtest.py                   # 로직 검증: git 스냅샷으로 과거 추천 재현
 │  └─ requirements.txt
 ├─ docs/                            # GitHub Pages 정적 웹앱 (빌드 도구 없음)
 │  ├─ index.html                    # SPA 진입점 (해시 라우팅)
@@ -55,6 +60,32 @@ pip install -r screener/requirements.txt
 python screener/screener.py        # docs/data/results.json 생성
 python -m http.server 8000 -d docs # http://localhost:8000
 ```
+
+## 로직 검증 (백테스트)
+
+워크플로가 매일 `results.json`을 커밋하므로, git 이력 자체가 '그 날의 추천
+목록' 시계열이다. 과거 시점의 지표를 다시 계산하지 않고 당시 커밋된 파일을
+그대로 읽으므로 룩어헤드가 없다. 스냅샷이 쌓이는 만큼 검증 기간도 늘어난다.
+
+```bash
+python screener/backtest.py                 # 미국, 최근 30일
+python screener/backtest.py kr --days 90
+python screener/backtest.py us --rule last  # 사후 규칙(낙관적 상한)
+python screener/backtest.py us --no-prices  # 네트워크 없이(스냅샷 종가만)
+python screener/backtest.py us --top 20     # 오늘의 추천 상위 20
+python screener/test_backtest.py            # 단위 테스트 (네트워크 불필요)
+```
+
+**청산 규칙이 결과를 지배한다.** `gap`(기본)은 리스트에서 처음 빠진 날 매도로
+실제 운용 가능한 규칙이고, `last`는 마지막 등장일 매도다. '마지막'인지는 나중에야
+아는 사실이므로 `last`는 사후 정보가 섞인 낙관적 상한이다. 빠졌다 다시 들어오는
+종목이 많아(최근 1개월 미국 147/367) 두 규칙의 차이가 크다.
+
+**읽을 때 주의할 것:**
+- 평균은 한 종목이 지배할 수 있다. 평균과 중앙값이 벌어지면 중앙값을 본다.
+- 시나리오 B(끝까지 남은 종목)는 성과가 아니라 **생존 편향의 크기**다.
+- 수수료·슬리피지·배당·세금 미반영, 동일 비중, 종가 단일 가격.
+- 한 달은 전략 검증에 짧다. 상승·하락 국면이 모두 든 구간이어야 의미가 있다.
 
 ## Firebase 연동 (매매 기록 기기 간 동기화, 선택)
 
