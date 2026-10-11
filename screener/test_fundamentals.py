@@ -116,4 +116,57 @@ assert F.out_path("AAPL").parent.name == "fundamentals"
 assert F.out_path("005930.KS").parent.name == "fundamentals_kr"
 assert F.out_path("247540.KQ").parent.name == "fundamentals_kr"
 ok("out_path: 시장별 디렉터리 분리")
+
+
+# 7) 누적 교차검증 — 당해값 그대로 쓰는 경우 (Phase 0의 삼성전자 2025)
+def rows_for(rev, op, ni, rev_c=None, op_c=None, ni_c=None):
+    def row(nm, a, c):
+        r = {"fs_div": "CFS", "sj_div": "IS", "account_nm": nm,
+             "thstrm_amount": f"{int(a):,}"}
+        if c is not None:
+            r["thstrm_add_amount"] = f"{int(c):,}"
+        return r
+    return [row("매출액", rev, rev_c), row("영업이익", op, op_c),
+            row("당기순이익(손실)", ni, ni_c)]
+
+T = 10**12
+# 당해 3개월 + 누적이 정확히 맞는 정상 케이스
+STD = {1: (79.14, 6.69, 8.22), 2: (74.57, 4.68, 5.12), 3: (86.06, 12.17, 12.23)}
+def fake_std(key, corp, year, reprt):
+    if year != 2025:
+        return []
+    if reprt == F.KR_ANNUAL:
+        return rows_for(333.61*T, 43.60*T, 40.0*T)
+    qno = F.KR_REPORTS[reprt]
+    rev, op, ni = STD[qno]
+    cum = tuple(sum(STD[q][i] for q in range(1, qno+1)) for i in range(3))
+    return rows_for(rev*T, op*T, ni*T, cum[0]*T, cum[1]*T, cum[2]*T)
+F.dart_accounts = fake_std
+doc = F.fetch_kr("005930.KS", "c", "k", [2025])
+qs = {q["label"]: q for q in doc["quarters"]}
+assert abs(qs["2025Q2"]["revenue"] - 74.57*T) < 1e6, qs["2025Q2"]
+assert doc["quarter_basis"]["2025"] == "당해(3개월) 값 그대로"
+ok("누적 교차검증: 당해값이 맞으면 그대로 쓴다")
+
+# 누적만 들어오는(= thstrm_amount가 누적인) 비정상 케이스 → 차분 복원
+def fake_cum(key, corp, year, reprt):
+    if year != 2025:
+        return []
+    if reprt == F.KR_ANNUAL:
+        return rows_for(333.61*T, 43.60*T, 40.0*T)
+    qno = F.KR_REPORTS[reprt]
+    cum = tuple(sum(STD[q][i] for q in range(1, qno+1)) for i in range(3))
+    return rows_for(cum[0]*T, cum[1]*T, cum[2]*T, cum[0]*T, cum[1]*T, cum[2]*T)
+F.dart_accounts = fake_cum
+doc = F.fetch_kr("005930.KS", "c", "k", [2025])
+qs = {q["label"]: q for q in doc["quarters"]}
+assert doc["quarter_basis"]["2025"] == "누적 차분으로 복원", doc["quarter_basis"]
+for lbl, want in (("2025Q1", 79.14), ("2025Q2", 74.57), ("2025Q3", 86.06)):
+    got = qs[lbl]["revenue"] / T
+    assert abs(got - want) < 0.01, (lbl, got, want)
+    assert qs[lbl]["basis"] == "cumulative_diff"
+ok("누적 교차검증: 누적이 들어오면 차분으로 분기값 복원")
+q4 = qs["2025Q4"]
+assert abs(q4["revenue"]/T - (333.61 - 239.77)) < 0.02, q4["revenue"]/T
+ok(f"복원 후에도 4분기 역산 정상: {q4['revenue']/T:.1f}조")
 print("\n전체 통과")

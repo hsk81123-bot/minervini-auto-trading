@@ -340,11 +340,42 @@ def dart_accounts(key: str, corp: str, year: int, reprt: str) -> list[dict]:
     return body.get("list", [])
 
 
+KR_FIELDS = ("revenue", "operating_income", "net_income")
+
+
+def cumulative_ok(std: dict[int, dict], cum: dict[int, dict],
+                  field: str) -> bool | None:
+    """당해(3개월) 값들의 합이 누적 값과 맞는지. 판단 불가면 None.
+
+    Phase 0에서 삼성전자 2025로 thstrm_amount가 3개월치임을 확인했지만,
+    종목·연도마다 다를 수 있으므로 매번 데이터로 확인한다. 1~3분기 중
+    가장 늦은 분기의 누적값과 그 이전 당해값들의 합을 비교한다.
+    """
+    qs = sorted(q for q in std if q in cum)
+    if len(qs) < 2:
+        return None
+    last = qs[-1]
+    total = cum[last].get(field)
+    parts = [std[q].get(field) for q in qs if q <= last]
+    if total is None or any(p is None for p in parts):
+        return None
+    s = sum(parts)
+    if total == 0:
+        return s == 0
+    return abs(s - total) / abs(total) < 0.005
+
+
 def fetch_kr(ticker: str, corp: str, key: str, years: list[int]) -> dict:
-    """한국 한 종목. thstrm_amount가 3개월치라 그대로 쓴다 (Phase 0 확인)."""
-    quarters, annuals = [], []
+    """한국 한 종목.
+
+    thstrm_amount(당해 3개월)를 기본으로 쓰되, 누적 필드와 합이 맞는지
+    해마다 검증한다. 어긋나면 누적의 차분으로 분기값을 복원한다 —
+    누적을 분기로 착각하면 성장률이 전부 틀어진다.
+    """
+    quarters, annuals, basis_notes = [], [], {}
     for year in years:
         year_q: dict[int, dict] = {}
+        year_cum: dict[int, dict] = {}
         for reprt, qno in KR_REPORTS.items():
             rows = dart_accounts(key, corp, year, reprt)
             if not rows:
@@ -356,6 +387,27 @@ def fetch_kr(ticker: str, corp: str, key: str, years: list[int]) -> dict:
                 "operating_income": kr_pick(rows, KR_ACCOUNTS["operating_income"]),
                 "net_income": kr_pick(rows, KR_ACCOUNTS["net_income"]),
             }
+            year_cum[qno] = {
+                f: kr_pick(rows, KR_ACCOUNTS[f], "thstrm_add_amount")
+                for f in KR_FIELDS
+            }
+
+        # 당해값 합 == 누적값 인지 확인. 어긋나면 누적 차분으로 복원한다.
+        checks = {f: cumulative_ok(year_q, year_cum, f) for f in KR_FIELDS}
+        if year_q and any(v is False for v in checks.values()):
+            basis_notes[str(year)] = "누적 차분으로 복원"
+            print(f"    {year}: 당해값 합이 누적과 어긋남 → 누적 차분으로 복원 "
+                  f"{ {k: v for k, v in checks.items()} }", flush=True)
+            for qno in sorted(year_q):
+                for f in KR_FIELDS:
+                    cur = year_cum.get(qno, {}).get(f)
+                    prev = year_cum.get(qno - 1, {}).get(f)
+                    if cur is None:
+                        continue
+                    year_q[qno][f] = cur if qno == 1 or prev is None else cur - prev
+                year_q[qno]["basis"] = "cumulative_diff"
+        elif year_q:
+            basis_notes[str(year)] = "당해(3개월) 값 그대로"
         rows = dart_accounts(key, corp, year, KR_ANNUAL)
         ann = None
         if rows:
@@ -389,6 +441,7 @@ def fetch_kr(ticker: str, corp: str, key: str, years: list[int]) -> dict:
         "market": "kr",
         "source": "DART fnlttSinglAcnt (연결 우선)",
         "note": "EPS는 주요계정에 없어 저장하지 않는다 (순이익으로 대체)",
+        "quarter_basis": basis_notes,
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "quarters": quarters[:QUARTERS_KEEP],
         "annuals": annuals[:YEARS_KEEP],
