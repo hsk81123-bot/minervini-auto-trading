@@ -54,6 +54,12 @@ OTHER_TAGS = {
 }
 
 
+def ua_hint(ua: str) -> str:
+    """로그용 UA 표기 — 이메일 아이디를 가린다 (공개 저장소는 로그도 공개)."""
+    import re
+    return re.sub(r"[\w.+-]+@", "***@", ua)
+
+
 def why(text: str) -> str:
     """오류 응답에서 사람이 읽을 부분만. SEC는 거부 이유를 <title>과 본문에 적는다."""
     flat = " ".join((text or "").split())
@@ -179,7 +185,7 @@ def probe_access() -> None:
 def probe_us() -> None:
     print("=" * 70)
     print("미국 — SEC EDGAR XBRL companyconcept")
-    print(f"User-Agent: {SEC_UA}")
+    print(f"User-Agent: {ua_hint(SEC_UA)}")
     print("=" * 70)
     probe_access()
     cmap = cik_map()
@@ -302,7 +308,7 @@ if __name__ == "__main__":
         sys.stdout.reconfigure(encoding="utf-8")
     which = sys.argv[1].lower() if len(sys.argv) > 1 else "all"
     if which == "access":        # 접근 점검만 (로그가 짧아 원인 보기 쉽다)
-        print(f"User-Agent: {SEC_UA}\n")
+        print(f"User-Agent: {ua_hint(SEC_UA)}\n")
         probe_access()
         sys.exit(0)
     if which in ("all", "us"):
