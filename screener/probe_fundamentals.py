@@ -307,6 +307,23 @@ def probe_kr() -> None:
             if not any("주당" in n for n in names):
                 print("     주당이익(EPS) 항목 없음 → 순이익÷주식수로 계산 필요")
 
+    # 계정명 정확한 표기와 금액 필드 의미를 확인한다.
+    # DART는 손익 항목에 3개월(thstrm_amount)과 누적(thstrm_add_amount)을 함께 준다.
+    # 어느 쪽이 무엇인지 확정해야 분기 성장률을 틀리지 않게 계산할 수 있다.
+    corp = code_map.get(KR_SAMPLES[0])
+    r = get("https://opendart.fss.or.kr/api/fnlttSinglAcnt.json",
+            params={"crtfc_key": key, "corp_code": corp,
+                    "bsns_year": "2025", "reprt_code": "11014"})
+    if r and r.json().get("status") == "000":
+        print(f"\n[{KR_SAMPLES[0]}] 3분기보고서 연결(CFS) 계정 전체 "
+              "— 계정명 / 당기 / 당기누적")
+        for x in r.json()["list"]:
+            if x.get("fs_div") != "CFS":
+                continue
+            print(f"  {x['sj_div']:<4} {x['account_nm']:<16} "
+                  f"{x.get('thstrm_amount', ''):>22} "
+                  f"{x.get('thstrm_add_amount', ''):>22}")
+
     print("\n[확인 포인트] 주요계정(fnlttSinglAcnt)에 EPS가 없으면,")
     print("전체 재무제표(fnlttSinglAcntAll)를 쓰거나 순이익으로 대체해야 한다.")
 
