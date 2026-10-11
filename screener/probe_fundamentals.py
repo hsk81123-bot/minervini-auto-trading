@@ -75,13 +75,21 @@ def why(text: str) -> str:
     return flat[:220] or "(본문 없음)"
 
 
-def get(url: str, **kw):
-    """재시도 포함 GET. 실패하면 None."""
+def get(url: str, quiet_404: bool = False, **kw):
+    """재시도 포함 GET. 실패하면 None.
+
+    404는 '그 태그가 없다'는 뜻이므로 재시도하지 않는다 (Phase 0 확인 결과).
+    재시도는 403/429/5xx 같은 일시적·정책성 실패에만 의미가 있다.
+    """
     for attempt in range(1, 4):
         try:
             r = requests.get(url, headers=UA, timeout=30, **kw)
             if r.status_code == 200:
                 return r
+            if r.status_code == 404:
+                if not quiet_404:
+                    print(f"    HTTP 404 (없음) {url[:80]}")
+                return None
             print(f"    HTTP {r.status_code} ({attempt}/3) {url[:80]}")
             print(f"      이유: {why(r.text)}")
         except requests.RequestException as e:
@@ -132,7 +140,7 @@ def probe_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
     url = (f"https://data.sec.gov/api/xbrl/companyconcept/CIK{cik}"
            f"/us-gaap/{tag}.json")
     time.sleep(SEC_RATE_SLEEP)
-    r = get(url)
+    r = get(url, quiet_404=True)
     if not r:
         return [], None
     body = r.json()
