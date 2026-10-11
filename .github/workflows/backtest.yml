@@ -1,0 +1,81 @@
+name: Backtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "검증 기간 (일) — 스냅샷이 쌓인 만큼만 거슬러 올라간다"
+        default: "30"
+  # 작업 브랜치에서 백테스트 코드를 고치면 곧바로 실제 수치로 확인한다.
+  # (workflow_dispatch 버튼은 기본 브랜치에 파일이 있어야 뜨므로, 브랜치에서
+  #  돌릴 길을 따로 둔다. 백테스트 파일을 건드린 푸시에만 반응한다.)
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "screener/backtest.py"
+      - "screener/test_backtest.py"
+      - ".github/workflows/backtest.yml"
+
+# 읽기만 한다 — 백테스트는 아무것도 커밋하지 않는다.
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 스냅샷 시계열을 git 이력에서 읽는다 — 얕은 클론이면 0개가 나온다.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r screener/requirements.txt
+
+      - name: Unit tests
+        run: python screener/test_backtest.py
+
+      # gap(실제 운용 가능)과 last(사후 정보 포함 상한)를 나란히 낸다.
+      # 두 수치의 차이가 곧 '마지막 등장일을 미리 안다고 가정했을 때의 이득'이다.
+      # 입력값은 셸에 직접 끼우지 않고 env로 넘긴다 (저장소가 공개라 dispatch
+      # 입력은 마스킹되지 않는다).
+      - name: Run backtest
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+        run: |
+          set -o pipefail
+          : > report.txt
+          for m in us kr; do
+            for r in gap last; do
+              echo "" | tee -a report.txt
+              echo "### $m · rule=$r · days=$DAYS" | tee -a report.txt
+              top=""
+              [ "$r" = "gap" ] && top="--top 20"
+              python screener/backtest.py "$m" --days "$DAYS" --rule "$r" \
+                $top --json "bt-$m-$r.json" 2>&1 | tee -a report.txt
+            done
+          done
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '```'
+            # 가격 다운로드 진행 로그는 요약에서 걷어낸다.
+            grep -v '^  가격 ' report.txt || cat report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backtest
+          path: |
+            report.txt
+            bt-*.json
