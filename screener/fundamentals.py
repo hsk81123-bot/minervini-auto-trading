@@ -190,16 +190,26 @@ def derive_q4(quarters: list[dict], annuals: list[dict]) -> list[dict]:
         if len(inside) != 3:
             continue
         last_end = max(_d(q["end"]) for q in inside)
+        val = ann["val"] - sum(q["val"] for q in inside)
         out.append({
             "start": last_end.isoformat(),
             "end": ann["end"],
-            "val": ann["val"] - sum(q["val"] for q in inside),
+            # EPS는 소수라 뺄셈에 부동소수 잡음이 남는다 (1.8399999999999999)
+            "val": round(val, 4) if isinstance(val, float) else val,
             "form": ann.get("form", "10-K"),
-            "fy": ann.get("fy"),
-            "fp": "Q4",
             "derived": True,
         })
     return sorted(out, key=lambda r: r["end"], reverse=True)
+
+
+def round_floats(doc: dict) -> dict:
+    """소수 값만 4자리로 맞춘다 (금액은 정수라 영향 없음)."""
+    for group in ("quarters", "annuals"):
+        for row in doc.get(group, []):
+            for k, v in row.items():
+                if isinstance(v, float):
+                    row[k] = round(v, 4)
+    return doc
 
 
 def sec_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
@@ -251,15 +261,13 @@ def fetch_us(ticker: str, cik: str) -> dict:
         q = derive_q4(q, a)
         for item in q:
             slot = quarters.setdefault(item["end"], {
-                "end": item["end"], "start": item["start"],
-                "fy": item.get("fy"), "fp": item.get("fp")})
+                "end": item["end"], "start": item["start"]})
             slot[field] = item["val"]
             if item.get("derived"):
                 slot.setdefault("derived", []).append(field)
         for item in a:
             slot = annuals.setdefault(item["end"], {
-                "end": item["end"], "start": item["start"],
-                "fy": item.get("fy")})
+                "end": item["end"], "start": item["start"]})
             slot[field] = item["val"]
 
     equity = [{"end": r["end"], "value": r["val"]}
@@ -396,6 +404,7 @@ def out_path(ticker: str) -> Path:
 
 
 def save(doc: dict) -> Path:
+    round_floats(doc)
     path = out_path(doc["ticker"])
     with open(path, "w", encoding="utf-8") as f:
         json.dump(doc, f, ensure_ascii=False, separators=(",", ":"))
@@ -428,6 +437,7 @@ def main(tickers: list[str], refresh: bool) -> int:
             print(f"[{t}] 분기 {len(doc['quarters'])} / 연간 "
                   f"{len(doc['annuals'])} | 최근 {q['end']} "
                   f"매출 {q.get('revenue'):,.0f} | 태그 {doc['revenue_tag']} "
+                  f"| 역산분기 {sum(1 for x in doc['quarters'] if x.get('derived'))}개 "
                   f"-> {path.name}", flush=True)
 
     if kr:
