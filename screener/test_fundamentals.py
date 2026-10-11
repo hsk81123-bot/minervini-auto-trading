@@ -218,6 +218,26 @@ assert "anomalies" not in clean
 ok("이상치 표시: 정상 데이터에는 키를 만들지 않는다")
 print("\n전체 통과")
 
+# 11) 태그 선택은 '존재'가 아니라 '커버리지'로 — NVDA에서 실제로 틀렸던 지점
+_OLD = [{"start": "2021-02-01", "end": "2022-01-30", "val": 26914000000,
+         "form": "10-K", "filed": "2022-03-01"}]
+_NEW = [{"start": "2026-04-27", "end": "2026-07-26", "val": 46743000000,
+         "form": "10-Q", "filed": "2026-08-01"},
+        {"start": "2026-01-26", "end": "2026-04-26", "val": 44062000000,
+         "form": "10-Q", "filed": "2026-05-01"}]
+_orig_concept = F.sec_concept
+F.sec_concept = lambda cik, tag: (
+    {"RevenueFromContractWithCustomerExcludingAssessedTax": _OLD,
+     "RevenueFromContractWithCustomerIncludingAssessedTax": _NEW}.get(tag, []), "USD")
+rows, tag = F.best_series("x", F.REVENUE_TAGS)
+assert tag == "RevenueFromContractWithCustomerIncludingAssessedTax", tag
+ok("태그 선택: 옛 데이터 1건뿐인 태그가 아니라 최신 분기가 있는 태그를 고른다")
+F.sec_concept = lambda cik, tag: (_NEW, "USD/shares")
+_, tag = F.best_series("x", ["EarningsPerShareDiluted", "EarningsPerShareBasic"])
+assert tag == "EarningsPerShareDiluted", tag
+ok("태그 선택: 커버리지가 같으면 목록 순서 유지 (희석 EPS 우선)")
+F.sec_concept = _orig_concept
+
 # 10) 요약 출력은 값이 없어도 터지지 않는다 (NVDA에서 실제로 터졌던 경로)
 assert F.fmt_num(None) == "-"
 assert F.fmt_num(109417000000) == "109,417,000,000"

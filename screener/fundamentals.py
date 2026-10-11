@@ -289,27 +289,39 @@ def sec_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
     return units[unit], unit
 
 
+def best_series(cik: str, tags: list[str]) -> tuple[list[dict], str | None]:
+    """후보 태그 중 '커버리지가 가장 좋은' 것을 고른다.
+
+    '데이터가 하나라도 있으면 채택'은 틀렸다. NVDA는
+    RevenueFromContractWithCustomerExcludingAssessedTax에 2022년 한 건만 남아
+    있고 최근 기간은 다른 태그를 쓴다. 먼저 맞은 태그를 채택하면 매출이
+    사실상 비어버린다. 그래서 분기 항목 수와 최신 종료일로 고른다
+    (동점이면 목록 순서 = 의미상 선호도).
+    """
+    best = ([], None, (-1, ""))
+    for tag in tags:
+        rows, _ = sec_concept(cik, tag)
+        if not rows:
+            continue
+        qs = pick_periods(rows, 80, 100)
+        rank = (len(qs), max((q["end"] for q in qs), default=""))
+        if rank > best[2]:
+            best = (rows, tag, rank)
+    if best[1]:
+        print(f"    {best[1]} (분기 {best[2][0]}개, 최신 {best[2][1]})", flush=True)
+    return best[0], best[1]
+
+
 def fetch_us(ticker: str, cik: str) -> dict:
     """미국 한 종목의 분기/연간 원시치."""
     series: dict[str, list[dict]] = {}
-    revenue_tag = None
-    for tag in REVENUE_TAGS:
-        rows, _ = sec_concept(cik, tag)
+    rows, revenue_tag = best_series(cik, REVENUE_TAGS)
+    if rows:
+        series["revenue"] = rows
+    for field, tags in list(US_TAGS.items()) + list(US_INSTANT_TAGS.items()):
+        rows, _ = best_series(cik, tags)
         if rows:
-            revenue_tag, series["revenue"] = tag, rows
-            break
-    for field, tags in US_TAGS.items():
-        for tag in tags:
-            rows, _ = sec_concept(cik, tag)
-            if rows:
-                series[field] = rows
-                break
-    for field, tags in US_INSTANT_TAGS.items():
-        for tag in tags:
-            rows, _ = sec_concept(cik, tag)
-            if rows:
-                series[field] = rows
-                break
+            series[field] = rows
 
     # 분기/연간 정리: 매출 기준으로 기간을 잡고 나머지를 같은 종료일에 맞춘다
     quarters: dict[str, dict] = {}
