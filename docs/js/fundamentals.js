@@ -79,13 +79,19 @@ const Fundamentals = (() => {
       role="img" aria-label="분기 추이">${zero}${marks}</svg>`;
   }
 
-  /** 선 미니차트 (영업이익률). 마지막 점에만 마커를 둔다. */
+  /** 선 미니차트 (영업이익률). 마지막 점에만 마커를 둔다.
+
+      막대와 달리 선은 0에 묶지 않는다. 0을 기준으로 잡으면 30%→33% 같은
+      변화가 평평하게 눌려 보이는데, 영업이익률 확대는 SEPA 기준 중 하나라
+      그 변화가 읽혀야 한다. 대신 값이 음수로 내려가면 0선을 그려 부호를 밝힌다. */
   function line(points, fmt) {
     const pts = points.filter(p => p.v != null);
     if (pts.length < 2) return "";
     const W = 300, H = 64, PAD = 6, n = points.length;
     const vals = pts.map(p => p.v);
-    const max = Math.max(...vals), min = Math.min(...vals, 0);
+    const hi = Math.max(...vals), lo = Math.min(...vals);
+    const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.1 || 1;
+    const max = hi + pad, min = lo - pad;
     const span = (max - min) || 1;
     const xy = p => {
       const i = points.indexOf(p);
@@ -103,8 +109,12 @@ const Fundamentals = (() => {
       return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5" `
         + `fill="transparent"><title>${esc(p.label)}: ${esc(fmt(p.v))}</title></circle>`;
     }).join("");
+    const zeroY = PAD + (1 - (0 - min) / span) * (H - PAD * 2);
+    const zero = (min < 0 && max > 0)
+      ? `<line x1="0" y1="${zeroY.toFixed(1)}" x2="${W}" y2="${zeroY.toFixed(1)}"
+          stroke="var(--border)" stroke-width="1"/>` : "";
     return `<svg class="fchart" viewBox="0 0 ${W} ${H}" role="img"
-      aria-label="영업이익률 추이"><path d="${d}" fill="none" stroke="${COLOR}"
+      aria-label="영업이익률 추이">${zero}<path d="${d}" fill="none" stroke="${COLOR}"
       stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
       <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="4" fill="${COLOR}"
         stroke="var(--panel)" stroke-width="2"/>${dots}</svg>`;
@@ -120,10 +130,10 @@ const Fundamentals = (() => {
     </div>`;
   }
 
-  const row = (label, state, detail) => {
+  const row = (label, state, detail, hint) => {
     const cls = state == null ? "" : state ? "pos" : "neg";
     const text = state == null ? "측정 불가" : state ? "통과" : "미달";
-    return `<div class="metric-row"><span>${esc(label)}</span>
+    return `<div class="metric-row"><span${hint ? ` title="${esc(hint)}"` : ""}>${esc(label)}</span>
       <span class="${cls}">${text}${detail ? ` <span style="color:var(--muted)">${esc(detail)}</span>` : ""}</span></div>`;
   };
 
@@ -188,8 +198,9 @@ const Fundamentals = (() => {
       ${row("분기 EPS 성장 +25% 이상", m.checks.eps_25plus, pct(m.eps_growth))}
       ${row("분기 매출 성장 +20% 이상", m.checks.revenue_20plus, pct(m.revenue_growth))}
       ${row("영업이익률 확대", m.checks.opm_expanding, pp(m.opm_change))}
-      ${row("EPS 성장 가속 (3개 분기)", m.checks.eps_accelerating,
-        (m.eps_growth_3q || []).filter(v => v != null).map(v => pct(v, 0)).join(" ← "))}
+      ${row("EPS 성장 가속", m.checks.eps_accelerating,
+        (m.eps_growth_3q || []).filter(v => v != null).map(v => pct(v, 0)).join(" ← "),
+        "최근 3개 분기의 전년 동기비 성장률이 계단식으로 올라가는지 (최신이 왼쪽)")}
       ${row("연간 EPS 3년 +25% 이상", m.checks.annual_eps_25plus, pct(m.annual_eps_cagr))}
       ${row("ROE 17% 이상", m.checks.roe_17plus, pct(m.roe))}
       ${charts}
