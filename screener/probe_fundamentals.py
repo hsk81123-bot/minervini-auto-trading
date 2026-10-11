@@ -21,10 +21,20 @@ from xml.etree import ElementTree
 
 import requests
 
-# SEC는 요청자를 식별할 수 있는 User-Agent를 요구한다 (개인 이메일 대신 저장소 주소).
-UA = {"User-Agent": "minervini-auto-trading/1.0 "
-                    "(+https://github.com/hsk81123-bot/minervini-auto-trading)"}
+# SEC는 요청자를 식별할 수 있는 User-Agent를 요구한다. 공식 안내는 연락처(이메일)를
+# 넣으라고 하므로, 넣고 싶으면 SEC_USER_AGENT 환경변수로 주입한다.
+SEC_UA = os.environ.get("SEC_USER_AGENT", "").strip() or (
+    "minervini-auto-trading/1.0 "
+    "(+https://github.com/hsk81123-bot/minervini-auto-trading)")
+UA = {"User-Agent": SEC_UA,
+      "Accept": "application/json,text/plain,*/*",
+      "Accept-Encoding": "gzip, deflate"}
 SEC_RATE_SLEEP = 0.15          # 초당 10회 권장 → 여유를 두고 간격을 준다
+
+# 티커 매핑을 못 받아도 미국 검증을 계속할 수 있게 샘플 CIK를 박아둔다.
+# (응답의 entityName을 함께 출력하므로 CIK가 틀리면 바로 드러난다)
+FALLBACK_CIK = {"AAPL": "0000320193", "NVDA": "0001045810",
+                "VLO": "0001035002"}
 
 US_SAMPLES = ["AAPL", "NVDA", "VLO"]   # 9월 결산 / 1월 결산 / 통과 종목
 KR_SAMPLES = ["005930", "000660"]      # 삼성전자, SK하이닉스
@@ -51,7 +61,10 @@ def get(url: str, **kw):
             r = requests.get(url, headers=UA, timeout=30, **kw)
             if r.status_code == 200:
                 return r
-            print(f"    HTTP {r.status_code} ({attempt}/3) {url[:90]}")
+            body = " ".join(r.text.split())[:200]
+            print(f"    HTTP {r.status_code} ({attempt}/3) {url[:80]}")
+            if body:
+                print(f"      응답: {body}")
         except requests.RequestException as e:
             print(f"    {type(e).__name__} ({attempt}/3): {e}")
         time.sleep(2 ** attempt)
@@ -103,22 +116,62 @@ def probe_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
     r = get(url)
     if not r:
         return [], None
-    units = r.json().get("units", {})
+    body = r.json()
+    units = body.get("units", {})
     if not units:
         return [], None
     unit_name = next(iter(units))
-    return quarterly_entries(units[unit_name]), unit_name
+    rows = quarterly_entries(units[unit_name])
+    if rows:
+        rows[0] = dict(rows[0], _entity=body.get("entityName", ""))
+    return rows, unit_name
+
+
+def probe_access() -> None:
+    """어느 호스트·헤더 조합이 통과하는지 먼저 가린다 (403의 원인 좁히기)."""
+    print("[접근 점검] 호스트·User-Agent 조합별 응답 코드")
+    variants = {
+        "기본(저장소 URL)": SEC_UA,
+        "이메일 포함 형식": "minervini-auto-trading admin@example.com",
+        "브라우저 위장": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                     "AppleWebKit/537.36 (KHTML, like Gecko) "
+                     "Chrome/120.0 Safari/537.36"),
+    }
+    targets = {
+        "www.sec.gov/files/company_tickers.json":
+            "https://www.sec.gov/files/company_tickers.json",
+        "data.sec.gov/submissions/AAPL":
+            "https://data.sec.gov/submissions/CIK0000320193.json",
+        "data.sec.gov/companyconcept/AAPL OperatingIncomeLoss":
+            "https://data.sec.gov/api/xbrl/companyconcept/CIK0000320193"
+            "/us-gaap/OperatingIncomeLoss.json",
+    }
+    for vname, ua in variants.items():
+        for tname, url in targets.items():
+            try:
+                r = requests.get(url, timeout=25, headers={
+                    "User-Agent": ua,
+                    "Accept": "application/json,text/plain,*/*",
+                    "Accept-Encoding": "gzip, deflate"})
+                code, size = r.status_code, len(r.content)
+            except requests.RequestException as e:
+                code, size = type(e).__name__, 0
+            print(f"  {vname:<16} {tname:<48} {code} ({size:,}B)")
+            time.sleep(0.3)
+    print()
 
 
 def probe_us() -> None:
     print("=" * 70)
     print("미국 — SEC EDGAR XBRL companyconcept")
+    print(f"User-Agent: {SEC_UA}")
     print("=" * 70)
+    probe_access()
     cmap = cik_map()
     print(f"company_tickers.json: {len(cmap)}개 티커 매핑 로드")
     if not cmap:
-        print("  → CIK 매핑을 못 받았다. 여기서 중단.")
-        return
+        print("  → 티커 매핑 실패. 샘플 CIK를 하드코딩해 계속 진행한다.")
+        cmap = dict(FALLBACK_CIK)
 
     for ticker in US_SAMPLES:
         cik = cmap.get(ticker)
@@ -136,7 +189,8 @@ def probe_us() -> None:
             if rows and not hit_tag:
                 hit_tag, hit_rows, hit_unit = tag, rows, unit
         if hit_tag:
-            print(f"  → 채택: {hit_tag} ({hit_unit})")
+            print(f"  → 채택: {hit_tag} ({hit_unit}) "
+                  f"| 회사명 {hit_rows[0].get('_entity', '?')}")
             for row in hit_rows[:8]:
                 print(f"     {row['start']}~{row['end']} "
                       f"FY{row.get('fy')}{row.get('fp')} {row.get('form'):<5} "
