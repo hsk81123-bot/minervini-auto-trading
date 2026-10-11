@@ -48,6 +48,9 @@ jobs:
           fi
           python screener/fundamentals.py $args ${{ github.event.inputs.tickers }}
 
+      - name: Compute metrics
+        run: python screener/code33.py
+
       - name: Show result shape
         run: |
           for f in docs/data/fundamentals/*.json docs/data/fundamentals_kr/*.json; do
@@ -62,6 +65,7 @@ jobs:
           git config user.name "screener-bot"
           git config user.email "actions@github.com"
           git add docs/data/fundamentals docs/data/fundamentals_kr \
+                  docs/data/fundamentals.json docs/data/fundamentals_kr.json \
                   docs/data/cik_map.json docs/data/corp_code_kr.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "no changes to commit"
