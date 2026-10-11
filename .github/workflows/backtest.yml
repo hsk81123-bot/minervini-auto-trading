@@ -6,6 +6,18 @@ on:
       days:
         description: "검증 기간 (일) — 스냅샷이 쌓인 만큼만 거슬러 올라간다"
         default: "30"
+      top:
+        description: "모의매매 시장별 상위 N 종목"
+        default: "5"
+      capital:
+        description: "모의매매 원금 (원)"
+        default: "10000000"
+      stop:
+        description: "손절 기준 (%)"
+        default: "-5"
+      target:
+        description: "익절 기준 (%)"
+        default: "10"
   # 작업 브랜치에서 백테스트 코드를 고치면 곧바로 실제 수치로 확인한다.
   # (workflow_dispatch 버튼은 기본 브랜치에 파일이 있어야 뜨므로, 브랜치에서
   #  돌릴 길을 따로 둔다. 백테스트 파일을 건드린 푸시에만 반응한다.)
@@ -14,6 +26,8 @@ on:
     paths:
       - "screener/backtest.py"
       - "screener/test_backtest.py"
+      - "screener/papertrade.py"
+      - "screener/test_papertrade.py"
       - ".github/workflows/backtest.yml"
 
 # 읽기만 한다 — 백테스트는 아무것도 커밋하지 않는다.
@@ -39,7 +53,9 @@ jobs:
         run: pip install -r screener/requirements.txt
 
       - name: Unit tests
-        run: python screener/test_backtest.py
+        run: |
+          python screener/test_backtest.py
+          python screener/test_papertrade.py
 
       # gap(실제 운용 가능)과 last(사후 정보 포함 상한)를 나란히 낸다.
       # 두 수치의 차이가 곧 '마지막 등장일을 미리 안다고 가정했을 때의 이득'이다.
@@ -62,6 +78,23 @@ jobs:
             done
           done
 
+      # 손절·익절 규칙까지 넣은 모의매매 — 집계 통계가 아니라 체결 내역을 본다.
+      - name: Run papertrade
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+          TOP: ${{ inputs.top || '5' }}
+          CAPITAL: ${{ inputs.capital || '10000000' }}
+          STOP: ${{ inputs.stop || '-5' }}
+          TARGET: ${{ inputs.target || '10' }}
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 모의매매 · days=$DAYS top=$TOP 원금=$CAPITAL" \
+            "손절=$STOP% 익절=$TARGET%" | tee -a report.txt
+          python screener/papertrade.py --days "$DAYS" --top "$TOP" \
+            --capital "$CAPITAL" --stop "$STOP" --target "$TARGET" \
+            --json pt.json 2>&1 | tee -a report.txt
+
       - name: Summary
         if: always()
         run: |
@@ -79,3 +112,4 @@ jobs:
           path: |
             report.txt
             bt-*.json
+            pt.json
