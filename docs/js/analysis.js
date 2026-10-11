@@ -119,6 +119,7 @@ App.register("analysis", async (page, params) => {
           <div class="metric-row"><span>52주 고점 / 저점</span><span>${won(r.high52)} / ${won(r.low52)}</span></div>
           <div class="metric-row"><span>50 / 150 / 200일선</span><span>${App.money(r.ma50, isKR, 0)} / ${App.money(r.ma150, isKR, 0)} / ${App.money(r.ma200, isKR, 0)}</span></div>
         </div>` : ""}
+        <div id="fund-panel"></div>
         <div class="card">
           <h2 style="margin-top:0">포지션 사이징</h2>
           <div class="form-grid" style="grid-template-columns:1fr 1fr">
@@ -426,6 +427,15 @@ App.register("analysis", async (page, params) => {
     document.getElementById("chart-toggle").style.display = "none";
     await renderTV();
   }
+
+  // 펀더멘털 패널: 데이터가 없으면 아무것도 그리지 않는다 (차트와 독립)
+  (async () => {
+    try {
+      const html = await Fundamentals.render(ticker, isKR);
+      const slot = document.getElementById("fund-panel");
+      if (slot && html) slot.innerHTML = html;
+    } catch (e) { console.warn("펀더멘털 패널 생략:", e); }
+  })();
 
   if (histData) {
     try { await renderOwnChart(); } catch { await showTVOnly(); }

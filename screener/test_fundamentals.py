@@ -232,6 +232,17 @@ F.sec_concept = lambda cik, tag: (
 rows, tag = F.best_series("x", F.REVENUE_TAGS)
 assert tag == "RevenueFromContractWithCustomerIncludingAssessedTax", tag
 ok("태그 선택: 옛 데이터 1건뿐인 태그가 아니라 최신 분기가 있는 태그를 고른다")
+
+# AAPL 상황: 폐지된 태그에 옛 분기가 '많이' 쌓여 있다 → 개수로 고르면 틀린다
+_MANY_OLD = [{"start": f"20{y:02d}-01-01", "end": f"20{y:02d}-03-31",
+              "val": 1000, "form": "10-Q", "filed": f"20{y:02d}-05-01"}
+             for y in range(8, 19)]          # 2008~2018, 11개 분기
+F.sec_concept = lambda cik, tag: (
+    {"SalesRevenueNet": _MANY_OLD,
+     "RevenueFromContractWithCustomerExcludingAssessedTax": _NEW}.get(tag, []), "USD")
+_, tag = F.best_series("x", F.REVENUE_TAGS)
+assert tag == "RevenueFromContractWithCustomerExcludingAssessedTax", tag
+ok("태그 선택: 옛 분기가 많은 폐지 태그보다 최신 분기를 가진 태그 (최신성 우선)")
 F.sec_concept = lambda cik, tag: (_NEW, "USD/shares")
 _, tag = F.best_series("x", ["EarningsPerShareDiluted", "EarningsPerShareBasic"])
 assert tag == "EarningsPerShareDiluted", tag

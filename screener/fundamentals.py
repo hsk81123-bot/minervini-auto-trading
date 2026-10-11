@@ -292,23 +292,26 @@ def sec_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
 def best_series(cik: str, tags: list[str]) -> tuple[list[dict], str | None]:
     """후보 태그 중 '커버리지가 가장 좋은' 것을 고른다.
 
-    '데이터가 하나라도 있으면 채택'은 틀렸다. NVDA는
-    RevenueFromContractWithCustomerExcludingAssessedTax에 2022년 한 건만 남아
-    있고 최근 기간은 다른 태그를 쓴다. 먼저 맞은 태그를 채택하면 매출이
-    사실상 비어버린다. 그래서 분기 항목 수와 최신 종료일로 고른다
-    (동점이면 목록 순서 = 의미상 선호도).
+    두 가지를 다 겪었다.
+    - NVDA: RevenueFromContractWithCustomerExcludingAssessedTax에 2022년 한 건만
+      남아 있고 최근 기간은 Revenues를 쓴다 → '있으면 채택'은 매출을 비워버린다
+    - AAPL: 구 회계기준 시절 SalesRevenueNet에 옛 분기가 많이 쌓여 있다
+      → '개수 많은 것 채택'은 2018년에서 끊긴 태그를 골라버린다
+
+    그래서 **최신 종료일을 먼저** 보고, 같으면 분기 수로 고른다.
+    둘 다 같으면 목록 순서(의미상 선호: 희석 EPS > 기본 EPS)를 지킨다.
     """
-    best = ([], None, (-1, ""))
+    best = ([], None, ("", -1))
     for tag in tags:
         rows, _ = sec_concept(cik, tag)
         if not rows:
             continue
         qs = pick_periods(rows, 80, 100)
-        rank = (len(qs), max((q["end"] for q in qs), default=""))
+        rank = (max((q["end"] for q in qs), default=""), len(qs))
         if rank > best[2]:
             best = (rows, tag, rank)
     if best[1]:
-        print(f"    {best[1]} (분기 {best[2][0]}개, 최신 {best[2][1]})", flush=True)
+        print(f"    {best[1]} (최신 {best[2][0]}, 분기 {best[2][1]}개)", flush=True)
     return best[0], best[1]
 
 
