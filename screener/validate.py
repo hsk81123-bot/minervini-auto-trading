@@ -44,10 +44,13 @@
     python screener/validate.py us --top 5 --every 3     # 3스냅샷마다 진입
     python screener/validate.py us --grid               # 파라미터 격자까지
     python screener/validate.py us --days 90 --json val.json
+    python screener/validate.py us --ext-max 5 --ext-min 0  # 피봇 0~+5%만 진입
+    python screener/validate.py us --ext-grid           # 피봇 괴리 구간 격자
 """
 import json
 import random
 import sys
+import unicodedata
 from pathlib import Path
 from statistics import mean, median, pstdev
 
@@ -61,34 +64,102 @@ GRID_STOPS = (-5.0, -8.0, -12.0)
 GRID_TARGETS = (15.0, 25.0, 40.0, None)   # None = 고정 익절 없음
 
 
+# ---------------------------------------------------------------- 피봇 괴리
+# 미너비니의 진입은 'VCP 피봇 돌파 시점'이다. 피봇에서 한참 위로 달아난 종목을
+# 사면 정상적인 눌림에도 손절선에 걸린다. 리스트 상위는 RS가 높은 만큼 이미 많이
+# 오른 종목이 많아, 순위만으로 사면 연장된 지점에서 사게 된다. 괴리 구간별로
+# 거래를 나눠 이 가설을 직접 잰다.
+EXT_BANDS = (
+    ("피봇 0~+5% (돌파 직후)", 0.0, 0.05),
+    ("피봇 0~+10%", 0.0, 0.10),
+    ("피봇 ±5%", -0.05, 0.05),
+    ("피봇 -5~0% (돌파 직전)", -0.05, 0.0),
+    ("피봇 +10% 이상 (연장)", 0.10, None),
+)
+# 현재 규칙이 실제로 산 종목을 진입 시 괴리로 쪼갤 때 쓰는 구간 (하한 포함)
+EXT_BUCKETS = (
+    ("피봇 아래", None, 0.0),
+    ("0~+5%", 0.0, 0.05),
+    ("+5~+10%", 0.05, 0.10),
+    ("+10~+25%", 0.10, 0.25),
+    ("+25% 이상", 0.25, None),
+)
+
+
+def extension(row: dict) -> float | None:
+    """진입가의 피봇 대비 괴리. 피봇이 없으면 None (재지 못한 것과 0은 다르다).
+
+    price와 pivot은 같은 스냅샷의 같은 미수정가라 분할 영향이 섞이지 않는다.
+    """
+    p, pv = row.get("price"), row.get("pivot")
+    if not isinstance(p, (int, float)) or not isinstance(pv, (int, float)):
+        return None
+    if p <= 0 or pv <= 0:
+        return None
+    # 가격은 소수 둘째 자리 값이라 비율의 부동소수 잡음(105/100-1 =
+    # 0.050000000000000044)을 걷어낸다. 안 그러면 정확히 +5%인 종목이
+    # '0~+5%' 구간에서 빠진다.
+    return round(p / pv - 1.0, 9)
+
+
+def in_band(row: dict, lo: float | None, hi: float | None) -> bool:
+    """괴리가 [lo, hi] 안인가 (양끝 포함). 피봇이 없으면 어느 구간에도 안 든다."""
+    e = extension(row)
+    if e is None:
+        return False
+    return (lo is None or e >= lo) and (hi is None or e <= hi)
+
+
+def bucket_of(e: float | None) -> str:
+    """거래를 진입 시 괴리 구간으로 분류한다 (하한 포함, 상한 미포함)."""
+    if e is None:
+        return "피봇 없음"
+    for label, lo, hi in EXT_BUCKETS:
+        if (lo is None or e >= lo) and (hi is None or e < hi):
+            return label
+    return "피봇 없음"
+
+
 # ---------------------------------------------------------------- 코호트
-def cohorts(market: str, days: int, top: int, every: int
+def entry_snaps(snaps: list[dict], every: int) -> list[dict]:
+    """진입일로 쓸 스냅샷. 마지막 스냅샷은 진입 후 경과일이 0이라 뺀다."""
+    usable = snaps[:-1]
+    return usable[::every] if every > 1 else usable
+
+
+def cohorts(snaps: list[dict], top: int, every: int,
+            band: tuple[float | None, float | None] | None = None
             ) -> list[tuple[str, list[dict]]]:
     """스냅샷마다 (진입일, 상위 N) — 진입일을 고를 수 없게 전부 쓴다.
 
-    마지막 스냅샷은 진입 후 경과일이 0이라 제외한다.
+    band가 있으면 피봇 괴리 구간 안의 종목만 남긴 뒤 상위 N을 고른다.
+    '순위 상위에서 구간 밖을 버리기'가 아니라 '구간 안에서 순위 상위'다 —
+    실전에서 돌파 근처 종목 중 가장 강한 것을 사는 규칙과 같다.
     """
-    snaps = B.snapshots(market, days)
     out = []
-    for s in snaps[:-1][::every] if every > 1 else snaps[:-1]:
-        rows = sorted(({"ticker": t, **v} for t, v in s["rows"].items()),
-                      key=B.rank_key)
+    for s in entry_snaps(snaps, every):
+        rows = [{"ticker": t, **v} for t, v in s["rows"].items()]
+        if band is not None:
+            rows = [r for r in rows if in_band(r, *band)]
+        rows.sort(key=B.rank_key)
         out.append((s["date"], rows[:top]))
     return out
 
 
-def random_cohorts(market: str, days: int, top: int, every: int,
+def random_cohorts(snaps: list[dict], top: int, every: int,
+                   band: tuple[float | None, float | None] | None = None,
                    seed: int = SEED) -> list[tuple[str, list[dict]]]:
-    """같은 진입일, 같은 종목 수 — 다만 통과 종목에서 무작위로 뽑는다.
+    """같은 진입일, 같은 종목 수 — 다만 같은 풀에서 무작위로 뽑는다.
 
-    통과 필터(트렌드 템플릿 8조건) 자체의 기여는 양쪽에 똑같이 들어가므로,
+    통과 필터(와 band가 있으면 괴리 필터)의 기여는 양쪽에 똑같이 들어가므로,
     차이는 RS→VCP 순위가 더한 값이다.
     """
     rng = random.Random(seed)
-    snaps = B.snapshots(market, days)
     out = []
-    for s in snaps[:-1][::every] if every > 1 else snaps[:-1]:
+    for s in entry_snaps(snaps, every):
         rows = [{"ticker": t, **v} for t, v in s["rows"].items()]
+        if band is not None:
+            rows = [r for r in rows if in_band(r, *band)]
         out.append((s["date"], rng.sample(rows, min(top, len(rows)))))
     return out
 
@@ -106,7 +177,7 @@ def run(cohort: list[tuple[str, list[dict]]], market: str,
                 continue
             trades.append({"market": market, "ticker": r["ticker"],
                            "cohort": entry_date, "rs": r["rs"],
-                           "vcp": r["vcp"], **sim})
+                           "vcp": r["vcp"], "ext": extension(r), **sim})
     return trades
 
 
@@ -198,6 +269,81 @@ def show(label: str, trades: list[dict], bench: float | None = None) -> dict:
             "perf": a["perf"], "verdict": a["verdict"]}
 
 
+def by_bucket(trades: list[dict]) -> list[tuple[str, dict]]:
+    """거래를 진입 시 괴리 구간별로 묶어 전량 청산 기준 성과를 낸다."""
+    g: dict[str, list[dict]] = {}
+    for t in marked(trades):
+        g.setdefault(bucket_of(t.get("ext")), []).append(t)
+    order = [b[0] for b in EXT_BUCKETS] + ["피봇 없음"]
+    return [(k, P.perf(g[k])) for k in order if k in g]
+
+
+def _rpad(text: str, width: int) -> str:
+    """표시 너비 기준 오른쪽 정렬 — 한글 헤더가 두 칸을 차지해 밀리지 않게."""
+    used = sum(2 if unicodedata.east_asian_width(c) in "WF" else 1
+               for c in text)
+    return " " * max(0, width - used) + text
+
+
+def _row(label: str, m: dict, covered: str, edge: float | None,
+         show_edge: bool = True) -> str:
+    if "expectancy_r" not in m:
+        return (f"  {B.wpad(label, 26)} {m.get('trades', 0):>4}  "
+                f"{covered:>7}   거래 없음")
+    pay = "   -  " if m["payoff"] is None else f"{m['payoff']:5.2f}:1"
+    flag = " *" if m["measured"] < MIN_TRADES else "  "
+    line = (f"  {B.wpad(label, 26)} {m['measured']:>4}{flag}{covered:>7} "
+            f"{P.rfmt(m['expectancy_r'])} {m['win_rate'] * 100:5.1f}% "
+            f"{pay} {B.pct(m['avg_mae']).strip():>8}")
+    if show_edge:
+        line += "      -" if edge is None else f" {edge:+6.2f}R"
+    return line
+
+
+def ext_report(base_tr: list[dict], base_rnd: list[dict],
+               variants: list[tuple[str, tuple, list[dict], list[dict], int]],
+               n_cohorts: int) -> dict:
+    """피봇 괴리 진입 필터의 효과 — 전량 청산 기준.
+
+    variants: (라벨, 구간, 필터 후 상위 N 거래, 필터 풀 무작위 거래,
+               후보가 1개 이상 있던 코호트 수)
+    """
+    print(f"\n  [피봇 괴리 진입 필터]  구간 안에서 RS 상위 N — 전량 청산 기준")
+    print(f"  * = 거래 {MIN_TRADES} 미만 (판정 보류) · 무작위대비 = 같은 구간 "
+          f"풀에서 무작위로 뽑았을 때와의 차이")
+    print(f"  {B.wpad('구간', 26)} {_rpad('거래', 4)}  {_rpad('코호트', 7)} "
+          f"{_rpad('기대값', 7)} {_rpad('승률', 6)} {_rpad('손익비', 7)} "
+          f"{_rpad('평균MAE', 8)} {_rpad('무작위대비', 8)}")
+    print(f"  {'-' * 86}")
+    bm = P.perf(marked(base_tr))
+    bre = P.perf(marked(base_rnd)).get("expectancy_r")
+    bedge = (bm["expectancy_r"] - bre) if ("expectancy_r" in bm
+                                            and bre is not None) else None
+    print(_row("필터 없음 (현재 규칙)", bm, f"{n_cohorts}/{n_cohorts}", bedge))
+    rows = [{"label": "필터 없음 (현재 규칙)", "band": None, "perf": bm,
+             "rank_edge_r": bedge}]
+    for label, band, tr, rnd, cov in variants:
+        m = P.perf(marked(tr))
+        re_ = P.perf(marked(rnd)).get("expectancy_r")
+        edge = (m["expectancy_r"] - re_) if ("expectancy_r" in m
+                                              and re_ is not None) else None
+        print(_row(label, m, f"{cov}/{n_cohorts}", edge))
+        rows.append({"label": label, "band": band, "perf": m,
+                     "rank_edge_r": edge, "covered": cov})
+
+    # 현재 규칙이 실제로 산 종목을 진입 시 괴리로 쪼갠다 — 가설의 직접 검증.
+    print(f"\n  [현재 규칙의 거래를 진입 시 괴리로 분해]  연장된 진입이 정말 나빴나")
+    print(f"  {B.wpad('진입 시 괴리', 26)} {_rpad('거래', 4)}  {'':>7} "
+          f"{_rpad('기대값', 7)} {_rpad('승률', 6)} {_rpad('손익비', 7)} "
+          f"{_rpad('평균MAE', 8)}")
+    print(f"  {'-' * 78}")
+    buckets = by_bucket(base_tr)
+    for label, m in buckets:
+        print(_row(label, m, "", None, show_edge=False))
+    return {"bands": rows, "buckets": [{"bucket": k, "perf": m}
+                                       for k, m in buckets]}
+
+
 def grid(cohort, market, ohlc, o) -> list[dict]:
     """손절·익절 격자. 한 칸만 좋으면 과최적화다 (방침 3).
 
@@ -228,6 +374,8 @@ def grid(cohort, market, ohlc, o) -> list[dict]:
 def main(argv: list[str]) -> int:
     market = "us"
     rest, every, do_grid = [], 1, False
+    ext_lo = ext_hi = None
+    ext_grid = False
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -238,18 +386,41 @@ def main(argv: list[str]) -> int:
             every = max(1, int(argv[i]))
         elif a == "--grid":
             do_grid = True
+        elif a == "--ext-min" and i + 1 < len(argv):
+            i += 1
+            ext_lo = float(argv[i]) / 100
+        elif a == "--ext-max" and i + 1 < len(argv):
+            i += 1
+            ext_hi = float(argv[i]) / 100
+        elif a == "--ext-grid":
+            ext_grid = True
         else:
             rest.append(a)
         i += 1
     o, _, out_json = P.parse_args([x for x in rest])
 
-    cos = cohorts(market, o["days"], o["top"], every)
+    # 스냅샷은 한 번만 읽는다 — 구간마다 git 이력을 다시 훑지 않게.
+    snaps = B.snapshots(market, o["days"])
+    cos = cohorts(snaps, o["top"], every)
     if not cos:
         print(f"  {market}: 최근 {o['days']}일 스냅샷이 2개 미만이다")
         return 1
-    rnd = random_cohorts(market, o["days"], o["top"], every)
+    rnd = random_cohorts(snaps, o["top"], every)
+
+    bands: list[tuple[str, tuple]] = []
+    if ext_grid:
+        bands = [(lab, (lo, hi)) for lab, lo, hi in EXT_BANDS]
+    elif ext_lo is not None or ext_hi is not None:
+        lab = (f"피봇 {'' if ext_lo is None else f'{ext_lo * 100:+.0f}%'}"
+               f"~{'' if ext_hi is None else f'{ext_hi * 100:+.0f}%'}")
+        bands = [(lab, (ext_lo, ext_hi))]
+    var_cos = [(lab, band, cohorts(snaps, o["top"], every, band),
+                random_cohorts(snaps, o["top"], every, band))
+               for lab, band in bands]
 
     tickers = {r["ticker"] for _, rows in cos + rnd for r in rows}
+    for _, _, vc, vr in var_cos:
+        tickers |= {r["ticker"] for _, rows in vc + vr for r in rows}
     bt = B.CFG[market]["bench"]
     start = cos[0][0]
     print(f"\n{'=' * 92}")
@@ -289,6 +460,15 @@ def main(argv: list[str]) -> int:
             print(f"    순위가 값을 더한다 — 다만 비용·슬리피지를 넘는지는 "
                   f"기대값 절대 크기로 봐야 한다.")
 
+    ext = None
+    if var_cos:
+        variants = []
+        for lab, band, vc, vr in var_cos:
+            cov = sum(1 for _, rows in vc if rows)
+            variants.append((lab, band, run(vc, market, ohlc, o),
+                             run(vr, market, ohlc, o), cov))
+        ext = ext_report(top_tr, rnd_tr, variants, len(cos))
+
     g = grid(cos, market, ohlc, o) if do_grid else None
     if g:
         pos = [c for c in g if (c["expectancy_r"] or -1) > 0]
@@ -300,7 +480,8 @@ def main(argv: list[str]) -> int:
            "cohorts": len(cos), "every": every, "min_trades": MIN_TRADES,
            "seed": SEED, "benchmark": {"ticker": bt, "return": bench},
            "top": a, "random": b, "rank_edge_r": (ea - eb)
-           if (ea is not None and eb is not None) else None, "grid": g}
+           if (ea is not None and eb is not None) else None, "grid": g,
+           "pivot_extension": ext}
     if out_json:
         path = Path(out_json)
         path.parent.mkdir(parents=True, exist_ok=True)

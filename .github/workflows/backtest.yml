@@ -130,9 +130,10 @@ jobs:
               --stop "$STOP" --target "$TARGET" --grid \
               --json "val-$m-target.json" 2>&1 | tee -a report.txt
             echo "" | tee -a report.txt
-            echo "### 엄격 검증 $m · 추격손절" | tee -a report.txt
+            # 권장 규칙(추격손절)에서 피봇 괴리 진입 필터까지 함께 잰다.
+            echo "### 엄격 검증 $m · 추격손절 + 피봇 괴리" | tee -a report.txt
             python screener/validate.py "$m" --days "$DAYS" --top "$TOP" \
-              --stop "$STOP" --no-target --trail "${TRAIL:--15}" \
+              --stop "$STOP" --no-target --trail "${TRAIL:--15}" --ext-grid \
               --json "val-$m-trail.json" 2>&1 | tee -a report.txt
           done
 

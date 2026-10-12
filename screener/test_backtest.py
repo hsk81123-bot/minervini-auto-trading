@@ -34,14 +34,16 @@ SNAPS = [
 # 1) parse_snapshot — 필요한 필드만 뽑고 vcp 누락을 견딘다
 p = B.parse_snapshot({"data_date": "2026-09-01", "results": [
     {"ticker": "AAA", "name": "A사", "rs_rank": 99, "price": 10.0,
-     "vcp": {"score": 55}},
+     "vcp": {"score": 55, "pivot": 9.5, "stop": 8.0}},
     {"ticker": "BBB", "rs_rank": 80, "price": 20.0},       # vcp 없음
     {"name": "이름만"},                                     # ticker 없음 → 버린다
 ]})
 assert p["date"] == "2026-09-01"
 assert set(p["rows"]) == {"AAA", "BBB"}
-assert p["rows"]["AAA"] == {"name": "A사", "rs": 99, "vcp": 55, "price": 10.0}
+assert p["rows"]["AAA"] == {"name": "A사", "rs": 99, "vcp": 55, "price": 10.0,
+                           "pivot": 9.5, "vstop": 8.0}
 assert p["rows"]["BBB"]["vcp"] is None and p["rows"]["BBB"]["name"] == "BBB"
+assert p["rows"]["BBB"]["pivot"] is None          # vcp 없으면 피봇도 없다
 assert B.parse_snapshot({"results": []}) is None            # data_date 없음
 assert B.parse_snapshot({"data_date": "2026-09-01"}) is None
 ok("parse_snapshot: ticker 없는 행 제외, vcp·name 누락 허용")

@@ -88,7 +88,11 @@ def commit_shas(rel: str, since: date) -> list[str]:
 
 
 def parse_snapshot(doc: dict) -> dict | None:
-    """스냅샷 문서 → {date, rows: {ticker: {name, rs, vcp, price}}}"""
+    """스냅샷 문서 → {date, rows: {ticker: {name, rs, vcp, price, pivot, vstop}}}
+
+    pivot·vstop은 그 날 스크리너가 찍은 VCP 돌파 기준가·손절가다. price와 같은
+    날 같은 미수정가 기준이라 괴리율(price / pivot)을 섞임 없이 잴 수 있다.
+    """
     d = doc.get("data_date")
     rows = doc.get("results")
     if not isinstance(d, str) or not isinstance(rows, list):
@@ -104,6 +108,8 @@ def parse_snapshot(doc: dict) -> dict | None:
             "rs": r.get("rs_rank"),
             "vcp": vcp.get("score"),
             "price": r.get("price"),
+            "pivot": vcp.get("pivot"),
+            "vstop": vcp.get("stop"),
         }
     return {"date": d, "rows": out}
 
