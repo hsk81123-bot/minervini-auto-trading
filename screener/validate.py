@@ -46,6 +46,7 @@
     python screener/validate.py us --days 90 --json val.json
     python screener/validate.py us --ext-max 5 --ext-min 0  # 피봇 0~+5%만 진입
     python screener/validate.py us --ext-grid           # 피봇 괴리 구간 격자
+    python screener/validate.py us --ext-caps 15,20,25,35,50  # 상한 민감도
 """
 import json
 import random
@@ -84,6 +85,29 @@ EXT_BUCKETS = (
     ("+10~+25%", 0.10, 0.25),
     ("+25% 이상", 0.25, None),
 )
+
+
+def build_bands(ext_grid: bool, ext_caps: list[float] | None,
+                lo: float | None, hi: float | None
+                ) -> list[tuple[str, tuple[float | None, float | None]]]:
+    """실행할 피봇 괴리 구간 목록.
+
+    ext_caps 는 '상한만 두는' 구간(+X% 이하) 민감도 점검이다. 상한 필터는
+    피봇 없는 종목까지 함께 빼므로, 그 효과만 따로 보이게 '피봇 있는 종목만'
+    (상한 없음) 행을 앞에 둔다. 상한값의 효과는 이 행과 비교해서 읽는다.
+    """
+    bands: list[tuple[str, tuple[float | None, float | None]]] = []
+    if ext_grid:
+        bands += [(lab, (a, b)) for lab, a, b in EXT_BANDS]
+    if ext_caps:
+        bands.append(("피봇 있는 종목만", (None, None)))
+        bands += [(f"피봇 {c * 100:+.0f}% 이하", (None, c))
+                  for c in sorted(ext_caps)]
+    if not bands and (lo is not None or hi is not None):
+        lab = (f"피봇 {'' if lo is None else f'{lo * 100:+.0f}%'}"
+               f"~{'' if hi is None else f'{hi * 100:+.0f}%'}")
+        bands.append((lab, (lo, hi)))
+    return bands
 
 
 def extension(row: dict) -> float | None:
@@ -376,6 +400,7 @@ def main(argv: list[str]) -> int:
     rest, every, do_grid = [], 1, False
     ext_lo = ext_hi = None
     ext_grid = False
+    ext_caps: list[float] = []
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -394,6 +419,10 @@ def main(argv: list[str]) -> int:
             ext_hi = float(argv[i]) / 100
         elif a == "--ext-grid":
             ext_grid = True
+        elif a == "--ext-caps" and i + 1 < len(argv):
+            i += 1
+            ext_caps = [float(x) / 100 for x in argv[i].split(",")
+                        if x.strip()]
         else:
             rest.append(a)
         i += 1
@@ -407,13 +436,7 @@ def main(argv: list[str]) -> int:
         return 1
     rnd = random_cohorts(snaps, o["top"], every)
 
-    bands: list[tuple[str, tuple]] = []
-    if ext_grid:
-        bands = [(lab, (lo, hi)) for lab, lo, hi in EXT_BANDS]
-    elif ext_lo is not None or ext_hi is not None:
-        lab = (f"피봇 {'' if ext_lo is None else f'{ext_lo * 100:+.0f}%'}"
-               f"~{'' if ext_hi is None else f'{ext_hi * 100:+.0f}%'}")
-        bands = [(lab, (ext_lo, ext_hi))]
+    bands = build_bands(ext_grid, ext_caps, ext_lo, ext_hi)
     var_cos = [(lab, band, cohorts(snaps, o["top"], every, band),
                 random_cohorts(snaps, o["top"], every, band))
                for lab, band in bands]

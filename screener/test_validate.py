@@ -217,4 +217,29 @@ assert abs(bb["+25% 이상"]["expectancy_r"] + 1.0) < 1e-12
 assert abs(bb["0~+5%"]["expectancy_r"] - 2.0) < 1e-12
 ok("by_bucket: 진입 시 괴리별 성과 — 연장 진입이 나빴는지 직접 잰다")
 
+# 20) build_bands — 상한 민감도에는 '피봇 있는 종목만' 대조 행이 붙는다
+b = V.build_bands(False, [0.35, 0.15, 0.25], None, None)
+assert [x[0] for x in b] == ["피봇 있는 종목만", "피봇 +15% 이하",
+                             "피봇 +25% 이하", "피봇 +35% 이하"], b
+assert b[0][1] == (None, None) and b[2][1] == (None, 0.25)
+ok("build_bands: 상한 구간은 정렬되고, 피봇 없는 종목 제외 효과를 따로 보는 행이 앞에 온다")
+
+# 21) 격자와 상한을 함께 쓰면 둘 다 들어가고, 단일 구간 옵션은 무시된다
+b = V.build_bands(True, [0.25], 0.0, 0.05)
+assert len(b) == len(V.EXT_BANDS) + 2
+b = V.build_bands(False, None, 0.0, 0.05)
+assert b == [("피봇 +0%~+5%", (0.0, 0.05))], b
+assert V.build_bands(False, None, None, None) == []
+ok("build_bands: 격자+상한 동시 지원, 아무것도 없으면 빈 목록")
+
+# 22) 상한 구간은 피봇 아래 종목을 포함하고, 피봇 없는 종목은 뺀다
+c = V.cohorts(SNAPS, 9, 1, (None, 0.25))
+got = [r["ticker"] for r in c[0][1]]
+assert got == ["NEAR", "EDGE", "BELOW"], got     # HOT(+100%) WARM(+30%) 제외
+assert "NOPIV" not in got
+c = V.cohorts(SNAPS, 9, 1, (None, None))
+assert "NOPIV" not in [r["ticker"] for r in c[0][1]]
+assert "HOT" in [r["ticker"] for r in c[0][1]]
+ok("상한 구간: 연장 종목만 빼고 피봇 아래는 남긴다, 피봇 없는 종목은 대조 행에서도 빠진다")
+
 print("\n전체 통과")

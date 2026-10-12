@@ -125,15 +125,19 @@ jobs:
           set -o pipefail
           for m in us kr; do
             echo "" | tee -a report.txt
-            echo "### 엄격 검증 $m · 고정 익절" | tee -a report.txt
+            # 피봇 +X% 초과 제외 규칙의 상한 민감도 — 매도 규칙 두 가지 모두에서.
+            # 한 상한값에서만 좋으면 우연이다. 이웃 값과 두 규칙에서 함께 봐야 한다.
+            echo "### 엄격 검증 $m · 고정 익절 + 피봇 상한" | tee -a report.txt
             python screener/validate.py "$m" --days "$DAYS" --top "$TOP" \
               --stop "$STOP" --target "$TARGET" --grid \
+              --ext-caps 15,20,25,35,50 \
               --json "val-$m-target.json" 2>&1 | tee -a report.txt
             echo "" | tee -a report.txt
             # 권장 규칙(추격손절)에서 피봇 괴리 진입 필터까지 함께 잰다.
-            echo "### 엄격 검증 $m · 추격손절 + 피봇 괴리" | tee -a report.txt
+            echo "### 엄격 검증 $m · 추격손절 + 피봇 괴리·상한" | tee -a report.txt
             python screener/validate.py "$m" --days "$DAYS" --top "$TOP" \
               --stop "$STOP" --no-target --trail "${TRAIL:--15}" --ext-grid \
+              --ext-caps 15,20,25,35,50 \
               --json "val-$m-trail.json" 2>&1 | tee -a report.txt
           done
 

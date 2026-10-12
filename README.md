@@ -167,9 +167,13 @@ python screener/test_validate.py
 ```bash
 python screener/validate.py us --no-target --trail -15 --ext-grid
 python screener/validate.py us --ext-min 0 --ext-max 5    # 피봇 0~+5%만 진입
+python screener/validate.py us --ext-caps 15,20,25,35,50   # 피봇 +X% 초과 제외, 상한 민감도
 ```
 
-세 스크립트의 단위 테스트(백테스트 17 · 모의매매 29 · 검증 20)는 모두 네트워크
+상한 필터(`--ext-caps`)는 피봇 없는 종목까지 함께 빼므로 "피봇 있는 종목만" 행이
+대조군으로 붙는다. 상한값의 효과는 그 행과 비교해서 읽는다.
+
+세 스크립트의 단위 테스트(백테스트 17 · 모의매매 29 · 검증 23)는 모두 네트워크
 없이 돌고, 합성 데이터로 손 검산한 값만 쓴다.
 
 ## Firebase 연동 (매매 기록 기기 간 동기화, 선택)
