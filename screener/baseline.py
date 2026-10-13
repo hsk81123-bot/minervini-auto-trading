@@ -80,7 +80,7 @@ def tracking(fr: E.Frame, a: str, b: str, lo: str, hi: str) -> dict:
             "cagr_diff": E.cagr(x, fr.days(ix)) - E.cagr(y, fr.days(ix))}
 
 
-def build_frame(args=None) -> tuple[E.Frame, dict]:
+def build_frame() -> tuple[E.Frame, dict, dict]:
     px, data, ex = S.all_prices()
     spy = S.Spy(ex["spy"])
     m = S.load_members()
@@ -136,7 +136,9 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
             "backfilled": caps.backfilled, "selfcheck": selfcheck(caps), "tops": tops, "debug": debug, "dropped": caps.dropped,
             "adjusted_only": caps.adjusted_only, "shares_tickers": len(shares),
             "cost_bp": cost, "rsp": rsp is not None}
-    return fr, meta
+    ctx = {"p": p, "caps": caps, "members": members, "snaps": snaps, "px": px,
+           "spy": spy, "spy_df": ex["spy"], "cost": cost, "fr": fr, "runs": runs}
+    return fr, meta, ctx
 
 
 def report(fr: E.Frame, meta: dict) -> dict:
@@ -246,7 +248,7 @@ def report(fr: E.Frame, meta: dict) -> dict:
 
 def main(argv: list[str]) -> int:
     out_json = argv[argv.index("--json") + 1] if "--json" in argv else None
-    fr, meta = build_frame()
+    fr, meta, _ = build_frame()
     doc = report(fr, meta)
     if out_json:
         Path(out_json).write_text(json.dumps(doc, ensure_ascii=False, indent=1,

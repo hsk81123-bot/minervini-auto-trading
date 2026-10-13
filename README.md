@@ -28,6 +28,7 @@
 │  ├─ evalkit.py                     # 후보 평가 공통 도구: ROADMAP 성공 기준 6개를 코드로 고정
 │  ├─ marketcap.py                   # 시점 기준 시가총액 (SEC 발행주식수 × 분할·배당 되돌린 가격)
 │  ├─ baseline.py                    # 기준선 보고 (시총 가중 추적 검증 · 생존편향 보정치 · 판정)
+│  ├─ hypotheses.py                  # 사전 등록 가설 H1~H3 (ROADMAP 단계 2)
 │  └─ requirements.txt
 ├─ docs/                            # GitHub Pages 정적 웹앱 (빌드 도구 없음)
 │  ├─ index.html                    # SPA 진입점 (해시 라우팅)

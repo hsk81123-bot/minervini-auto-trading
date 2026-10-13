@@ -217,9 +217,12 @@ def verdict(fr: Frame, name: str) -> dict:
 
 
 # ---------------------------------------------------------------- 가중치 → 수익
-def run_weights(sched: list[tuple[str, dict[str, float]]], prices, cost_bp: float
+def run_weights(sched: list[tuple[str, dict[str, float] | None]], prices, cost_bp: float
                 ) -> tuple[list[str], list[str], list[str], list[float], list[float]]:
-    """(신호일, {종목: 비중}) 목록 → (signal, d0, d1, 총수익, 순수익).
+    """(신호일, {종목: 비중} 또는 None) 목록 → (signal, d0, d1, 총수익, 순수익).
+
+    비중이 None 이면 '거래하지 않음' — 직전 기간 끝에 흘러간 비중을 그대로 들고 간다
+    (월 1회 리밸런싱 같은 규칙용, 비용 0). 가격이 끊긴 종목은 현금으로 돌린다.
 
     비중 합이 1 보다 작으면 나머지는 현금(수익 0). 가격이 없는 종목은 빼고 남은 종목에
     원래 합계를 다시 나눈다. 진입 = 신호 다음 거래일 시가, 청산 = 다음 신호의 다음날 시가
@@ -231,6 +234,9 @@ def run_weights(sched: list[tuple[str, dict[str, float]]], prices, cost_bp: floa
         d0, d1 = prices.entry_day(s), prices.entry_day(s2)
         if d0 is None or d1 is None or d0 >= d1:
             continue
+        hold = w is None
+        if hold:
+            w = dict(prev)                       # 거래 없이 직전 비중 그대로
         total = sum(w.values())
         rets = {}
         for t in w:
@@ -239,10 +245,13 @@ def run_weights(sched: list[tuple[str, dict[str, float]]], prices, cost_bp: floa
             if a and b:
                 rets[t] = b / a - 1
         have = sum(w[t] for t in rets)
-        wn = {t: w[t] * total / have for t in rets} if have > 0 else {}
+        if hold:                                  # 가격 없는 종목은 현금 (재분배하지 않음)
+            wn = {t: w[t] for t in rets}
+        else:
+            wn = {t: w[t] * total / have for t in rets} if have > 0 else {}
         g = sum(wn[t] * rets[t] for t in wn)
-        turnover = sum(abs(wn.get(t, 0.0) - prev.get(t, 0.0))
-                       for t in set(wn) | set(prev))
+        turnover = 0.0 if hold else sum(abs(wn.get(t, 0.0) - prev.get(t, 0.0))
+                                        for t in set(wn) | set(prev))
         n = (1 - cost_bp / 1e4 * turnover) * (1 + g) - 1
         sig.append(s), d0s.append(d0), d1s.append(d1), gross.append(g), net.append(n)
         prev = ({t: wn[t] * (1 + rets[t]) / (1 + g) for t in wn} if g > -1 else {})

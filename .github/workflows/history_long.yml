@@ -11,6 +11,8 @@ on:
       - ".github/workflows/history_long.yml"
       - "screener/baseline.py"
       - "screener/test_evalkit.py"
+      - "screener/hypotheses.py"
+      - "screener/test_hypotheses.py"
       - "screener/evalkit.py"
       - "screener/marketcap.py"
       - "screener/test_marketcap.py"
@@ -52,6 +54,7 @@ jobs:
           python screener/test_evalkit.py
           python screener/test_marketcap.py
           python screener/test_pit_fund.py
+          python screener/test_hypotheses.py
 
       - name: Cache key
         id: key
@@ -135,6 +138,14 @@ jobs:
           echo "### 기준선 (단계 1)" | tee -a report.txt
           python screener/baseline.py --json baseline.json 2>&1 | tee -a report.txt
 
+      # ROADMAP 단계 2: 사전 등록 H1~H3 — 설계 기간 통과 때만 보류 기간 계산
+      - name: Hypotheses H1-H3 (stage 2)
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 가설 H1~H3 (단계 2)" | tee -a report.txt
+          python screener/hypotheses.py --json hypotheses.json 2>&1 | tee -a report.txt
+
       - name: Summary
         if: always()
         run: |
@@ -150,3 +161,4 @@ jobs:
             report.txt
             diagnose-long.json
             baseline.json
+            hypotheses.json

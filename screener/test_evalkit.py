@@ -155,6 +155,20 @@ sg, _, _, gr, _ = E.run_weights([(cal[0], {"A": 0.5, "Z": 0.5}), (cal[2], {})], 
 assert abs(gr[0] - 0.2) < 1e-12
 sg, _, _, gr, _ = E.run_weights([(cal[0], {"A": 0.5}), (cal[2], {})], p, 0.0)
 assert abs(gr[0] - 0.1) < 1e-12                                       # 50% 현금
+# 거래 없음(None): 직전 비중이 흘러간 대로 들고 가고 비용 0
+sg, h0, h1, gr, nt = E.run_weights([(cal[0], {"A": 0.5, "B": 0.5}), (cal[2], None),
+                                    (cal[4], None)], p, 10.0)
+assert len(gr) == 2
+g1 = 0.5 * 0.2 + 0.5 * (-0.1)
+assert abs(gr[0] - g1) < 1e-12
+# 둘째 기간: A 0.5·1.2/1.05, B 0.5·0.9/1.05 로 시작 → cal[3]→cal[5] 에서 A 12→12, B 18→18
+assert abs(gr[1]) < 1e-12 and nt[1] == gr[1]                      # 가격 변화 없음 · 비용 0
+# 가격이 없는 종목은 현금으로 (재분배하지 않는다)
+pz = T.Prices(px, {"A", "B"}, cal)
+sg, _, _, gr, nt = E.run_weights([(cal[0], {"A": 0.5, "Z": 0.5}), (cal[2], None),
+                                  (cal[4], None)], pz, 0.0)
+assert abs(gr[0] - 0.2) < 1e-12                                    # Z 는 빼고 A 에 몰림 → A 100%
+assert abs(gr[1]) < 1e-12
 assert E.ew(["A", "B"]) == {"A": 0.5, "B": 0.5} and E.ew([]) == {}
 cw = E.cap_weights(["A", "B", "Z"], {"A": 3.0, "B": 1.0})
 assert cw == {"A": 0.75, "B": 0.25}
