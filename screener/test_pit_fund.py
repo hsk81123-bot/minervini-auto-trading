@@ -145,4 +145,26 @@ for trial in range(30):
         assert T.doc_asof(prep, cutoff) == ref_doc(raw, cutoff), (trial, cutoff)
 ok("중복 제거·공시일 정렬 후에도 원본 행으로 계산한 문서와 같다 (30회 × 4시점)")
 
+# 발행주식수: 종류가 여럿이면 합 · 같은 행 중복은 한 번 · 정정 양식 포함 · 공시일 < 신호일
+def dei(rows):
+    return {"facts": {"dei": {"EntityCommonStockSharesOutstanding":
+                              {"units": {"shares": rows}}}}}
+
+
+R = lambda accn, end, val, filed, form="10-Q": {"accn": accn, "end": end, "val": val,
+                                                 "filed": filed, "form": form}
+sh = T.compact_shares(dei([
+    R("a1", "2023-04-20", 5_000, "2023-05-02"), R("a1", "2023-04-20", 800, "2023-05-02"),
+    R("a1", "2023-04-20", 5_000, "2023-05-02"),                 # 같은 행 중복
+    R("a2", "2023-07-20", 5_100, "2023-08-02"), R("a2", "2023-07-20", 800, "2023-08-02"),
+    R("a3", "2023-10-20", 0, "2023-11-02"),                     # 0 은 버린다
+    R("a4", "2023-10-20", 7, "2023-11-02", "8-K")]))             # 다른 양식
+assert sh == [["2023-05-02", "2023-04-20", 5_800], ["2023-08-02", "2023-07-20", 5_900]]
+assert T.shares_at(sh, "2023-05-02") is None                    # 같은 날 공시는 아직 모른다
+assert T.shares_at(sh, "2023-05-03") == (5_800, "2023-04-20")
+assert T.shares_at(sh, "2023-09-01") == (5_900, "2023-07-20")
+assert T.shares_at(sh, "2024-12-01") is None                    # 기준일이 400일 넘게 전
+assert T.shares_at(None, "2023-09-01") is None and T.compact_shares({}) == []
+ok("compact_shares / shares_at: 종류별 합산 · 중복 · 공시일 < 신호일 · 오래된 값 제외")
+
 print("\n  전체 통과")

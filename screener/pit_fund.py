@@ -25,6 +25,7 @@ filed < d 인 행만으로 분기 표를 다시 만들고 지표를 낸다.
 """
 import gzip
 import json
+import os
 import sys
 import time
 import zipfile
@@ -37,10 +38,12 @@ import code33 as Q
 import fundamentals as F
 
 ROOT = Path(__file__).resolve().parent.parent
-CACHE = ROOT / ".cache"
+# history.py 와 같은 규칙: HISTORY_CACHE 로 다른 캐시(긴 기간)를 쓴다
+CACHE = Path(os.environ.get("HISTORY_CACHE") or ROOT / ".cache")
 FACTS_ZIP = CACHE / "companyfacts.zip"
 FACTS = CACHE / "us_facts.json.gz"
 TIMELINE = CACHE / "us_fund_pit.json.gz"
+SHARES = CACHE / "us_shares.json.gz"
 UNIVERSE = ROOT / "docs" / "data" / "tickers_us.json"
 SP500_PIT = CACHE / "sp500_pit.json"
 URL = "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip"
@@ -122,6 +125,59 @@ def compact(facts: dict) -> dict[str, dict[str, list]]:
     return out
 
 
+def compact_shares(facts: dict) -> list[list]:
+    """표지의 발행주식수 → [[공시일, 기준일, 총 주식수], …] 공시일 순.
+
+    dei:EntityCommonStockSharesOutstanding 은 종류가 여럿인 회사(GOOGL 등)에서 같은
+    공시에 종류별 값이 따로 온다. 같은 (공시번호, 기준일)의 서로 다른 값은 더해
+    총 주식수로 쓴다. 같은 행이 여러 번 실린 경우(accn·val 이 같음)는 한 번만 센다.
+    """
+    units = (facts.get("facts", {}).get("dei", {})
+             .get("EntityCommonStockSharesOutstanding", {}).get("units") or {})
+    rows = units.get("shares") or next(iter(units.values()), [])
+    seen, tot, meta = set(), {}, {}
+    for r in rows:
+        if r.get("form") not in FORMS + ("10-K/A", "10-Q/A") or not r.get("filed") \
+                or r.get("val") is None or not r.get("end"):
+            continue
+        key = (r.get("accn"), r["end"], r["val"])
+        if key in seen:
+            continue
+        seen.add(key)
+        g = (r.get("accn") or r["filed"], r["end"])
+        tot[g] = tot.get(g, 0) + r["val"]
+        meta[g] = r["filed"]
+    return sorted(([meta[g], g[1], v] for g, v in tot.items() if v > 0),
+                  key=lambda x: (x[0], x[1]))
+
+
+def shares_at(rows: list[list] | None, d: str, max_age_days: int = 400,
+              backfill_days: int = 0) -> tuple[float, str] | None:
+    """신호일 d 에 알 수 있던 가장 최근 발행주식수 (공시일 < d) → (주식수, 기준일).
+    기준일이 d 보다 max_age_days 넘게 전이면 없는 셈.
+
+    XBRL 표지 공시는 2009~2011년에 시작해 그 전 날짜에는 값이 없다. backfill_days > 0 이면
+    d 이후 backfill_days 안에 첫 공시가 있을 때 그 값을 쓴다 — 미래 정보를 쓰는 셈이라
+    '근사 비중' 용도로만(결과 판정이 아니라 가중치의 대략적인 크기) 허용하고, 호출하는 쪽이
+    분할 배수로 d 기준으로 되돌린다 (marketcap.Caps)."""
+    if not rows:
+        return None
+    i = bisect_left([x[0] for x in rows], d) - 1
+    if i < 0:
+        if backfill_days and rows[0][0] <= (date.fromisoformat(d)
+                                            + timedelta(days=backfill_days)).isoformat():
+            return rows[0][2], rows[0][1]
+        return None
+    # 같은 공시일에 여러 기준일이 있으면 가장 최근 기준일
+    j = i
+    while j > 0 and rows[j - 1][0] == rows[i][0]:
+        j -= 1
+    fd, end, v = max(rows[j:i + 1], key=lambda x: x[1])
+    if end < (date.fromisoformat(d) - timedelta(days=max_age_days)).isoformat():
+        return None
+    return v, end
+
+
 def universe_ciks() -> dict[str, str]:
     """유니버스 + (있으면) 기간 중 S&P 500 구성종목이던 종목 → CIK."""
     names = set(json.loads(UNIVERSE.read_text(encoding="utf-8")))
@@ -141,7 +197,7 @@ def universe_ciks() -> dict[str, str]:
 def extract() -> None:
     ciks = universe_ciks()
     t0 = time.time()
-    out, missing = {}, 0
+    out, shares, missing = {}, {}, 0
     with zipfile.ZipFile(FACTS_ZIP) as z:
         have = set(z.namelist())
         for n, (t, cik) in enumerate(sorted(ciks.items()), 1):
@@ -149,15 +205,22 @@ def extract() -> None:
             if name not in have:
                 missing += 1
                 continue
-            c = compact(json.loads(z.read(name)))
+            raw = json.loads(z.read(name))
+            c = compact(raw)
             if c:
                 out[t] = c
+            sh = compact_shares(raw)
+            if sh:
+                shares[t] = sh
             if n % 1000 == 0:
                 print(f"  {n}/{len(ciks)} ({time.time() - t0:.0f}s)", flush=True)
     with gzip.open(FACTS, "wt", encoding="utf-8") as f:
         json.dump(out, f, separators=(",", ":"))
+    with gzip.open(SHARES, "wt", encoding="utf-8") as f:
+        json.dump(shares, f, separators=(",", ":"))
     print(f"  CIK 매핑 {len(ciks)} · 파일 없음 {missing} · us-gaap 태그 있음 "
-          f"{len(out)} → {FACTS} ({time.time() - t0:.0f}s)", flush=True)
+          f"{len(out)} → {FACTS} · 발행주식수 있음 {len(shares)} → {SHARES} "
+          f"({time.time() - t0:.0f}s)", flush=True)
 
 
 # ---------------------------------------------------------------- 3) 타임라인
@@ -236,6 +299,11 @@ def timeline() -> None:
 
 
 # ---------------------------------------------------------------- 조회
+def load_shares() -> dict[str, list[list]]:
+    with gzip.open(SHARES, "rt", encoding="utf-8") as f:
+        return json.load(f)
+
+
 def load_timeline() -> dict[str, list[list]]:
     with gzip.open(TIMELINE, "rt", encoding="utf-8") as f:
         return json.load(f)

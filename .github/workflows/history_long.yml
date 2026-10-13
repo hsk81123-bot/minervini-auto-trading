@@ -9,6 +9,14 @@ on:
     branches: ["claude/**"]
     paths:
       - ".github/workflows/history_long.yml"
+      - "screener/baseline.py"
+      - "screener/test_evalkit.py"
+      - "screener/hypotheses.py"
+      - "screener/test_hypotheses.py"
+      - "screener/evalkit.py"
+      - "screener/marketcap.py"
+      - "screener/test_marketcap.py"
+      - "screener/ledger.json"
 
 permissions:
   contents: read
@@ -43,10 +51,14 @@ jobs:
           python screener/test_spx.py
           python screener/test_template.py
           python screener/test_diagnose.py
+          python screener/test_evalkit.py
+          python screener/test_marketcap.py
+          python screener/test_pit_fund.py
+          python screener/test_hypotheses.py
 
       - name: Cache key
         id: key
-        run: echo "prices=us-prices-long-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+        run: echo "prices=us-prices-long-v2-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
       - name: Restore price cache
         id: cache
@@ -66,10 +78,48 @@ jobs:
           path: .cache-long/us_prices.pkl
           key: ${{ steps.key.outputs.prices }}
 
-      - name: S&P 500 members · prices · rebuild
+      - name: S&P 500 members
         run: |
           set -o pipefail
           python screener/spx_validate.py members 2>&1 | tee report.txt
+
+      # 시총 가중용 발행주식수(SEC 표지). 구성종목 이력이 있어야 옛 구성종목도 포함된다.
+      - name: SEC facts key
+        id: fkey
+        run: echo "facts=us-facts-long-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore SEC facts cache
+        id: fcache
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .cache-long/us_facts.json.gz
+            .cache-long/us_shares.json.gz
+          key: ${{ steps.fkey.outputs.facts }}
+
+      - name: Download SEC facts
+        id: facts
+        if: steps.fcache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          python screener/pit_fund.py download
+          python screener/pit_fund.py extract
+          rm -f .cache-long/companyfacts.zip
+
+      - name: Save SEC facts cache
+        if: steps.fcache.outputs.cache-hit != 'true' && steps.facts.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .cache-long/us_facts.json.gz
+            .cache-long/us_shares.json.gz
+          key: ${{ steps.fkey.outputs.facts }}
+
+      - name: S&P 500 prices · rebuild
+        run: |
+          set -o pipefail
           python screener/spx_validate.py prices 2>&1 | tail -3 | tee -a report.txt
           python screener/spx_validate.py rebuild 2>&1 | tail -1 | tee -a report.txt
 
@@ -79,6 +129,22 @@ jobs:
           python screener/diagnose.py --json diagnose-long.json --periods \
             2005-01-01:2008-12-31,2009-01-01:2012-12-31,2013-01-01:2018-12-31,2019-01-01:2023-12-31,2024-01-01:2099-12-31 \
             2>&1 | tee -a report.txt
+
+      # ROADMAP 단계 1: 잣대가 맞는지 (시총 가중 추적 · 생존편향 보정치 · 기준선 판정)
+      - name: Baseline (stage 1)
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 기준선 (단계 1)" | tee -a report.txt
+          python screener/baseline.py --json baseline.json 2>&1 | tee -a report.txt
+
+      # ROADMAP 단계 2: 사전 등록 H1~H3 — 설계 기간 통과 때만 보류 기간 계산
+      - name: Hypotheses H1-H3 (stage 2)
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 가설 H1~H3 (단계 2)" | tee -a report.txt
+          python screener/hypotheses.py --json hypotheses.json 2>&1 | tee -a report.txt
 
       - name: Summary
         if: always()
@@ -94,3 +160,5 @@ jobs:
           path: |
             report.txt
             diagnose-long.json
+            baseline.json
+            hypotheses.json

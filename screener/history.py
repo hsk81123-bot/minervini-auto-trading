@@ -114,6 +114,9 @@ def fetch_prices(tickers: list[str], start: str) -> tuple[dict[str, pd.DataFrame
                 sp = sub["Stock Splits"].fillna(0.0).astype("float32")
                 frame["Splits"] = sp
                 with_splits += int((sp > 0).any())
+            if "Dividends" in sub.columns:
+                # 시가총액용: 배당 조정을 되돌려 '그 날 실제 거래가'를 만든다 (marketcap.py)
+                frame["Dividends"] = sub["Dividends"].fillna(0.0).astype("float32")
             prices[t] = frame
         print(f"  가격 {min(i + BATCH, len(tickers))}/{len(tickers)} "
               f"(보관 {len(prices)})", flush=True)
