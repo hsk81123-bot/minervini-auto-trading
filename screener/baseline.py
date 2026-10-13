@@ -35,6 +35,9 @@ REFS = (("spy", "SPY"), ("rsp", "RSP (동일가중 ETF)"), ("pool", "풀 동일�
         ("tmpl_cw", "템플릿 시총가중"))
 
 
+TOP_DATES = ("2006-06-30", "2010-06-30", "2014-06-30", "2018-06-29", "2021-06-30",
+             "2025-06-30")
+TOP_N = 10
 BACKFILL_DAYS = 6 * 366       # 첫 XBRL 공시(2009~2011) 이전 날짜의 주식수 근사 허용 범위
 # 기억에 의한 참고 종가 (실제 거래가, 분할·배당 조정 전). 1% 넘게 어긋나면 가격 복원을 의심한다.
 REF_PRICES = (("AAPL", "2019-02-08", 170.18), ("MSFT", "2019-02-08", 105.67))
@@ -102,6 +105,12 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
                          if have_px else 0.0)
         cw_pool.append((sig, E.cap_weights(mm, c)))
         cw_tmpl.append((sig, E.cap_weights(set(s["rows"]), c)))
+    tops = {}
+    for want in TOP_DATES:
+        cand = [x for x in cw_pool if x[0] <= want]
+        if cand:
+            sig, w = cand[-1]
+            tops[sig] = sorted(w.items(), key=lambda x: -x[1])[:TOP_N]
     scheds = {"pool": [(s["date"], E.ew(members[s["date"]])) for s in snaps],
               "pool_cw": cw_pool,
               "tmpl_ew": [(s["date"], E.ew(s["rows"])) for s in snaps],
@@ -122,7 +131,7 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
         fr.add(k, r[4])
     meta = {"cap_cover": sum(cap_cover) / len(cap_cover), "undone": caps.undone,
             "cover_by_sig": dict(zip([x[0] for x in cw_pool], cap_cover)),
-            "backfilled": caps.backfilled, "selfcheck": selfcheck(caps),
+            "backfilled": caps.backfilled, "selfcheck": selfcheck(caps), "tops": tops,
             "adjusted_only": caps.adjusted_only, "shares_tickers": len(shares),
             "cost_bp": cost, "rsp": rsp is not None}
     return fr, meta
@@ -194,6 +203,10 @@ def report(fr: E.Frame, meta: dict) -> dict:
             print(f"  {el:<22} {corr:>7} {t['te'] * 100:7.2f}% "
                   f"{E.pct(t['cagr_diff'], 10)} {t['coverage'] * 100:12.1f}%")
     doc["tracking"] = trk
+    print(f"\n  [시총 가중치 상위 {TOP_N}] 시총이 큰 종목이 맞는지 — 엉뚱한 종목이 있으면 주식수 오류")
+    for sig, rows in meta["tops"].items():
+        print(f"    {sig}  " + "  ".join(f"{t} {w * 100:.1f}%" for t, w in rows))
+    doc["tops"] = meta["tops"]
     if "rsp" in fr.r:
         print(f"\n  [생존편향 보정치] 후보 수익에서 빼는 연 %p = mean(max(풀 동일가중 − RSP, 0)) × 52")
         hc = E.survivorship_haircut(fr)
