@@ -210,6 +210,12 @@ assert H.stale_ratio([1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 5.0]) == 0.5
 assert H.stale_ratio([1.0], None) is None
 ok("match_count / stale_ratio: 모집단 원점수 대조와 지연 데이터 감지")
 
+# 8c) 전 거래일 찾기 — 재구성된 날짜들 중 바로 앞
+by = {"2026-09-10": 0, "2026-09-11": 0, "2026-09-14": 0}
+assert H.prev_trading("2026-09-14", by) == "2026-09-11"
+assert H.prev_trading("2026-09-10", by) is None
+ok("prev_trading: 실제 스냅샷이 하루 늦었는지 대조할 전 거래일")
+
 # 9) 3단계 판정 기준은 결과 전에 고정
 assert [k for k, _ in H.HISTORY_CHECKS] == ["fidelity", "years_positive"]
 assert H.FIDELITY_JACCARD >= 0.9 and H.FIDELITY_TOP5 >= 4

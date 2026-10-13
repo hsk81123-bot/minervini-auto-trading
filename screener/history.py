@@ -230,6 +230,9 @@ def rebuild(top_check: bool = True) -> None:
     actual = {s["date"] for s in B.snapshots("us", 3650)}
     extra = [pd.Timestamp(d) for d in sorted(actual)
              if pd.Timestamp(d) in cal]
+    # 실제 스냅샷이 하루 늦은 데이터였는지 가리려면 그 전 거래일 재구성도 필요하다
+    pos = {d: i for i, d in enumerate(cal)}
+    extra = sorted(set(extra) | {cal[pos[d] - 1] for d in extra if pos[d] > 0})
     sig = pd.DatetimeIndex(sorted(set(weekly) | set(extra)))
     weekly_set = {d.strftime("%Y-%m-%d") for d in weekly}
     print(f"  신호일 {len(sig)}개 (주간 {len(weekly)} · 실제 스냅샷 대조용 "
@@ -351,6 +354,12 @@ def stale_ratio(cur: list[float], prev: list[float] | None) -> float | None:
     return sum((Counter(cur) & Counter(prev)).values()) / len(cur)
 
 
+def prev_trading(d: str, snaps_by_date: dict) -> str | None:
+    """재구성된 날짜들 중 d 바로 앞 날짜 (rebuild 가 실제 스냅샷 전 거래일을 넣어 둔다)."""
+    earlier = [k for k in snaps_by_date if k < d]
+    return max(earlier) if earlier else None
+
+
 def fidelity(verbose: bool = True) -> dict:
     snaps_rec = {s["date"]: s for s in load_snaps()}
     rec = {d: s["rows"] for d, s in snaps_rec.items()}
@@ -368,7 +377,19 @@ def fidelity(verbose: bool = True) -> dict:
         if actual is None:
             continue
         pop = snaps_rec[d].get("pop") or {}
+        prev_d = prev_trading(d, snaps_rec)
+        prev_pop = (snaps_rec[prev_d].get("pop") or {}) if prev_d else {}
+        m_same = match_count(cur, list(pop.values())) if pop else 0
+        m_prev = match_count(cur, list(prev_pop.values())) if prev_pop else 0
+        # 실제 원점수가 전 거래일 재구성과 더 많이 맞으면 그 날 실제 데이터는 하루 늦었다
+        lagged = m_prev > m_same * 2 and m_prev > 0.5 * len(cur)
+        aligned = prev_d if lagged else d
+        al = compare(actual["rows"], rec[aligned])
         rows.append({"date": d, **compare(actual["rows"], rec[d]),
+                     "lagged": lagged, "aligned": aligned,
+                     "aligned_jaccard": al["jaccard"], "aligned_top5": al["top5"],
+                     "aligned_rs_exact": al["rs_exact"],
+                     "prev_match": (m_prev / len(cur)) if cur else None,
                      "stale": st, "pop_live": len(cur), "pop_rec": len(pop),
                      "pop_match": match_count(cur, list(pop.values()))
                      if pop else None,
@@ -407,17 +428,28 @@ def fidelity(verbose: bool = True) -> dict:
                   f"{r['jaccard']:>6.3f} {(r['rs_exact'] or 0) * 100:>5.0f}% "
                   f"{sh} {r['top5']:>4}/5 {st} "
                   f"{r['pop_live']:>5}/{r['pop_rec']:<5} {pm}")
-        fresh = [r for r in rows if (r["stale"] or 0) < 0.05]
-        if fresh:
-            print(f"  (진단) 실제 쪽 데이터가 지연되지 않은 날만 ({len(fresh)}일): "
-                  f"자카드 {mean(r['jaccard'] for r in fresh):.3f} · 상위 5 "
-                  f"{mean(r['top5'] for r in fresh):.1f}/5 — 판정은 위 전체 기준 그대로")
+        lag = [r for r in rows if r["lagged"]]
+        print(f"\n  [사후 진단] 실제 스냅샷이 하루 늦은 데이터였나 — 전 거래일 재구성과 대조")
+        print(f"  {'날짜':<10} {'같은 날':>8} {'전 거래일':>9}  판단")
         for r in rows:
-            if r["jaccard"] < 0.95 and (r["stale"] or 0) < 0.05:
+            same = (r["pop_match"] or 0) / max(1, r["pop_live"])
+            pv = "    -   " if r["prev_match"] is None else f"{r['prev_match'] * 100:7.1f}%"
+            print(f"  {r['date']:<10} {same * 100:7.1f}% {pv}   "
+                  + (f"하루 늦음 → {r['aligned']} 데이터" if r["lagged"] else "정상"))
+        print(f"  실제 스냅샷 {len(rows)}일 중 {len(lag)}일이 전 거래일 데이터로 판단됨")
+        print(f"  데이터 날짜를 맞춰 다시 대조하면: 자카드 "
+              f"{mean(r['aligned_jaccard'] for r in rows):.3f} · 상위 5 "
+              f"{mean(r['aligned_top5'] for r in rows):.1f}/5 · RS 정확히 일치 "
+              f"{mean(r['aligned_rs_exact'] or 0 for r in rows) * 100:.0f}%")
+        print(f"  ※ 사후 진단이다. 미리 정한 판정은 위 같은 날짜 기준 그대로 둔다.")
+        for r in rows:
+            if r["aligned_jaccard"] < 0.95:
                 oa = list(r["only_actual_rs"].items())[:10]
                 orb = list(r["only_rebuilt_rs"].items())[:10]
-                print(f"  {r['date']} 실제에만 {len(r['only_actual_rs'])}: {oa}")
-                print(f"  {r['date']} 재구성에만 {len(r['only_rebuilt_rs'])}: {orb}")
+                print(f"  (정렬 뒤에도 다름) {r['date']} 실제에만 "
+                      f"{len(r['only_actual_rs'])}: {oa}")
+                print(f"  (정렬 뒤에도 다름) {r['date']} 재구성에만 "
+                      f"{len(r['only_rebuilt_rs'])}: {orb}")
         print(f"  평균: 자카드 {jac:.3f} · RS 정확히 일치 {rs_exact * 100:.0f}% · "
               f"상위 5 일치 {top5:.1f}/5 → "
               f"{'통과' if passed else '실패 — 재구성이 실제와 다르다'}")
@@ -425,7 +457,11 @@ def fidelity(verbose: bool = True) -> dict:
         print(f"  최근일({last['date']}) 실제에만: {last['only_actual'][:12]}")
         print(f"  최근일({last['date']}) 재구성에만: {last['only_rebuilt'][:12]}")
     out = {"days": len(rows), "jaccard": jac, "top5": top5,
-           "rs_exact": rs_exact, "passed": passed, "per_day": rows}
+           "rs_exact": rs_exact, "passed": passed,
+           "lagged_days": sum(1 for r in rows if r["lagged"]),
+           "aligned_jaccard": mean(r["aligned_jaccard"] for r in rows),
+           "aligned_top5": mean(r["aligned_top5"] for r in rows),
+           "per_day": rows}
     CACHE.mkdir(parents=True, exist_ok=True)
     FIDELITY.write_text(json.dumps(out, ensure_ascii=False), encoding="utf-8")
     return out
