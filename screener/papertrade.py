@@ -43,6 +43,7 @@
 """
 import json
 import sys
+from bisect import bisect_left, bisect_right
 from datetime import date
 from pathlib import Path
 from statistics import mean, median
@@ -113,7 +114,8 @@ def simulate(rows: list[dict], entry_date: str, stop: float,
              target: float | None = None, trail: float | None = None,
              breakeven: float | None = None,
              time_stop: int | None = None,
-             entry_mode: str = "next_open") -> dict:
+             entry_mode: str = "next_open",
+             dates: list[str] | None = None) -> dict:
     """일봉을 앞으로 걸으며 매도 규칙을 판정한다.
 
     stop/target/trail/breakeven 은 % 단위. stop·trail 은 음수, target·
@@ -126,21 +128,33 @@ def simulate(rows: list[dict], entry_date: str, stop: float,
       close            신호가 나온 날 종가에 산다. 신호를 만든 가격에 사는
                        셈이라 실제로는 불가능하다 — 비교용으로만 남긴다.
                        산 날의 고가·저가는 매수 전의 일이라 판정에서 뺀다.
+
+    dates 는 rows 의 날짜 목록(같은 순서)이다. 주면 진입일을 이분 탐색으로
+    찾는다 — 여러 해 일봉에 수십만 번 돌릴 때 필요하다. 결과는 같다.
     """
     if entry_mode == "next_open":
-        idx = next((i for i, r in enumerate(rows) if r["date"] > entry_date),
-                   None)
+        if dates is not None:
+            i = bisect_right(dates, entry_date)
+            idx = i if i < len(rows) else None
+        else:
+            idx = next((i for i, r in enumerate(rows)
+                        if r["date"] > entry_date), None)
         if idx is None:
             return {"status": "측정 불가", "reason": "신호 다음 거래일 가격 없음"}
         entry = rows[idx]["open"]
         first = idx                 # 시가에 샀으므로 그 날 장중부터 판정
     elif entry_mode == "close":
-        idx = next((i for i, r in enumerate(rows) if r["date"] == entry_date),
-                   None)
-        if idx is None:
-            # 진입일에 거래가 없었다 — 그 이후 첫 거래일 종가로 산다.
+        if dates is not None:
+            # 진입일 그 날, 없으면 그 이후 첫 거래일 — 아래 선형 탐색과 같다
+            i = bisect_left(dates, entry_date)
+            idx = i if i < len(rows) else None
+        else:
             idx = next((i for i, r in enumerate(rows)
-                        if r["date"] > entry_date), None)
+                        if r["date"] == entry_date), None)
+            if idx is None:
+                # 진입일에 거래가 없었다 — 그 이후 첫 거래일 종가로 산다.
+                idx = next((i for i, r in enumerate(rows)
+                            if r["date"] > entry_date), None)
         if idx is None:
             return {"status": "측정 불가", "reason": "진입일 이후 가격 없음"}
         entry = rows[idx]["close"]

@@ -208,49 +208,49 @@ def mark(ok: bool | None) -> str:
     return "  -  " if ok is None else ("통과" if ok else "실패")
 
 
-def main(argv: list[str]) -> int:
-    o, _, out_json = P.parse_args([a for a in argv if a not in B.CFG])
-    snaps = B.snapshots(MARKET, o["days"])
-    base = V.cohorts(snaps, o["top"], 1)
-    if not base:
-        print(f"  스냅샷이 2개 미만이다 (최근 {o['days']}일)")
-        return 1
+def prepare(snaps: list[dict], top: int) -> dict:
+    """점검에 쓸 코호트들을 미리 만든다 — 가격을 받기 전에 필요한 종목을 알기 위해."""
+    ties = tie_group(snaps, top)
+    rng = random.Random(SEED)
+    return {
+        "base": V.cohorts(snaps, top, 1),
+        "rnd_sets": [V.random_cohorts(snaps, top, 1, seed=SEED + i)
+                     for i in range(N_PERM)],
+        "ties": ties,
+        "tie_rand_keys": [{(d, r["ticker"]): rng.random()
+                           for d, rows in ties.items() for r in rows}
+                          for _ in range(N_PERM)],
+    }
+
+
+def needed_tickers(prep: dict) -> tuple[set[str], set[str]]:
+    """(동점 후보 — 원점수용 긴 이력 필요, 그 외 — 진입일 이후만 필요)."""
+    tie = {r["ticker"] for rows in prep["ties"].values() for r in rows}
+    other = ({r["ticker"] for _, rows in prep["base"] for r in rows}
+             | {r["ticker"] for cs in prep["rnd_sets"]
+                for _, rows in cs for r in rows})
+    return tie, other - tie
+
+
+def run_checks(snaps: list[dict], ohlc: dict[str, list[dict]], o: dict,
+               prep: dict | None = None,
+               index: dict[str, list[str]] | None = None,
+               stage: str = "1단계") -> dict:
+    """1단계 점검 [1]~[판정]. 스냅샷 출처(git 커밋 / 과거 재구성)와 무관하다.
+
+    ohlc 는 {종목: 일봉 dict 목록}, index 는 {종목: 날짜 목록}(이분 탐색용).
+    """
+    prep = prep or prepare(snaps, o["top"])
+    base, rnd_sets = prep["base"], prep["rnd_sets"]
+    ties, tie_rand_keys = prep["ties"], prep["tie_rand_keys"]
     n_coh = len(base)
 
-    rnd_sets = [V.random_cohorts(snaps, o["top"], 1, seed=SEED + i)
-                for i in range(N_PERM)]
-    ties = tie_group(snaps, o["top"])
-    rng = random.Random(SEED)
-    tie_rand_keys = [{(d, r["ticker"]): rng.random()
-                      for d, rows in ties.items() for r in rows}
-                     for _ in range(N_PERM)]
-
-    tie_tickers = {r["ticker"] for rows in ties.values() for r in rows}
-    other = ({r["ticker"] for _, rows in base for r in rows}
-             | {r["ticker"] for cs in rnd_sets for _, rows in cs for r in rows})
-    start = base[0][0]
-    long_start = (date.fromisoformat(start)
-                  - timedelta(days=RS_LOOKBACK_DAYS)).isoformat()
-    bt = B.CFG[MARKET]["bench"]
-
-    print(f"\n{'=' * 92}")
-    print(f"  US 1단계 견고성 점검  코호트 {n_coh}개 ({start} ~ {base[-1][0]})"
-          f" · 코호트당 상위 {o['top']}")
-    print(f"{'=' * 92}")
-    print(f"  매도 규칙: {P.rules_line(dict(o, entry='next_open'))}")
-    print(f"  기준: 전량 청산 · 부트스트랩 {N_BOOT}회 · 무작위 {N_PERM}회 · "
-          f"시드 {SEED}")
-    print(f"  일봉 수집: 동점 후보 {len(tie_tickers)}종목(원점수용 {long_start}~)"
-          f" + 그 외 {len(other - tie_tickers)}종목 …", flush=True)
-    ohlc = P.fetch_ohlc(sorted(other - tie_tickers) + [bt], start)
-    ohlc.update(P.fetch_ohlc(sorted(tie_tickers), long_start))
-
     def go(cos, entry):
-        return V.run(cos, MARKET, ohlc, dict(o, entry=entry))
+        return V.run(cos, MARKET, ohlc, dict(o, entry=entry), index)
 
     doc: dict = {"market": MARKET, "rules": {k: o[k] for k in P.DEFAULTS},
-                 "cohorts": n_coh, "n_boot": N_BOOT, "n_perm": N_PERM,
-                 "seed": SEED}
+                 "cohorts": n_coh, "first": base[0][0], "last": base[-1][0],
+                 "n_boot": N_BOOT, "n_perm": N_PERM, "seed": SEED}
 
     # ---- 1. 진입 시점 ------------------------------------------------------
     print(f"\n  [1] 진입 시점 — 신호 당일 종가(실행 불가) vs 다음날 시가")
@@ -327,7 +327,8 @@ def main(argv: list[str]) -> int:
 
     # ---- 3. RS 동점 처리 ---------------------------------------------------
     print(f"\n  [3] RS 동점 처리 — 상위 {o['top']}을 동점 안에서 무엇으로 고르나")
-    raw_cache = {(d, r["ticker"]): raw_rs_asof(ohlc.get(r["ticker"], []), d)
+    raw_cache = {(d, r["ticker"]): (r["raw"] if r.get("raw") is not None
+                                    else raw_rs_asof(ohlc.get(r["ticker"], []), d))
                  for d, rows in ties.items() for r in rows}
     missing = sum(1 for v in raw_cache.values() if v is None)
     by_raw = tie_cohorts(snaps, o["top"], lambda r, d: (
@@ -381,10 +382,43 @@ def main(argv: list[str]) -> int:
     for key, desc in CHECKS:
         print(f"    {mark(res[key])}  {desc}")
     passed = all(v is True for v in res.values())
-    print(f"    → {'1단계 통과' if passed else '1단계 실패 — 지금 결론을 그대로 믿을 수 없다'}")
+    print(f"    → {stage} {'통과' if passed else '실패 — 지금 결론을 그대로 믿을 수 없다'}")
     doc["checks"] = res
     doc["passed"] = passed
+    # 연도별·국면별로 다시 쪼갤 수 있게 거래 목록을 넘긴다 (JSON 에는 넣지 않는다)
+    doc["_top_trades"] = top_tr
+    doc["_rnd_trades"] = rnd_tr
+    return doc
 
+
+def main(argv: list[str]) -> int:
+    o, _, out_json = P.parse_args([a for a in argv if a not in B.CFG])
+    snaps = B.snapshots(MARKET, o["days"])
+    prep = prepare(snaps, o["top"])
+    base = prep["base"]
+    if not base:
+        print(f"  스냅샷이 2개 미만이다 (최근 {o['days']}일)")
+        return 1
+    tie_tickers, other = needed_tickers(prep)
+    start = base[0][0]
+    long_start = (date.fromisoformat(start)
+                  - timedelta(days=RS_LOOKBACK_DAYS)).isoformat()
+    bt = B.CFG[MARKET]["bench"]
+
+    print(f"\n{'=' * 92}")
+    print(f"  US 1단계 견고성 점검  코호트 {len(base)}개 ({start} ~ {base[-1][0]})"
+          f" · 코호트당 상위 {o['top']}")
+    print(f"{'=' * 92}")
+    print(f"  매도 규칙: {P.rules_line(dict(o, entry='next_open'))}")
+    print(f"  기준: 전량 청산 · 부트스트랩 {N_BOOT}회 · 무작위 {N_PERM}회 · "
+          f"시드 {SEED}")
+    print(f"  일봉 수집: 동점 후보 {len(tie_tickers)}종목(원점수용 {long_start}~)"
+          f" + 그 외 {len(other)}종목 …", flush=True)
+    ohlc = P.fetch_ohlc(sorted(other) + [bt], start)
+    ohlc.update(P.fetch_ohlc(sorted(tie_tickers), long_start))
+
+    doc = run_checks(snaps, ohlc, o, prep)
+    doc = {k: v for k, v in doc.items() if not k.startswith("_")}
     if out_json:
         path = Path(out_json)
         path.parent.mkdir(parents=True, exist_ok=True)

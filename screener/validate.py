@@ -189,15 +189,20 @@ def random_cohorts(snaps: list[dict], top: int, every: int,
 
 
 def run(cohort: list[tuple[str, list[dict]]], market: str,
-        ohlc: dict[str, list[dict]], o: dict) -> list[dict]:
-    """코호트 전체를 같은 규칙으로 굴려 거래 목록을 만든다."""
+        ohlc: dict[str, list[dict]], o: dict,
+        index: dict[str, list[str]] | None = None) -> list[dict]:
+    """코호트 전체를 같은 규칙으로 굴려 거래 목록을 만든다.
+
+    index 는 {종목: ohlc 날짜 목록} — 주면 진입일을 이분 탐색으로 찾는다.
+    """
     trades = []
     for entry_date, rows in cohort:
         for r in rows:
             sim = P.simulate(ohlc.get(r["ticker"], []), entry_date,
                              o["stop"], o["target"], o["trail"],
                              o["breakeven"], o["time-stop"],
-                             o.get("entry", "next_open"))
+                             o.get("entry", "next_open"),
+                             index.get(r["ticker"]) if index else None)
             if sim["status"] == "측정 불가":
                 continue
             trades.append({"market": market, "ticker": r["ticker"],

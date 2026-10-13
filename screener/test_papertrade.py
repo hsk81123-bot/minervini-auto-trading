@@ -191,6 +191,17 @@ assert o["entry"] == "close" and P.DEFAULTS["entry"] == "next_open"
 assert "다음날 시가" in P.rules_line(dict(P.DEFAULTS))
 ok("entry_mode: next_open|close 만 허용, 규칙 설명 줄에 진입 방식이 찍힌다")
 
+# 24) 날짜 색인(이분 탐색)을 주어도 결과가 선형 탐색과 같다
+rows = [ENTRY, bar(D[0], 104.0, 106, 103, 105.0), bar(D[1], 105, 107, 90.0, 95.0),
+        bar(D[2], 95, 96, 94, 95.0)]
+idx = [r["date"] for r in rows]
+for mode in ("next_open", "close"):
+    for d in ("2026-09-10", "2026-09-11", "2026-09-12", D[1], D[2], "2026-12-01"):
+        a = P.simulate(rows, d, -8.0, None, -15.0, entry_mode=mode)
+        b = P.simulate(rows, d, -8.0, None, -15.0, entry_mode=mode, dates=idx)
+        assert a == b, (mode, d, a, b)
+ok("dates 색인: 이분 탐색과 선형 탐색이 모든 진입일·진입 방식에서 같은 결과")
+
 # ---------------------------------------------------------------- 성과 지표
 # 19) 손익비·기대값 — 손으로 검산
 m = P.perf([{"r_multiple": 3.0, "mae": -0.05, "mfe": 0.3},

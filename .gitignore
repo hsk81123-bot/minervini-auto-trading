@@ -13,3 +13,6 @@ sync/serviceAccount.json
 **/AUX.json
 **/NUL.json
 sync/last_run.log
+
+# 과거 재구성 캐시 (history.py — 수백 MB, Actions 캐시로만 보관)
+.cache/
