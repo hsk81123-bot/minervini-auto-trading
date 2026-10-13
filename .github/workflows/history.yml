@@ -12,6 +12,8 @@ on:
     paths:
       - "screener/history.py"
       - "screener/test_history.py"
+      - "screener/candidates.py"
+      - "screener/test_candidates.py"
       # 재구성은 스크리너의 임계값·지표를 그대로 따른다 — 스크리너가 바뀌면 다시 잰다
       - "screener/screener.py"
       - "screener/test_screener.py"
@@ -53,6 +55,7 @@ jobs:
           python screener/test_papertrade.py
           python screener/test_validate.py
           python screener/test_backtest.py
+          python screener/test_candidates.py
 
       # 7년치 5천여 종목 일봉은 주 단위로 캐시한다 — 같은 주 재실행은 다시 받지 않는다.
       - name: Cache key
@@ -88,6 +91,14 @@ jobs:
           set -o pipefail
           python screener/history.py fidelity 2>&1 | tee report.txt
 
+      # 후보 규칙(C3·C4·C5): 설계 기간을 통과한 후보만 보류 기간을 계산한다.
+      - name: Candidates
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 후보 규칙" | tee -a report.txt
+          python screener/candidates.py --json candidates.json 2>&1 | tee -a report.txt
+
       - name: Validate (trailing stop)
         run: |
           set -o pipefail
@@ -118,4 +129,5 @@ jobs:
           path: |
             report.txt
             history-*.json
+            candidates.json
             .cache/us_fidelity.json
