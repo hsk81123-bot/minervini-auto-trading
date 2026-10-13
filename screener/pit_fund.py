@@ -151,14 +151,22 @@ def compact_shares(facts: dict) -> list[list]:
                   key=lambda x: (x[0], x[1]))
 
 
-def shares_at(rows: list[list] | None, d: str, max_age_days: int = 400
-              ) -> tuple[float, str] | None:
+def shares_at(rows: list[list] | None, d: str, max_age_days: int = 400,
+              backfill_days: int = 0) -> tuple[float, str] | None:
     """신호일 d 에 알 수 있던 가장 최근 발행주식수 (공시일 < d) → (주식수, 기준일).
-    기준일이 d 보다 max_age_days 넘게 전이면 없는 셈."""
+    기준일이 d 보다 max_age_days 넘게 전이면 없는 셈.
+
+    XBRL 표지 공시는 2009~2011년에 시작해 그 전 날짜에는 값이 없다. backfill_days > 0 이면
+    d 이후 backfill_days 안에 첫 공시가 있을 때 그 값을 쓴다 — 미래 정보를 쓰는 셈이라
+    '근사 비중' 용도로만(결과 판정이 아니라 가중치의 대략적인 크기) 허용하고, 호출하는 쪽이
+    분할 배수로 d 기준으로 되돌린다 (marketcap.Caps)."""
     if not rows:
         return None
     i = bisect_left([x[0] for x in rows], d) - 1
     if i < 0:
+        if backfill_days and rows[0][0] <= (date.fromisoformat(d)
+                                            + timedelta(days=backfill_days)).isoformat():
+            return rows[0][2], rows[0][1]
         return None
     # 같은 공시일에 여러 기준일이 있으면 가장 최근 기준일
     j = i

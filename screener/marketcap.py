@@ -46,8 +46,12 @@ def unadjust_close(adj: np.ndarray, div: np.ndarray) -> np.ndarray:
 class Caps:
     """종목별 (날짜, 실제 거래가, 누적 분할배수)를 한 번 계산해 두고 시총을 조회한다."""
 
-    def __init__(self, px: dict[str, pd.DataFrame], shares: dict[str, list[list]]):
+    def __init__(self, px: dict[str, pd.DataFrame], shares: dict[str, list[list]],
+                 cik_of: dict[str, str] | None = None, backfill_days: int = 0):
         self.px, self.shares = px, shares
+        self.cik_of = cik_of or {}
+        self.backfill_days = backfill_days
+        self.backfilled = 0
         self.memo: dict[str, tuple | None] = {}
         self.undone = 0           # 배당 조정을 되돌린 종목 수
         self.adjusted_only = 0    # Dividends 열이 없어 조정 가격 그대로 쓴 종목 수
@@ -78,10 +82,12 @@ class Caps:
         if s is None:
             return None
         dates, price, cum = s
-        sh = PF.shares_at(self.shares[t], d)
+        sh = PF.shares_at(self.shares[t], d, backfill_days=self.backfill_days)
         if sh is None:
             return None
         v, end = sh
+        if end > d:
+            self.backfilled += 1
         i = int(np.searchsorted(dates, d, side="right")) - 1       # d 이하 마지막 거래일
         if i < 0 or not price[i] > 0:
             return None
@@ -89,10 +95,34 @@ class Caps:
         ratio = cum[i] / cum[j] if j >= 0 else cum[i]              # (기준일, d] 의 분할배수
         return float(v * ratio * price[i])
 
+    def price(self, t: str, d: str) -> float | None:
+        """d 이하 마지막 거래일의 실제 거래가 (분할·배당 조정을 되돌린 값)."""
+        s = self._series(t) if t in self.shares else None
+        if s is None:
+            df = self.px.get(t)
+            if df is None:
+                return None
+            self.shares.setdefault(t, [])
+            s = self._series(t)
+        dates, price, _ = s
+        i = int(np.searchsorted(dates, d, side="right")) - 1
+        return float(price[i]) if i >= 0 else None
+
     def caps(self, names, d: str) -> dict[str, float]:
+        """종목별 시총. 같은 회사(CIK)의 주식 종류가 여럿(GOOGL·GOOG 등)이면 각 종류가
+        '전체 주식수 × 자기 가격' 이 되어 두 번 세어지므로, 풀에 있는 종류 수로 나눈다."""
         out = {}
         for t in names:
             c = self.cap(t, d)
             if c:
                 out[t] = c
+        groups: dict[str, list[str]] = {}
+        for t in out:
+            cik = self.cik_of.get(t)
+            if cik:
+                groups.setdefault(cik, []).append(t)
+        for ts in groups.values():
+            if len(ts) > 1:
+                for t in ts:
+                    out[t] /= len(ts)
         return out

@@ -35,6 +35,20 @@ REFS = (("spy", "SPY"), ("rsp", "RSP (동일가중 ETF)"), ("pool", "풀 동일�
         ("tmpl_cw", "템플릿 시총가중"))
 
 
+BACKFILL_DAYS = 6 * 366       # 첫 XBRL 공시(2009~2011) 이전 날짜의 주식수 근사 허용 범위
+# 기억에 의한 참고 종가 (실제 거래가, 분할·배당 조정 전). 1% 넘게 어긋나면 가격 복원을 의심한다.
+REF_PRICES = (("AAPL", "2019-02-08", 170.18), ("MSFT", "2019-02-08", 105.67))
+
+
+def selfcheck(caps: "M.Caps") -> list[dict]:
+    out = []
+    for t, d, ref in REF_PRICES:
+        got = caps.price(t, d)
+        out.append({"ticker": t, "date": d, "ref": ref, "got": got,
+                    "diff": None if got is None else got / ref - 1})
+    return out
+
+
 def etf_returns(bench: S.Spy, d0: list[str], d1: list[str]) -> list[float]:
     return [bench.at(b, "open") / bench.at(a, "open") - 1 for a, b in zip(d0, d1)]
 
@@ -73,7 +87,12 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
     members = {s["date"]: mem(s["date"]) for s in snaps}
     need = set().union(*members.values()) | {t for s in snaps for t in s["rows"]}
     p = T.Prices(px, need, spy.dates)
-    caps = M.Caps(px, shares)
+    try:
+        cik_of = PF.universe_ciks()
+    except Exception as e:                   # cik_map 이 없으면 종류 합산 보정만 빠진다
+        print(f"  CIK 매핑 실패: {e}", flush=True)
+        cik_of = {}
+    caps = M.Caps(px, shares, cik_of=cik_of, backfill_days=BACKFILL_DAYS)
     cap_cover, cw_pool, cw_tmpl = [], [], []
     for s in snaps:
         sig, mm = s["date"], members[s["date"]]
@@ -102,6 +121,8 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
     for k, r in runs.items():
         fr.add(k, r[4])
     meta = {"cap_cover": sum(cap_cover) / len(cap_cover), "undone": caps.undone,
+            "cover_by_sig": dict(zip([x[0] for x in cw_pool], cap_cover)),
+            "backfilled": caps.backfilled, "selfcheck": selfcheck(caps),
             "adjusted_only": caps.adjusted_only, "shares_tickers": len(shares),
             "cost_bp": cost, "rsp": rsp is not None}
     return fr, meta
@@ -121,7 +142,12 @@ def report(fr: E.Frame, meta: dict) -> dict:
     print(f"  시도한 가설 {led['n']}개 → Bonferroni 임계 z {led['bonferroni_z']:.2f} "
           f"(이 도구의 알파 t 기준 {led['t_min']:.1f} 은 후보 수가 적을 때의 최소선 — "
           f"후보가 늘면 올린다)")
-    print(f"  RSP {'있음' if meta['rsp'] else '없음 — 생존편향 보정 못 함'}")
+    print(f"  RSP {'있음' if meta['rsp'] else '없음 — 생존편향 보정 못 함'} · 첫 공시 이전 값을 "
+          f"되돌려 쓴 조회 {meta['backfilled']}건")
+    for c in meta["selfcheck"]:
+        got = "없음" if c["got"] is None else f"{c['got']:.2f} ({c['diff'] * 100:+.2f}%)"
+        print(f"  가격 복원 점검 {c['ticker']} {c['date']}: 기억한 종가 {c['ref']:.2f} vs "
+              f"복원 {got}")
     print(f"{'=' * 104}")
 
     for title, (lo, hi) in (("전체 기간", ("0000", "9999")), ("설계 기간 2013~", E.DESIGN),
@@ -155,15 +181,18 @@ def report(fr: E.Frame, meta: dict) -> dict:
     doc["eras"] = eras
 
     print(f"\n  [시총 가중 추적 검증] 풀 시총가중 vs SPY — 닮지 않으면 시총 데이터를 못 믿는다")
-    print(f"  {'':<22} {'상관':>7} {'추적오차':>8} {'연복리 차이':>10}")
+    print(f"  {'':<22} {'상관':>7} {'추적오차':>8} {'연복리 차이':>10} {'시총 계산 비율':>13}")
     trk = {}
+    cov = meta["cover_by_sig"]
     for el, lo, hi in (("전체", "0000", "9999"),) + tuple(E.ERAS):
         t = tracking(fr, "pool_cw", "spy", lo, hi)
         if t:
             trk[el] = t
+            ix = fr.idx(lo, hi)
+            t["coverage"] = sum(cov[fr.signal[i]] for i in ix) / len(ix)
             corr = "-" if t["corr"] is None else f"{t['corr']:.4f}"
             print(f"  {el:<22} {corr:>7} {t['te'] * 100:7.2f}% "
-                  f"{E.pct(t['cagr_diff'], 10)}")
+                  f"{E.pct(t['cagr_diff'], 10)} {t['coverage'] * 100:12.1f}%")
     doc["tracking"] = trk
     if "rsp" in fr.r:
         print(f"\n  [생존편향 보정치] 후보 수익에서 빼는 연 %p = mean(max(풀 동일가중 − RSP, 0)) × 52")
