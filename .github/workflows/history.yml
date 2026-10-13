@@ -71,7 +71,6 @@ jobs:
         id: key
         run: |
           echo "prices=us-prices-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
-          echo "facts=us-facts-v2-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
       - name: Restore price cache
         id: cache
@@ -99,6 +98,13 @@ jobs:
         continue-on-error: true
         run: python screener/spx_validate.py members
 
+      # 추출 대상이 구성종목 이력 유무에 따라 다르므로 캐시 키에 넣는다
+      - name: SEC facts key
+        id: fkey
+        run: |
+          tag=base; [ -f .cache/sp500_pit.json ] && tag=sp500
+          echo "facts=us-facts-v3-$tag-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
       # 시점 기준 펀더멘털(C1·C2): SEC 일괄 XBRL(1GB 남짓)에서 필요한 태그만 추려
       # 주 단위로 캐시한다. 실패해도 가격 기반 후보는 그대로 돈다.
       - name: Restore SEC facts cache
@@ -106,7 +112,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/us_facts.json.gz
-          key: ${{ steps.key.outputs.facts }}
+          key: ${{ steps.fkey.outputs.facts }}
 
       - name: Download SEC facts
         id: facts
@@ -124,7 +130,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/us_facts.json.gz
-          key: ${{ steps.key.outputs.facts }}
+          key: ${{ steps.fkey.outputs.facts }}
 
       - name: Fundamentals timeline
         if: hashFiles('.cache/us_facts.json.gz') != ''

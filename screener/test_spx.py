@@ -35,7 +35,25 @@ assert cur == ["AAA", "BRK-B", "NEW"]
 assert ch == [{"date": "2020-06-22", "added": "OLD", "removed": "GONE"},
               {"date": "2021-01-05", "added": None, "removed": "BF-B"},
               {"date": "2024-03-18", "added": "NEW", "removed": "OLD"}]
-ok("parse_wiki: 2단 머리글 · 날짜 정렬 · '.'→'-' · 빈 칸과 날짜 아닌 행 제외")
+# 둘째 머리글 줄이 데이터로 읽히는 모양 (thead 에 첫 줄만 있음)
+HTML2 = """
+<table><thead><tr><th>Symbol</th><th>Security</th></tr></thead>
+<tbody><tr><td>AAA</td><td>A</td></tr></tbody></table>
+<table><thead><tr><th>Effective date</th><th colspan="2">Added</th>
+<th colspan="2">Removed</th><th>Reason</th></tr></thead><tbody>
+<tr><th></th><th>Ticker</th><th>Security</th><th>Ticker</th><th>Security</th><th></th></tr>
+<tr><td>March 18, 2024</td><td>AAA</td><td>A</td><td>OLD</td><td>Old</td><td>x</td></tr>
+</tbody></table>"""
+cur2, ch2 = S.parse_wiki(HTML2)
+assert cur2 == ["AAA"]
+assert ch2 == [{"date": "2024-03-18", "added": "AAA", "removed": "OLD"}], ch2
+try:
+    S.parse_wiki("<table><tr><th>Foo</th></tr><tr><td>1</td></tr></table>")
+    raise AssertionError("표가 없으면 실패해야 한다")
+except ValueError as e:
+    assert "Foo" in str(e)                                 # 진단용으로 열 이름을 보여준다
+ok("parse_wiki: 2단 머리글 · 한 줄 머리글(둘째 줄이 데이터) · 날짜 정렬 · "
+   "'.'→'-' · 빈 칸과 날짜 아닌 행 제외 · 실패 시 열 이름 출력")
 
 # 2) 시점별 구성종목: 변경일에는 이미 바뀐 상태
 assert S.members_at(cur, ch, "2024-03-18") == {"AAA", "BRK-B", "NEW"}

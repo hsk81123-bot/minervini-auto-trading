@@ -83,26 +83,43 @@ def flat(col) -> str:
     return " ".join(str(c) for c in col) if isinstance(col, tuple) else str(col)
 
 
+def pick_col(cols: list[str], group: str) -> str | None:
+    """'Added'/'Removed' 묶음에서 티커 열. 2단 머리글이 한 줄로 읽히면 묶음의 첫 열."""
+    g = [c for c in cols if group in c.lower()]
+    return next((c for c in g if "ticker" in c.lower() or "symbol" in c.lower()),
+                g[0] if g else None)
+
+
 def parse_wiki(html: str) -> tuple[list[str], list[dict]]:
-    """위키백과 S&P 500 문서 → (지금 구성종목, 변경 이력 [{date, added, removed}])."""
-    current, changes = None, None
+    """위키백과 S&P 500 문서 → (지금 구성종목, 변경 이력 [{date, added, removed}]).
+
+    변경 이력 표는 2단 머리글(Added/Removed 아래 Ticker·Security)이다. pandas 가
+    둘째 머리글 줄을 데이터로 읽는 경우도 있어 그 줄('Ticker')은 걸러낸다.
+    """
+    current, changes, seen = None, None, []
     for t in pd.read_html(io.StringIO(html)):
         cols = [flat(c) for c in t.columns]
-        if current is None and "Symbol" in cols:
-            current = sorted({x for x in map(tk, t["Symbol"]) if x})
+        seen.append(cols[:8])
+        low = [c.lower() for c in cols]
+        if current is None and "symbol" in low:
+            current = sorted({x for x in map(tk, t[cols[low.index("symbol")]]) if x})
             continue
-        date_c = next((c for c in cols if "Date" in c), None)
-        add_c = next((c for c in cols if "Added" in c and "Ticker" in c), None)
-        rem_c = next((c for c in cols if "Removed" in c and "Ticker" in c), None)
+        date_c = next((c for c in cols if "date" in c.lower()), None)
+        add_c, rem_c = pick_col(cols, "added"), pick_col(cols, "removed")
         if changes is None and date_c and add_c and rem_c:
             t.columns = cols
             ds = pd.to_datetime(t[date_c], errors="coerce", format="mixed")
-            changes = [{"date": d.strftime("%Y-%m-%d"), "added": tk(a),
-                        "removed": tk(r)}
-                       for d, a, r in zip(ds, t[add_c], t[rem_c])
-                       if not pd.isna(d) and (tk(a) or tk(r))]
+            hdr = {"TICKER", "SYMBOL"}
+            changes = []
+            for d, a, r in zip(ds, t[add_c], t[rem_c]):
+                a, r = tk(a), tk(r)
+                a, r = (None if a in hdr else a), (None if r in hdr else r)
+                if not pd.isna(d) and (a or r):
+                    changes.append({"date": d.strftime("%Y-%m-%d"),
+                                    "added": a, "removed": r})
     if not current or changes is None:
-        raise ValueError("위키백과 표를 찾지 못했다 (구성종목 표 · 변경 이력 표)")
+        raise ValueError("위키백과 표를 찾지 못했다 (구성종목 표 · 변경 이력 표). "
+                         f"읽은 표의 열: {seen}")
     return current, sorted(changes, key=lambda c: c["date"])
 
 
