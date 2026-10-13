@@ -42,6 +42,7 @@ FACTS_ZIP = CACHE / "companyfacts.zip"
 FACTS = CACHE / "us_facts.json.gz"
 TIMELINE = CACHE / "us_fund_pit.json.gz"
 UNIVERSE = ROOT / "docs" / "data" / "tickers_us.json"
+SP500_PIT = CACHE / "sp500_pit.json"
 URL = "https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip"
 
 FIELDS = {"revenue": F.REVENUE_TAGS, **F.US_TAGS}
@@ -122,10 +123,15 @@ def compact(facts: dict) -> dict[str, dict[str, list]]:
 
 
 def universe_ciks() -> dict[str, str]:
-    names = json.loads(UNIVERSE.read_text(encoding="utf-8"))
+    """유니버스 + (있으면) 기간 중 S&P 500 구성종목이던 종목 → CIK."""
+    names = set(json.loads(UNIVERSE.read_text(encoding="utf-8")))
+    if SP500_PIT.exists():                   # spx_validate.py members 산출물
+        m = json.loads(SP500_PIT.read_text(encoding="utf-8"))
+        names |= set(m["current"])
+        names |= {x for ch in m["changes"] for x in (ch["added"], ch["removed"]) if x}
     cmap = F.load_cik_map()
     out = {}
-    for t in names:
+    for t in sorted(names):
         cik = cmap.get(t) or cmap.get(t.replace("-", "."))
         if cik:
             out[t] = cik
@@ -150,8 +156,7 @@ def extract() -> None:
                 print(f"  {n}/{len(ciks)} ({time.time() - t0:.0f}s)", flush=True)
     with gzip.open(FACTS, "wt", encoding="utf-8") as f:
         json.dump(out, f, separators=(",", ":"))
-    print(f"  유니버스 {len(json.loads(UNIVERSE.read_text(encoding='utf-8')))} · "
-          f"CIK 매핑 {len(ciks)} · 파일 없음 {missing} · us-gaap 태그 있음 "
+    print(f"  CIK 매핑 {len(ciks)} · 파일 없음 {missing} · us-gaap 태그 있음 "
           f"{len(out)} → {FACTS} ({time.time() - t0:.0f}s)", flush=True)
 
 

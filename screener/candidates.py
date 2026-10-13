@@ -240,6 +240,69 @@ def coverage(snaps: list[dict], fund_at) -> dict[str, tuple[int, int, int, int]]
     return {y: tuple(v) for y, v in sorted(out.items())}
 
 
+def vcp_lookup():
+    """(가격표, 날짜) → 그 날까지 2년 구간의 VCP. 같은 질의는 기억해 둔다."""
+    from vcp import detect_vcp
+    cache: dict = {}
+
+    def vcp_at(df, d):
+        key = (id(df), d)
+        if key not in cache:
+            ts = pd.Timestamp(d)
+            win = df[(df.index > ts - pd.Timedelta(H.WINDOW_2Y)) & (df.index <= ts)]
+            cache[key] = detect_vcp(win[["Open", "High", "Low", "Close",
+                                         "Volume"]].astype("float64"))
+        return cache[key]
+    return vcp_at
+
+
+def build(snaps: list[dict], prices: dict, aux: dict, timeline: dict | None
+          ) -> tuple[dict[str, list], dict, list]:
+    """(후보 → 코호트, 메타, 현재 규칙 코호트). timeline 이 없으면 C1·C2 는 뺀다."""
+    vcp_at = vcp_lookup()
+    cands = {
+        "C3 덜 오른 강세주": [(s["date"], pick_c3(s, aux)) for s in snaps],
+        "C4 변동성 조정": [(s["date"], pick_c4(s, aux)) for s in snaps],
+    }
+    c5, n_setup = [], 0
+    for s in snaps:
+        filled, n = pick_c5(s, aux, prices, vcp_at)
+        c5.append((s["date"], filled))
+        n_setup += n
+    cands["C5 피봇 돌파 진입"] = c5
+    n_fill = sum(len(p) for _, p in c5)
+
+    fund_doc = None
+    if timeline is not None:
+        fund_at = fund_lookup(timeline)
+        cov = coverage(snaps, fund_at)
+        tot = [sum(v[i] for v in cov.values()) for i in range(4)]
+        print(f"\n  [펀더멘털 커버리지] 공시일 < 신호일 · 최근 분기 {PF.STALE_DAYS}일 이내")
+        print(f"  {'연도':<6} {'통과 종목·주':>12} {'데이터 있음':>10} "
+              f"{'C1 충족':>8} {'C2 충족':>8}")
+        for y, (n, have, a, b) in list(cov.items()) + [("전체", tuple(tot))]:
+            print(f"  {y:<6} {n:>12} {have:>6} ({have / n * 100:3.0f}%) "
+                  f"{a:>8} {b:>8}")
+        cands["C1 실적 성장"] = [(s["date"], pick_c1(s, fund_at)) for s in snaps]
+        cands["C2 실적 가속"] = [(s["date"], pick_c2(s, fund_at)) for s in snaps]
+        c15, n15 = [], 0
+        for s in snaps:
+            filled, n = pick_c5(s, aux, prices, vcp_at,
+                                lambda t, d=s["date"]: c1_ok(fund_at(t, d)))
+            c15.append((s["date"], filled))
+            n15 += n
+        cands["C1+C5 실적+돌파"] = c15
+        fund_doc = {"coverage": cov, "c15_setups": n15,
+                    "c15_filled": sum(len(p) for _, p in c15)}
+    else:
+        print(f"\n  펀더멘털 타임라인 없음({PF.TIMELINE.name}) — C1·C2 생략")
+    # 3단계의 현재 규칙(RS 상위 5)을 같은 청산 조건으로
+    ref = [(c, [dict(r, stop=BASE_STOP, entry_date=c) for r in rows])
+           for c, rows in V.cohorts(snaps + [snaps[-1]], TOP, 1)]
+    return cands, {"c5_setups": n_setup, "c5_filled": n_fill,
+                   "fund": fund_doc}, ref
+
+
 # ---------------------------------------------------------------- 실행·집계
 def simulate_picks(cohorts: list[tuple[str, list[dict]]], ohlc, index
                    ) -> list[dict]:
@@ -334,58 +397,9 @@ def main(argv: list[str]) -> int:
     aux = {t: aux_indicators(prices[t]) for t in pool if t in prices}
     ohlc, index = H.to_ohlc(prices, pool, first)
 
-    from vcp import detect_vcp
-    cache: dict = {}
-
-    def vcp_at(df, d):
-        key = (id(df), d)
-        if key not in cache:
-            ts = pd.Timestamp(d)
-            win = df[(df.index > ts - pd.Timedelta(H.WINDOW_2Y)) & (df.index <= ts)]
-            cache[key] = detect_vcp(win[["Open", "High", "Low", "Close",
-                                         "Volume"]].astype("float64"))
-        return cache[key]
-
-    # 후보별 코호트
-    cands = {
-        "C3 덜 오른 강세주": [(s["date"], pick_c3(s, aux)) for s in snaps],
-        "C4 변동성 조정": [(s["date"], pick_c4(s, aux)) for s in snaps],
-    }
-    c5, n_setup = [], 0
-    for s in snaps:
-        filled, n = pick_c5(s, aux, prices, vcp_at)
-        c5.append((s["date"], filled))
-        n_setup += n
-    cands["C5 피봇 돌파 진입"] = c5
-    n_fill = sum(len(p) for _, p in c5)
-
-    fund_doc = None
-    if PF.TIMELINE.exists():
-        fund_at = fund_lookup(PF.load_timeline())
-        cov = coverage(snaps, fund_at)
-        tot = [sum(v[i] for v in cov.values()) for i in range(4)]
-        print(f"\n  [펀더멘털 커버리지] 공시일 < 신호일 · 최근 분기 {PF.STALE_DAYS}일 이내")
-        print(f"  {'연도':<6} {'통과 종목·주':>12} {'데이터 있음':>10} "
-              f"{'C1 충족':>8} {'C2 충족':>8}")
-        for y, (n, have, a, b) in list(cov.items()) + [("전체", tuple(tot))]:
-            print(f"  {y:<6} {n:>12} {have:>6} ({have / n * 100:3.0f}%) "
-                  f"{a:>8} {b:>8}")
-        cands["C1 실적 성장"] = [(s["date"], pick_c1(s, fund_at)) for s in snaps]
-        cands["C2 실적 가속"] = [(s["date"], pick_c2(s, fund_at)) for s in snaps]
-        c15, n15 = [], 0
-        for s in snaps:
-            filled, n = pick_c5(s, aux, prices, vcp_at,
-                                lambda t, d=s["date"]: c1_ok(fund_at(t, d)))
-            c15.append((s["date"], filled))
-            n15 += n
-        cands["C1+C5 실적+돌파"] = c15
-        fund_doc = {"coverage": cov, "c15_setups": n15,
-                    "c15_filled": sum(len(p) for _, p in c15)}
-    else:
-        print(f"\n  펀더멘털 타임라인 없음({PF.TIMELINE.name}) — C1·C2 생략")
-    # 참고: 3단계의 현재 규칙(RS 상위 5)을 같은 청산 조건으로
-    ref = [(c, [dict(r, stop=BASE_STOP, entry_date=c) for r in rows])
-           for c, rows in V.cohorts(snaps + [snaps[-1]], TOP, 1)]
+    timeline = PF.load_timeline() if PF.TIMELINE.exists() else None
+    cands, meta, ref = build(snaps, prices, aux, timeline)
+    n_setup, n_fill, fund_doc = meta["c5_setups"], meta["c5_filled"], meta["fund"]
 
     # 대조군: 통과 종목 중 무작위 5, 같은 청산
     rnd_all = []

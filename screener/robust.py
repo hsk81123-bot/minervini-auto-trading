@@ -108,16 +108,17 @@ def expectancy(trades: list[dict]) -> float | None:
 
 
 def cluster_ci(trades: list[dict], key: str = "ticker", n: int = N_BOOT,
-               seed: int = SEED, level: float = CI_LEVEL
-               ) -> tuple[float, float] | None:
+               seed: int = SEED, level: float = CI_LEVEL,
+               value: str = "r_multiple") -> tuple[float, float] | None:
     """묶음(종목) 단위로 다시 뽑는 부트스트랩 — 기대값의 신뢰구간.
 
     같은 종목의 거래는 서로 독립이 아니므로 거래 하나하나가 아니라 종목을
     단위로 복원 추출한다. 묶음이 2개 미만이면 None.
     """
     groups: dict[str, list[float]] = {}
-    for t in V.marked(trades):
-        groups.setdefault(t[key], []).append(t["r_multiple"])
+    for t in trades:
+        if t.get(value) is not None:
+            groups.setdefault(t[key], []).append(t[value])
     keys = sorted(groups)
     if len(keys) < 2:
         return None

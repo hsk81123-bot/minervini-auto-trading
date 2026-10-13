@@ -78,12 +78,10 @@ def screener_cfg() -> dict:
 
 
 # ---------------------------------------------------------------- 수집
-def download(start: str = DATA_START) -> None:
-    """유니버스 전 종목 일봉(수정주가 + 분할 기록)을 받아 캐시에 저장한다."""
+def fetch_prices(tickers: list[str], start: str) -> tuple[dict[str, pd.DataFrame], int]:
+    """일봉(수정주가 + 분할 기록) → ({티커: OHLCV(+Splits)}, 분할 기록 있는 종목 수)."""
     import yfinance as yf
 
-    names = json.loads(UNIVERSE.read_text(encoding="utf-8"))
-    tickers = sorted(names)
     prices: dict[str, pd.DataFrame] = {}
     with_splits = 0
     for i in range(0, len(tickers), BATCH):
@@ -118,6 +116,15 @@ def download(start: str = DATA_START) -> None:
         print(f"  가격 {min(i + BATCH, len(tickers))}/{len(tickers)} "
               f"(보관 {len(prices)})", flush=True)
         time.sleep(1.0)
+    return prices, with_splits
+
+
+def download(start: str = DATA_START) -> None:
+    """유니버스 전 종목 일봉(수정주가 + 분할 기록)을 받아 캐시에 저장한다."""
+    import yfinance as yf
+
+    names = json.loads(UNIVERSE.read_text(encoding="utf-8"))
+    prices, with_splits = fetch_prices(sorted(names), start)
 
     bench = yf.download(BENCH, start=start, interval="1d", auto_adjust=True,
                         progress=False)["Close"].dropna()
@@ -216,27 +223,17 @@ def weekly_dates(calendar: pd.DatetimeIndex) -> list[pd.Timestamp]:
 
 
 # ---------------------------------------------------------------- 재구성
-def rebuild(top_check: bool = True) -> None:
-    from vcp import detect_vcp
+def build_snaps(prices: dict[str, pd.DataFrame], sig: pd.DatetimeIndex, cfg: dict,
+                names: dict[str, str], pop_dates: set[str] = frozenset(),
+                weekly_set: set[str] = frozenset(), keep=None
+                ) -> tuple[list[dict], float]:
+    """신호일마다 트렌드 템플릿 통과 종목 → 스냅샷 목록 (rebuild 의 본체).
 
-    cfg = screener_cfg()
-    data = load_prices()
-    prices, bench = data["prices"], data["bench"]
-    names = json.loads(UNIVERSE.read_text(encoding="utf-8"))
-    cal = pd.DatetimeIndex(bench.index)
-    first = pd.Timestamp(data["start"]) + pd.Timedelta(days=SIGNAL_LAG_DAYS)
-    weekly = [d for d in weekly_dates(cal) if d >= first]
-    # 실제 스냅샷 날짜도 재구성해 충실도를 잰다
-    actual = {s["date"] for s in B.snapshots("us", 3650)}
-    extra = [pd.Timestamp(d) for d in sorted(actual)
-             if pd.Timestamp(d) in cal]
-    # 실제 스냅샷이 하루 늦은 데이터였는지 가리려면 그 전 거래일 재구성도 필요하다
-    pos = {d: i for i, d in enumerate(cal)}
-    extra = sorted(set(extra) | {cal[pos[d] - 1] for d in extra if pos[d] > 0})
-    sig = pd.DatetimeIndex(sorted(set(weekly) | set(extra)))
-    weekly_set = {d.strftime("%Y-%m-%d") for d in weekly}
-    print(f"  신호일 {len(sig)}개 (주간 {len(weekly)} · 실제 스냅샷 대조용 "
-          f"{len(extra)}) · {sig[0].date()} ~ {sig[-1].date()}", flush=True)
+    RS 백분위는 prices 전체 모집단으로 낸다. keep(날짜, 티커) 가 있으면 그 뒤에
+    거른다(예: 그 날의 S&P 500 구성종목만) — VCP 를 잴 범위(상위 TIE_N 번째 RS
+    이상)도 거른 뒤의 종목으로 정한다. pop_dates 의 날은 모집단 원점수도 남긴다.
+    """
+    from vcp import detect_vcp
 
     t0 = time.time()
     parts = []
@@ -250,14 +247,15 @@ def rebuild(top_check: bool = True) -> None:
             print(f"  지표 {n}/{len(prices)} ({time.time() - t0:.0f}s)", flush=True)
     long = pd.concat(parts)
 
-    extra_set = {d.strftime("%Y-%m-%d") for d in extra}
     snaps = []
     for d, day in long.groupby(level=0):
         cross = day.set_index("ticker")
         passed = screen(cross, cfg)
         ds = d.strftime("%Y-%m-%d")
+        if keep is not None:
+            passed = passed[[keep(ds, t) for t in passed.index]]
         pop = None
-        if ds in extra_set:
+        if ds in pop_dates:
             # 충실도 진단용: RS 백분위 모집단 전체의 원점수 (실제 rs_dist.json 과 대조)
             el = population(cross, cfg)
             pop = {t: round(float(v), 6) for t, v in el["raw"].items()}
@@ -280,6 +278,31 @@ def rebuild(top_check: bool = True) -> None:
         if pop is not None:
             snap["pop"] = pop
         snaps.append(snap)
+    return snaps, t0
+
+
+def rebuild(top_check: bool = True) -> None:
+    cfg = screener_cfg()
+    data = load_prices()
+    prices, bench = data["prices"], data["bench"]
+    names = json.loads(UNIVERSE.read_text(encoding="utf-8"))
+    cal = pd.DatetimeIndex(bench.index)
+    first = pd.Timestamp(data["start"]) + pd.Timedelta(days=SIGNAL_LAG_DAYS)
+    weekly = [d for d in weekly_dates(cal) if d >= first]
+    # 실제 스냅샷 날짜도 재구성해 충실도를 잰다
+    actual = {s["date"] for s in B.snapshots("us", 3650)}
+    extra = [pd.Timestamp(d) for d in sorted(actual)
+             if pd.Timestamp(d) in cal]
+    # 실제 스냅샷이 하루 늦은 데이터였는지 가리려면 그 전 거래일 재구성도 필요하다
+    pos = {d: i for i, d in enumerate(cal)}
+    extra = sorted(set(extra) | {cal[pos[d] - 1] for d in extra if pos[d] > 0})
+    sig = pd.DatetimeIndex(sorted(set(weekly) | set(extra)))
+    weekly_set = {d.strftime("%Y-%m-%d") for d in weekly}
+    print(f"  신호일 {len(sig)}개 (주간 {len(weekly)} · 실제 스냅샷 대조용 "
+          f"{len(extra)}) · {sig[0].date()} ~ {sig[-1].date()}", flush=True)
+
+    snaps, t0 = build_snaps(prices, sig, cfg, names,
+                            {d.strftime("%Y-%m-%d") for d in extra}, weekly_set)
     CACHE.mkdir(parents=True, exist_ok=True)
     with gzip.open(SNAPS, "wt", encoding="utf-8") as f:
         json.dump({"built": date.today().isoformat(), "start": data["start"],
