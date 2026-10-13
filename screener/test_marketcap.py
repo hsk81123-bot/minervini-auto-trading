@@ -97,4 +97,31 @@ assert abs(bf.price("X", d(100)) - 100.0) < 1e-9               # 분할 전 실�
 assert abs(bf.price("X", d(160)) - 25.0) < 1e-9 and bf.price("X", "2000-01-01") is None
 ok("backfill: 첫 공시 이전은 분할 배수로 되돌린 첫 값 · 기한 밖이면 None · price()")
 
+# 5) 고립된 이상치(단위 오류) 제거 — 분할로 인한 정당한 점프·완만한 추세는 둔다
+rows = [[f"2020-0{i}-01", f"2019-1{i}-01", v] for i, v in
+        enumerate([1000.0, 1010.0, 1_000_000.0, 990.0, 985.0, 980.0], 1)]
+kept, k = M.drop_share_outliers(rows, [1.0] * 6)
+assert k == 1 and [r[2] for r in kept] == [1000.0, 1010.0, 990.0, 985.0, 980.0]
+rows = [["a", "a", 1000.0], ["b", "b", 1010.0], ["c", "c", 4040.0], ["d", "d", 4000.0],
+        ["e", "e", 3990.0]]
+kept, k = M.drop_share_outliers(rows, [4.0, 4.0, 1.0, 1.0, 1.0])   # 4:1 분할 — 정상
+assert k == 0 and len(kept) == 5
+trend = [["x", "x", 1000.0 * 1.5 ** i] for i in range(6)]            # 해마다 50% 증가
+assert M.drop_share_outliers(trend, [1.0] * 6)[1] == 0
+assert M.drop_share_outliers(rows[:3], [1.0] * 3)[1] == 0            # 점이 적으면 손대지 않음
+# Caps 가 실제로 이 값을 빼고 쓰는지: 한 점이 1000배인 종목
+# 분할(150) 전 공시는 분할 전 단위(250), 후 공시는 1000 — 조정하면 모두 같은 값이어야 한다
+bad = [[days[i].strftime("%Y-%m-%d"), days[i - 5].strftime("%Y-%m-%d"),
+        250.0 if i - 5 < 150 else 1_000.0] for i in range(30, 300, 30)]
+cb = M.Caps({"X": df}, {"X": bad})
+assert abs(cb.cap("X", d(160)) - 25_000) < 1e-6                   # 250주 × 4 × $25
+assert cb.dropped == 0                                               # 분할 점프는 정상
+bad[3][2] = 1_000_000.0
+cb2 = M.Caps({"X": df}, {"X": bad})
+cb2.cap("X", d(160))
+assert cb2.dropped == 1
+dbg = cb2.debug("X", d(160))
+assert dbg["ticker"] == "X" and dbg["n_div"] == 1 and dbg["cap"] is not None
+ok("drop_share_outliers: 고립된 단위 오류만 제거 · 분할·추세·점 부족은 둠 · Caps 연결 · debug()")
+
 print("\n  전체 통과")

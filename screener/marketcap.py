@@ -43,6 +43,30 @@ def unadjust_close(adj: np.ndarray, div: np.ndarray) -> np.ndarray:
     return adj / f
 
 
+OUTLIER_X = 3.0       # 이웃 공시 중앙값의 이 배수를 넘거나 1/배수 미만이면 이상치
+
+
+def drop_share_outliers(rows: list[list], ratio_to_now: list[float], x: float = OUTLIER_X
+                        ) -> tuple[list[list], int]:
+    """공시 순서대로의 발행주식수에서 '이웃 공시와 동떨어진 한 점'을 뺀다.
+
+    ratio_to_now[i] = 그 공시 기준일 이후 분할 배수의 곱 — 곱하면 지금 주식수 기준이라
+    분할로 인한 정당한 점프는 이상치로 오인하지 않는다. 이웃은 앞뒤 2개씩(자기 제외)의
+    중앙값. 단위 오류(천 단위/원 단위)나 오타 같은 고립된 점만 거른다 — 합병으로 서서히
+    늘거나 줄어드는 추세는 그대로 둔다. 점이 4개 미만이면 손대지 않는다.
+    """
+    n = len(rows)
+    if n < 4:
+        return rows, 0
+    adj = [r[2] * q for r, q in zip(rows, ratio_to_now)]
+    keep = []
+    for i in range(n):
+        nb = sorted(adj[j] for j in range(max(0, i - 2), min(n, i + 3)) if j != i)
+        med = nb[(len(nb) - 1) // 2]          # 아래쪽 중앙값 — 이웃 한쪽이 이상치여도 안 끌려간다
+        keep.append(not (adj[i] > x * med or adj[i] * x < med))
+    return [r for r, k in zip(rows, keep) if k], keep.count(False)
+
+
 class Caps:
     """종목별 (날짜, 실제 거래가, 누적 분할배수)를 한 번 계산해 두고 시총을 조회한다."""
 
@@ -52,6 +76,8 @@ class Caps:
         self.cik_of = cik_of or {}
         self.backfill_days = backfill_days
         self.backfilled = 0
+        self.dropped = 0          # 이상치로 뺀 발행주식수 점의 수
+        self.clean: dict[str, list[list]] = {}
         self.memo: dict[str, tuple | None] = {}
         self.undone = 0           # 배당 조정을 되돌린 종목 수
         self.adjusted_only = 0    # Dividends 열이 없어 조정 가격 그대로 쓴 종목 수
@@ -75,6 +101,13 @@ class Caps:
                 cum = np.cumprod(np.where(r > 0, r, 1.0))
                 dates = np.array([d.strftime("%Y-%m-%d") for d in df.index])
                 self.memo[t] = (dates, c * after, cum)
+                rows = self.shares[t]
+                q = []
+                for r in rows:
+                    j = int(np.searchsorted(dates, r[1], side="right")) - 1
+                    q.append(float(cum[-1] / cum[j]) if j >= 0 else float(cum[-1]))
+                self.clean[t], k = drop_share_outliers(rows, q)
+                self.dropped += k
         return self.memo[t]
 
     def cap(self, t: str, d: str) -> float | None:
@@ -82,7 +115,8 @@ class Caps:
         if s is None:
             return None
         dates, price, cum = s
-        sh = PF.shares_at(self.shares[t], d, backfill_days=self.backfill_days)
+        sh = PF.shares_at(self.clean.get(t, self.shares[t]), d,
+                          backfill_days=self.backfill_days)
         if sh is None:
             return None
         v, end = sh
@@ -94,6 +128,24 @@ class Caps:
         j = int(np.searchsorted(dates, end, side="right")) - 1     # 기준일 이하 마지막 거래일
         ratio = cum[i] / cum[j] if j >= 0 else cum[i]              # (기준일, d] 의 분할배수
         return float(v * ratio * price[i])
+
+    def debug(self, t: str, d: str) -> dict:
+        """엉뚱하게 큰 비중이 나올 때 원인을 보려고: 쓴 주식수·기준일·가격·분할 배수."""
+        s = self._series(t)
+        if s is None:
+            return {}
+        dates, price, cum = s
+        sh = PF.shares_at(self.clean.get(t, self.shares[t]), d,
+                          backfill_days=self.backfill_days)
+        i = int(np.searchsorted(dates, d, side="right")) - 1
+        df = self.px[t]
+        return {"ticker": t, "date": d, "shares": sh, "price_now": float(price[i]),
+                "adj_close": float(df["Close"].iloc[i]),
+                "splits": [(str(x.date()), float(v)) for x, v in
+                           df["Splits"][df["Splits"] > 0].items()][-4:]
+                if "Splits" in df.columns else [],
+                "n_div": int((df["Dividends"] > 0).sum()) if "Dividends" in df.columns else 0,
+                "first_rows": self.shares[t][:3], "cap": self.cap(t, d)}
 
     def price(self, t: str, d: str) -> float | None:
         """d 이하 마지막 거래일의 실제 거래가 (분할·배당 조정을 되돌린 값)."""

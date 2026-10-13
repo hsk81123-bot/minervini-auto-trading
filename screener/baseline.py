@@ -105,12 +105,14 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
                          if have_px else 0.0)
         cw_pool.append((sig, E.cap_weights(mm, c)))
         cw_tmpl.append((sig, E.cap_weights(set(s["rows"]), c)))
-    tops = {}
+    tops, debug = {}, []
     for want in TOP_DATES:
         cand = [x for x in cw_pool if x[0] <= want]
         if cand:
             sig, w = cand[-1]
             tops[sig] = sorted(w.items(), key=lambda x: -x[1])[:TOP_N]
+            if tops[sig] and tops[sig][0][1] > 0.25:       # 한 종목이 25% 넘으면 원인 확인용
+                debug.append(caps.debug(tops[sig][0][0], sig))
     scheds = {"pool": [(s["date"], E.ew(members[s["date"]])) for s in snaps],
               "pool_cw": cw_pool,
               "tmpl_ew": [(s["date"], E.ew(s["rows"])) for s in snaps],
@@ -131,7 +133,7 @@ def build_frame(args=None) -> tuple[E.Frame, dict]:
         fr.add(k, r[4])
     meta = {"cap_cover": sum(cap_cover) / len(cap_cover), "undone": caps.undone,
             "cover_by_sig": dict(zip([x[0] for x in cw_pool], cap_cover)),
-            "backfilled": caps.backfilled, "selfcheck": selfcheck(caps), "tops": tops,
+            "backfilled": caps.backfilled, "selfcheck": selfcheck(caps), "tops": tops, "debug": debug, "dropped": caps.dropped,
             "adjusted_only": caps.adjusted_only, "shares_tickers": len(shares),
             "cost_bp": cost, "rsp": rsp is not None}
     return fr, meta
@@ -206,6 +208,9 @@ def report(fr: E.Frame, meta: dict) -> dict:
     print(f"\n  [시총 가중치 상위 {TOP_N}] 시총이 큰 종목이 맞는지 — 엉뚱한 종목이 있으면 주식수 오류")
     for sig, rows in meta["tops"].items():
         print(f"    {sig}  " + "  ".join(f"{t} {w * 100:.1f}%" for t, w in rows))
+    for dbg in meta["debug"]:
+        print(f"    ! 한 종목이 25% 넘음: {dbg}")
+    print(f"    (이상치로 뺀 발행주식수 점 {meta['dropped']}개)")
     doc["tops"] = meta["tops"]
     if "rsp" in fr.r:
         print(f"\n  [생존편향 보정치] 후보 수익에서 빼는 연 %p = mean(max(풀 동일가중 − RSP, 0)) × 52")
