@@ -202,6 +202,14 @@ assert index["X"] == [x["date"] for x in ohlc["X"]]
 assert index["X"] == sorted(index["X"])
 ok("to_ohlc: simulate 형식 + 날짜 색인, 시작일 이전 자름, 없는 종목 무시")
 
+# 8b) 충실도 진단 — 허용 오차 안 짝짓기, 전날과 똑같은 원점수 비율
+assert H.match_count([1.0, 2.0, 3.0], [3.00005, 1.0, 9.0]) == 2
+assert H.match_count([1.0, 1.0], [1.0]) == 1                # 한 번씩만 짝짓는다
+assert H.match_count([], [1.0]) == 0
+assert H.stale_ratio([1.0, 2.0, 3.0, 4.0], [1.0, 2.0, 5.0]) == 0.5
+assert H.stale_ratio([1.0], None) is None
+ok("match_count / stale_ratio: 모집단 원점수 대조와 지연 데이터 감지")
+
 # 9) 3단계 판정 기준은 결과 전에 고정
 assert [k for k, _ in H.HISTORY_CHECKS] == ["fidelity", "years_positive"]
 assert H.FIDELITY_JACCARD >= 0.9 and H.FIDELITY_TOP5 >= 4

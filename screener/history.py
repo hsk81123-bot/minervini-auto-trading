@@ -185,16 +185,18 @@ def indicators(df: pd.DataFrame) -> pd.DataFrame:
     }, index=df.index)
 
 
-def screen(day: pd.DataFrame, cfg: dict) -> pd.DataFrame:
-    """한 신호일의 단면(종목별 지표) → RS 백분위 + 트렌드 템플릿 통과 종목.
-
-    RS 백분위 모집단은 스크리너와 같다: 유동성 필터 통과 + 2년 구간 260행 이상
-    + 원점수 계산 가능.
-    """
-    elig = day[(day["price_now"] >= cfg["min_price"])
+def population(day: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """RS 백분위 모집단 — 스크리너와 같다: 유동성 필터 통과 + 2년 구간 260행
+    이상 + 원점수 계산 가능."""
+    return day[(day["price_now"] >= cfg["min_price"])
                & (day["vol50_now"] >= cfg["min_vol"])
                & (day["n2y"] >= MIN_ROWS_2Y)
                & day["raw"].notna()].copy()
+
+
+def screen(day: pd.DataFrame, cfg: dict) -> pd.DataFrame:
+    """한 신호일의 단면(종목별 지표) → RS 백분위 + 트렌드 템플릿 통과 종목."""
+    elig = population(day, cfg)
     if elig.empty:
         return elig
     elig["rs"] = (elig["raw"].rank(pct=True) * 98 + 1).round(0)
@@ -245,10 +247,17 @@ def rebuild(top_check: bool = True) -> None:
             print(f"  지표 {n}/{len(prices)} ({time.time() - t0:.0f}s)", flush=True)
     long = pd.concat(parts)
 
+    extra_set = {d.strftime("%Y-%m-%d") for d in extra}
     snaps = []
     for d, day in long.groupby(level=0):
-        passed = screen(day.set_index("ticker"), cfg)
+        cross = day.set_index("ticker")
+        passed = screen(cross, cfg)
         ds = d.strftime("%Y-%m-%d")
+        pop = None
+        if ds in extra_set:
+            # 충실도 진단용: RS 백분위 모집단 전체의 원점수 (실제 rs_dist.json 과 대조)
+            el = population(cross, cfg)
+            pop = {t: round(float(v), 6) for t, v in el["raw"].items()}
         rows = {}
         cut = (passed["rs"].iloc[min(TIE_N, len(passed)) - 1]
                if len(passed) else 100)
@@ -264,7 +273,10 @@ def rebuild(top_check: bool = True) -> None:
                        "vcp": vcp.get("score"), "price": round(float(r["close"]), 2),
                        "pivot": vcp.get("pivot"), "vstop": vcp.get("stop"),
                        "raw": round(float(r["raw"]), 6)}
-        snaps.append({"date": ds, "weekly": ds in weekly_set, "rows": rows})
+        snap = {"date": ds, "weekly": ds in weekly_set, "rows": rows}
+        if pop is not None:
+            snap["pop"] = pop
+        snaps.append(snap)
     CACHE.mkdir(parents=True, exist_ok=True)
     with gzip.open(SNAPS, "wt", encoding="utf-8") as f:
         json.dump({"built": date.today().isoformat(), "start": data["start"],
@@ -302,12 +314,73 @@ def compare(actual: dict, rec: dict) -> dict:
             "only_actual": sorted(a - r), "only_rebuilt": sorted(r - a)}
 
 
+def live_dists() -> dict[str, list[float]]:
+    """data_date → 그 날 실제 스크리너가 커밋한 RS 원점수 분포(rs_dist.json)."""
+    rel = B.CFG["us"]["rel"]
+    out: dict[str, list[float]] = {}
+    for sha in B.commit_shas(rel, date.today() - timedelta(days=3650)):
+        try:
+            d = json.loads(B.git("show", f"{sha}:{rel}"))["data_date"]
+            if d in out:
+                continue
+            out[d] = json.loads(B.git("show", f"{sha}:docs/data/rs_dist.json"))
+        except (RuntimeError, json.JSONDecodeError, KeyError):
+            continue
+    return out
+
+
+def match_count(a: list[float], b: list[float], tol: float = 1e-4) -> int:
+    """정렬된 두 값 목록에서 tol 안으로 짝지어지는 개수 (투 포인터)."""
+    a, b = sorted(a), sorted(b)
+    i = j = n = 0
+    while i < len(a) and j < len(b):
+        if abs(a[i] - b[j]) <= tol:
+            n, i, j = n + 1, i + 1, j + 1
+        elif a[i] < b[j]:
+            i += 1
+        else:
+            j += 1
+    return n
+
+
+def stale_ratio(cur: list[float], prev: list[float] | None) -> float | None:
+    """원점수가 전날과 똑같은 비율 — 높으면 그 날 실제 스크리너가 지연 데이터를 썼다."""
+    if not prev or not cur:
+        return None
+    from collections import Counter
+    return sum((Counter(cur) & Counter(prev)).values()) / len(cur)
+
+
 def fidelity(verbose: bool = True) -> dict:
-    rec = {s["date"]: s["rows"] for s in load_snaps()}
+    snaps_rec = {s["date"]: s for s in load_snaps()}
+    rec = {d: s["rows"] for d, s in snaps_rec.items()}
+    dists = live_dists()
+    live = {s["date"]: s for s in B.snapshots("us", 3650)}
     rows = []
-    for s in B.snapshots("us", 3650):
-        if s["date"] in rec:
-            rows.append({"date": s["date"], **compare(s["rows"], rec[s["date"]])})
+    prev_dist = None
+    for d in sorted(dists):
+        cur = dists[d]
+        st = stale_ratio(cur, prev_dist)
+        prev_dist = cur
+        if d not in rec:
+            continue
+        actual = live.get(d)
+        if actual is None:
+            continue
+        pop = snaps_rec[d].get("pop") or {}
+        rows.append({"date": d, **compare(actual["rows"], rec[d]),
+                     "stale": st, "pop_live": len(cur), "pop_rec": len(pop),
+                     "pop_match": match_count(cur, list(pop.values()))
+                     if pop else None,
+                     "rs_shift": (mean(rec[d][t]["rs"] - actual["rows"][t]["rs"]
+                                       for t in set(rec[d]) & set(actual["rows"]))
+                                  if set(rec[d]) & set(actual["rows"]) else None),
+                     "only_actual_rs": {t: actual["rows"][t]["rs"]
+                                        for t in sorted(set(actual["rows"])
+                                                        - set(rec[d]))},
+                     "only_rebuilt_rs": {t: rec[d][t]["rs"]
+                                         for t in sorted(set(rec[d])
+                                                         - set(actual["rows"]))}})
     if not rows:
         print("  대조할 날짜가 없다")
         return {"days": 0, "passed": False}
@@ -318,12 +391,33 @@ def fidelity(verbose: bool = True) -> dict:
     passed = jac >= FIDELITY_JACCARD and top5 >= FIDELITY_TOP5
     if verbose:
         print(f"\n  [충실도] 재구성 vs 실제 커밋 스냅샷 ({len(rows)}일)")
-        print(f"  {'날짜':<10} {'실제':>5} {'재구성':>6} {'겹침':>5} "
-              f"{'자카드':>6} {'RS일치':>6} {'상위5':>5}")
+        print(f"  지연 = 실제 스크리너의 RS 원점수가 전날과 똑같은 비율 (높으면 그 날 "
+              f"실제 쪽이 전날 데이터를 다시 썼다)")
+        print(f"  모집단 = RS 백분위 모집단 크기 실제/재구성, 원점수 일치 = 실제 원점수 중 "
+              f"재구성에 같은 값(±1e-4)이 있는 비율")
+        print(f"  {'날짜':<10} {'실제':>5} {'재구성':>6} {'자카드':>6} "
+              f"{'RS일치':>6} {'RS이동':>6} {'상위5':>5} {'지연':>6} "
+              f"{'모집단':>11} {'원점수일치':>8}")
         for r in rows:
+            st = "   -  " if r["stale"] is None else f"{r['stale'] * 100:5.1f}%"
+            pm = ("     -  " if r["pop_match"] is None
+                  else f"{r['pop_match'] / max(1, r['pop_live']) * 100:6.1f}%")
+            sh = "   -  " if r["rs_shift"] is None else f"{r['rs_shift']:+6.2f}"
             print(f"  {r['date']:<10} {r['actual']:>5} {r['rebuilt']:>6} "
-                  f"{r['both']:>5} {r['jaccard']:>6.3f} "
-                  f"{(r['rs_exact'] or 0) * 100:>5.0f}% {r['top5']:>4}/5")
+                  f"{r['jaccard']:>6.3f} {(r['rs_exact'] or 0) * 100:>5.0f}% "
+                  f"{sh} {r['top5']:>4}/5 {st} "
+                  f"{r['pop_live']:>5}/{r['pop_rec']:<5} {pm}")
+        fresh = [r for r in rows if (r["stale"] or 0) < 0.05]
+        if fresh:
+            print(f"  (진단) 실제 쪽 데이터가 지연되지 않은 날만 ({len(fresh)}일): "
+                  f"자카드 {mean(r['jaccard'] for r in fresh):.3f} · 상위 5 "
+                  f"{mean(r['top5'] for r in fresh):.1f}/5 — 판정은 위 전체 기준 그대로")
+        for r in rows:
+            if r["jaccard"] < 0.95 and (r["stale"] or 0) < 0.05:
+                oa = list(r["only_actual_rs"].items())[:10]
+                orb = list(r["only_rebuilt_rs"].items())[:10]
+                print(f"  {r['date']} 실제에만 {len(r['only_actual_rs'])}: {oa}")
+                print(f"  {r['date']} 재구성에만 {len(r['only_rebuilt_rs'])}: {orb}")
         print(f"  평균: 자카드 {jac:.3f} · RS 정확히 일치 {rs_exact * 100:.0f}% · "
               f"상위 5 일치 {top5:.1f}/5 → "
               f"{'통과' if passed else '실패 — 재구성이 실제와 다르다'}")
