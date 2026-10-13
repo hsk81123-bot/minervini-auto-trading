@@ -36,6 +36,8 @@ on:
       - "screener/test_papertrade.py"
       - "screener/validate.py"
       - "screener/test_validate.py"
+      - "screener/robust.py"
+      - "screener/test_robust.py"
       - ".github/workflows/backtest.yml"
 
 # 읽기만 한다 — 백테스트는 아무것도 커밋하지 않는다.
@@ -65,6 +67,7 @@ jobs:
           python screener/test_backtest.py
           python screener/test_papertrade.py
           python screener/test_validate.py
+          python screener/test_robust.py
 
       # gap(실제 운용 가능)과 last(사후 정보 포함 상한)를 나란히 낸다.
       # 두 수치의 차이가 곧 '마지막 등장일을 미리 안다고 가정했을 때의 이득'이다.
@@ -76,7 +79,7 @@ jobs:
         run: |
           set -o pipefail
           : > report.txt
-          for m in us kr; do
+          for m in us; do
             for r in gap last; do
               echo "" | tee -a report.txt
               echo "### $m · rule=$r · days=$DAYS" | tee -a report.txt
@@ -100,7 +103,7 @@ jobs:
           BREAKEVEN: ${{ inputs.breakeven }}
         run: |
           set -o pipefail
-          common="--days $DAYS --top $TOP --capital $CAPITAL --stop $STOP"
+          common="--market us --days $DAYS --top $TOP --capital $CAPITAL --stop $STOP"
           echo "" | tee -a report.txt
           echo "### 모의매매 A · 고정 익절 $TARGET% (설계 손익비 3:1)" \
             | tee -a report.txt
@@ -123,7 +126,7 @@ jobs:
           TRAIL: ${{ inputs.trail }}
         run: |
           set -o pipefail
-          for m in us kr; do
+          for m in us; do
             echo "" | tee -a report.txt
             # 피봇 +X% 초과 제외 규칙의 상한 민감도 — 매도 규칙 두 가지 모두에서.
             # 한 상한값에서만 좋으면 우연이다. 이웃 값과 두 규칙에서 함께 봐야 한다.
@@ -140,6 +143,28 @@ jobs:
               --ext-caps 15,20,25,35,50 \
               --json "val-$m-trail.json" 2>&1 | tee -a report.txt
           done
+
+      # 1단계 견고성 점검 — 실행 가능한 진입가(다음날 시가), 종목 단위 신뢰구간,
+      # 기여 상위 종목 제외, 무작위 200회 대조군, RS 동점 처리. 매도 규칙 두 가지 모두.
+      - name: Robustness (stage 1)
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+          TOP: ${{ inputs.top || '5' }}
+          STOP: ${{ inputs.stop || '-8' }}
+          TARGET: ${{ inputs.target || '25' }}
+          TRAIL: ${{ inputs.trail }}
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 1단계 견고성 · 추격손절" | tee -a report.txt
+          python screener/robust.py --days "$DAYS" --top "$TOP" \
+            --stop "$STOP" --no-target --trail "${TRAIL:--15}" \
+            --json robust-trail.json 2>&1 | tee -a report.txt
+          echo "" | tee -a report.txt
+          echo "### 1단계 견고성 · 고정 익절" | tee -a report.txt
+          python screener/robust.py --days "$DAYS" --top "$TOP" \
+            --stop "$STOP" --target "$TARGET" \
+            --json robust-target.json 2>&1 | tee -a report.txt
 
       - name: Summary
         if: always()
@@ -160,3 +185,4 @@ jobs:
             bt-*.json
             pt-*.json
             val-*.json
+            robust-*.json

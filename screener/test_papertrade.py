@@ -24,8 +24,11 @@ D = ["2026-09-14", "2026-09-15", "2026-09-16", "2026-09-17"]
 
 
 def sim(*bars, **kw):
+    # 1~16번은 '신호 당일 종가 진입' 기준으로 쓴 판정 테스트다.
+    # 다음날 시가 진입은 아래 별도 블록에서 확인한다.
     kw.setdefault("stop", -8.0)
     kw.setdefault("target", 25.0)
+    kw.setdefault("entry_mode", "close")
     return P.simulate([ENTRY, *bars], "2026-09-11", **kw)
 
 
@@ -144,10 +147,49 @@ ok("가격 없음 — 측정 불가로 분리")
 
 # 18) 진입일 휴장이면 이후 첫 거래일 종가로 진입
 s = P.simulate([bar(D[0], 49, 51, 48, 50.0), bar(D[1], 51, 63.0, 50, 62.0)],
-               "2026-09-11", -8.0, 25.0)
+               "2026-09-11", -8.0, 25.0, entry_mode="close")
 assert s["entry"] == 50.0 and s["entry_date"] == D[0]
 assert s["status"] == "익절" and abs(s["exit"] - 62.5) < 1e-9
 ok("진입일 휴장·거래정지 — 이후 첫 거래일 종가로 진입")
+
+# ---------------------------------------------------------------- 다음날 시가 진입
+# 스크리너는 장 마감 뒤에 돈다. 신호를 만든 종가에는 살 수 없다.
+# 19) 기본값은 신호 다음 거래일 시가 진입
+s = P.simulate([ENTRY, bar(D[0], 104.0, 106, 103, 105.0)], "2026-09-11", -8.0)
+assert s["entry"] == 104.0 and s["entry_date"] == D[0], s
+assert s["status"] == "보유" and abs(s["exit"] - 105.0) < 1e-9
+assert abs(s["risk"] - 104.0 * 0.08) < 1e-9
+ok("기본 진입 = 신호 다음날 시가 (신호 당일 종가는 실제로 살 수 없다)")
+
+# 20) 산 날 장중에도 손절이 걸린다 (시가에 샀으므로 그 날 저가는 매수 뒤)
+s = P.simulate([ENTRY, bar(D[0], 100.0, 101, 91.0, 95.0)], "2026-09-11", -8.0)
+assert s["status"] == "손절" and abs(s["exit"] - 92.0) < 1e-9, s
+assert s["exit_date"] == D[0] and s["days"] == 0
+ok("다음날 시가 진입 — 산 날 장중 저가로 바로 손절될 수 있다")
+
+# 21) 밤사이 갭상승은 진입가에 그대로 반영된다 — 종가 진입과 차이가 여기서 난다
+gap = [ENTRY, bar(D[0], 112.0, 115, 110, 114.0), bar(D[1], 114, 116, 113, 115.0)]
+a = P.simulate(gap, "2026-09-11", -8.0, entry_mode="close")
+b = P.simulate(gap, "2026-09-11", -8.0)
+assert a["entry"] == 100.0 and b["entry"] == 112.0
+assert a["ret"] > b["ret"], (a["ret"], b["ret"])
+ok("갭상승 — 종가 진입은 밤사이 상승분을 공짜로 먹는다 (다음날 시가 진입은 아니다)")
+
+# 22) 신호 다음 거래일이 없으면 측정 불가 (신호 당일 가격으로 메우지 않는다)
+s = P.simulate([ENTRY], "2026-09-11", -8.0)
+assert s["status"] == "측정 불가", s
+ok("신호 다음 거래일 가격 없음 — 측정 불가")
+
+# 23) 알 수 없는 진입 방식은 거부
+try:
+    P.simulate([ENTRY], "2026-09-11", -8.0, entry_mode="vwap")
+    raise AssertionError("거부해야 한다")
+except ValueError:
+    pass
+o, _, _ = P.parse_args(["--entry", "close"])
+assert o["entry"] == "close" and P.DEFAULTS["entry"] == "next_open"
+assert "다음날 시가" in P.rules_line(dict(P.DEFAULTS))
+ok("entry_mode: next_open|close 만 허용, 규칙 설명 줄에 진입 방식이 찍힌다")
 
 # ---------------------------------------------------------------- 성과 지표
 # 19) 손익비·기대값 — 손으로 검산

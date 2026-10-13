@@ -196,7 +196,8 @@ def run(cohort: list[tuple[str, list[dict]]], market: str,
         for r in rows:
             sim = P.simulate(ohlc.get(r["ticker"], []), entry_date,
                              o["stop"], o["target"], o["trail"],
-                             o["breakeven"], o["time-stop"])
+                             o["breakeven"], o["time-stop"],
+                             o.get("entry", "next_open"))
             if sim["status"] == "측정 불가":
                 continue
             trades.append({"market": market, "ticker": r["ticker"],

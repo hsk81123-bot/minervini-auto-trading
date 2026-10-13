@@ -37,6 +37,7 @@
     python screener/papertrade.py --stop -8 --trail -15        # 추격손절 (익절 없음)
     python screener/papertrade.py --stop -8 --trail -15 --breakeven 10
     python screener/papertrade.py --time-stop 20               # N일 무반응이면 청산
+    python screener/papertrade.py --entry close                # 신호 당일 종가 진입(비교용)
     python screener/papertrade.py --days 30 --top 5 --capital 10000000
     python screener/papertrade.py --market us --json pt.json
 """
@@ -57,7 +58,8 @@ TAX_BPS = {"kr": 18.0, "us": 0.0}   # 매도 시에만
 
 DEFAULTS = {"days": 30, "top": 5, "capital": 10_000_000,
             "stop": -8.0, "target": 25.0, "trail": None,
-            "breakeven": None, "time-stop": None}
+            "breakeven": None, "time-stop": None, "entry": "next_open"}
+ENTRY_MODES = ("next_open", "close")
 
 
 # ---------------------------------------------------------------- 가격
@@ -110,35 +112,53 @@ def at_or_before(series: dict[str, float], d: str) -> float | None:
 def simulate(rows: list[dict], entry_date: str, stop: float,
              target: float | None = None, trail: float | None = None,
              breakeven: float | None = None,
-             time_stop: int | None = None) -> dict:
+             time_stop: int | None = None,
+             entry_mode: str = "next_open") -> dict:
     """일봉을 앞으로 걸으며 매도 규칙을 판정한다.
 
     stop/target/trail/breakeven 은 % 단위. stop·trail 은 음수, target·
     breakeven 은 양수. trail 은 보유 중 최고가 기준 하락폭이다.
 
-    rows는 진입일을 포함한 날짜 오름차순 일봉. 진입일은 종가에 샀다고 보므로
-    판정에서 제외한다 (그 날 고가·저가는 매수 전의 일이다).
+    entry_date 는 신호가 나온 스냅샷 날짜다. entry_mode:
+      next_open (기본) 신호 다음 거래일 시가에 산다. 스크리너는 장 마감 뒤에
+                       돌기 때문에 이것이 실제로 살 수 있는 첫 가격이다.
+                       산 날의 고가·저가는 매수 뒤의 일이라 그 날부터 판정한다.
+      close            신호가 나온 날 종가에 산다. 신호를 만든 가격에 사는
+                       셈이라 실제로는 불가능하다 — 비교용으로만 남긴다.
+                       산 날의 고가·저가는 매수 전의 일이라 판정에서 뺀다.
     """
-    idx = next((i for i, r in enumerate(rows) if r["date"] == entry_date), None)
-    if idx is None:
-        # 진입일에 거래가 없었다 — 그 이후 첫 거래일 종가로 산다.
+    if entry_mode == "next_open":
         idx = next((i for i, r in enumerate(rows) if r["date"] > entry_date),
                    None)
-    if idx is None:
-        return {"status": "측정 불가", "reason": "진입일 이후 가격 없음"}
+        if idx is None:
+            return {"status": "측정 불가", "reason": "신호 다음 거래일 가격 없음"}
+        entry = rows[idx]["open"]
+        first = idx                 # 시가에 샀으므로 그 날 장중부터 판정
+    elif entry_mode == "close":
+        idx = next((i for i, r in enumerate(rows) if r["date"] == entry_date),
+                   None)
+        if idx is None:
+            # 진입일에 거래가 없었다 — 그 이후 첫 거래일 종가로 산다.
+            idx = next((i for i, r in enumerate(rows)
+                        if r["date"] > entry_date), None)
+        if idx is None:
+            return {"status": "측정 불가", "reason": "진입일 이후 가격 없음"}
+        entry = rows[idx]["close"]
+        first = idx + 1             # 종가에 샀으므로 그 날 고저는 매수 전
+    else:
+        raise ValueError(f"entry_mode 는 next_open|close (받은 값: {entry_mode})")
 
-    entry = rows[idx]["close"]
     if entry <= 0:
         return {"status": "측정 불가", "reason": "진입가 이상"}
     e_date = rows[idx]["date"]
     init_stop = entry * (1 + stop / 100)
     risk = entry - init_stop                 # 1R
     tgt = entry * (1 + target / 100) if target else None
-    # 보유 중 최고가. 종가에 샀으므로 진입가에서 출발한다 (그 날 고가는 매수 전).
+    # 보유 중 최고가는 진입가에서 출발한다 (매수 전 고가는 내 것이 아니다).
     peak = entry
     mae = mfe = 0.0
 
-    for n, r in enumerate(rows[idx + 1:], start=1):
+    for n, r in enumerate(rows[first:], start=first - idx):
         # 오늘의 손절선은 어제까지의 고가로만 정한다 (당일 고가는 아직 모른다).
         level, kind = init_stop, "손절"
         if trail is not None:
@@ -272,7 +292,9 @@ def rfmt(v: float | None) -> str:
 
 
 def rules_line(o: dict) -> str:
-    parts = [f"손절 {o['stop']:+.1f}%"]
+    parts = ["진입 " + ("신호 다음날 시가" if o.get("entry", "next_open")
+                        == "next_open" else "신호 당일 종가(실행 불가, 비교용)")]
+    parts.append(f"손절 {o['stop']:+.1f}%")
     if o["target"]:
         parts.append(f"익절 {o['target']:+.1f}% "
                      f"(설계 손익비 {abs(o['target'] / o['stop']):.1f}:1)")
@@ -376,6 +398,11 @@ def parse_args(argv: list[str]) -> tuple[dict, list[str], str | None]:
             out_json = argv[i]
         elif a == "--no-target":
             o["target"] = None
+        elif a == "--entry" and i + 1 < len(argv):
+            i += 1
+            if argv[i] not in ENTRY_MODES:
+                sys.exit(f"--entry 는 {'|'.join(ENTRY_MODES)} (받은 값: {argv[i]})")
+            o["entry"] = argv[i]
         elif a.lstrip("-") in o and i + 1 < len(argv):
             key = a.lstrip("-")
             i += 1
@@ -426,7 +453,7 @@ def main(argv: list[str]) -> int:
     for p in positions:
         p["sim"] = simulate(ohlc.get(p["ticker"], []), p["entry_snapshot"],
                             o["stop"], o["target"], o["trail"],
-                            o["breakeven"], o["time-stop"])
+                            o["breakeven"], o["time-stop"], o["entry"])
         value(p, o["capital"] / len(positions), fx)
 
     asof = max((p["sim"].get("exit_date", "") for p in positions), default="")
