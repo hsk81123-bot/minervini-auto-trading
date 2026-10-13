@@ -12,6 +12,7 @@ import io
 import json
 import sys
 import time
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
@@ -25,6 +26,13 @@ DATA_DIR = Path(__file__).resolve().parent.parent / "docs" / "data"
 
 TOP_EXPORT = 1000       # 차트 이력(5년) 내보낼 상위 종목 수 (사실상 통과 전체)
 MIN_KR_UNIVERSE = 500   # KRX 상장목록이 이보다 적으면 응답이 깨진 것으로 간주
+
+# 데이터 신선도 — 장 마감 직후에는 yfinance 최신 일봉이 아직 비어 있는 종목이 많다.
+# 이 비율 이상이 기준 거래일 일봉을 가져야 '그 날 데이터'로 본다. 모자라면 늦은
+# 종목만 기다렸다 다시 받고, 그래도 모자라면 실제로 가진 날짜로 정직하게 표시한다.
+FRESH_MIN = 0.95
+FRESH_RETRIES = 2
+FRESH_WAIT_SEC = 600
 
 # 시장별 설정
 CFG = {
@@ -198,6 +206,73 @@ def download_history(tickers: list[str], period: str = "2y",
     return data
 
 
+# ---------------------------------------------------------------- 데이터 신선도
+def freshness(data: dict[str, pd.DataFrame], day: pd.Timestamp) -> float:
+    """기준 거래일(day) 일봉까지 가진 종목의 비율."""
+    if not data:
+        return 0.0
+    return sum(1 for df in data.values() if df.index[-1] >= day) / len(data)
+
+
+def common_last_date(data: dict[str, pd.DataFrame]) -> pd.Timestamp:
+    """가장 많은 종목이 실제로 끝나는 날짜 — 데이터가 정말 반영하는 날."""
+    return Counter(df.index[-1] for df in data.values()).most_common(1)[0][0]
+
+
+def expected_session(bench: pd.Series, data: dict[str, pd.DataFrame]
+                     ) -> pd.Timestamp:
+    """기준 거래일 = 지수 마지막 일봉과 다수 종목 마지막 날 중 더 최근.
+
+    지수만 보면, 지수 쪽이 늦게 들어온 날 멀쩡한 종목 데이터를 하루 전으로 잘라
+    버린다. 다수 종목만 보면, 종목 다수가 늦은 날을 못 알아챈다. 둘 중 최근 쪽을
+    기준으로 삼고 신선도는 ensure_fresh 가 판정한다.
+    """
+    common = common_last_date(data)
+    return max(bench.index[-1], common) if len(bench) else common
+
+
+def as_of(data: dict[str, pd.DataFrame], day: pd.Timestamp
+          ) -> dict[str, pd.DataFrame]:
+    """모든 종목을 day 까지로 자른다 — 한 스냅샷 안에서 날짜가 섞이지 않게."""
+    out = {}
+    for t, df in data.items():
+        sub = df[df.index <= day]
+        if len(sub):
+            out[t] = sub
+    return out
+
+
+def ensure_fresh(data: dict[str, pd.DataFrame], expected: pd.Timestamp,
+                 refetch, wait, retries: int = FRESH_RETRIES,
+                 min_ratio: float = FRESH_MIN
+                 ) -> tuple[dict[str, pd.DataFrame], pd.Timestamp, dict]:
+    """기준 거래일 데이터가 충분해질 때까지 늦은 종목만 다시 받는다.
+
+    refetch(tickers) -> {ticker: df}, wait(seconds) 는 주입한다 (테스트용).
+    돌려주는 day 가 이 스냅샷의 data_date 다. 예전처럼 '종목들 마지막 날짜의
+    최댓값'을 쓰면, 최신 일봉을 받은 몇 종목 때문에 전날 데이터 대부분에 오늘
+    날짜가 붙는다 (2026-09~10월 실제로 28일 중 약 15일이 그랬다).
+    """
+    ratio = freshness(data, expected)
+    tries = 0
+    while ratio < min_ratio and tries < retries:
+        lagging = [t for t, df in data.items() if df.index[-1] < expected]
+        print(f"  기준일 {expected.date()} 일봉 {ratio:.1%} — 늦은 {len(lagging)}종목을 "
+              f"{FRESH_WAIT_SEC // 60}분 뒤 다시 받는다 ({tries + 1}/{retries})",
+              flush=True)
+        wait(FRESH_WAIT_SEC)
+        data = {**data, **refetch(lagging)}
+        ratio = freshness(data, expected)
+        tries += 1
+    info = {"expected_date": str(expected.date()), "fresh_ratio": round(ratio, 4),
+            "retries": tries, "stale": ratio < min_ratio}
+    day = expected if ratio >= min_ratio else common_last_date(data)
+    if info["stale"]:
+        print(f"::warning::기준일 {expected.date()} 일봉이 {ratio:.1%}뿐이라 "
+              f"{day.date()} 데이터로 표시한다 (지연 데이터)", flush=True)
+    return as_of(data, day), day, info
+
+
 # ---------------------------------------------------------------- RS 점수
 def rs_raw_score(close: pd.Series) -> float | None:
     """IBD 방식: 최근 3개월 수익률 40% + 이전 3개 분기 각 20% 가중."""
@@ -330,6 +405,18 @@ def main(market: str) -> None:
     print("[2/5] 가격 데이터 다운로드 (2년 일봉)...", flush=True)
     data = download_history(tickers)
     print(f"  {len(data)} tickers with sufficient history", flush=True)
+    # 기준 거래일 = 벤치마크 지수의 마지막 일봉. 종목 데이터가 그 날까지 충분히
+    # 와 있는지 확인하고, 이 스냅샷의 모든 계산을 그 날짜 기준으로 맞춘다.
+    bench2 = yf.download(cfg["bench"], period="2y", interval="1d",
+                         auto_adjust=True, progress=False)["Close"].dropna()
+    if isinstance(bench2, pd.DataFrame):
+        bench2 = bench2.iloc[:, 0]
+    expected = expected_session(bench2, data)
+    data, day, fresh = ensure_fresh(
+        data, expected, lambda ts: download_history(ts), time.sleep)
+    bench2 = bench2[bench2.index <= day]
+    print(f"  데이터 기준일 {day.date()} (기준일 일봉 {fresh['fresh_ratio']:.1%}"
+          f"{', 지연' if fresh['stale'] else ''})", flush=True)
     data = {
         t: df for t, df in data.items()
         if float(df["Close"].iloc[-1]) >= cfg["min_price"]
@@ -349,10 +436,6 @@ def main(market: str) -> None:
         json.dump(sorted(round(float(v), 6) for v in raw.values()), f)
 
     print("[4/5] 트렌드 템플릿 + VCP 스코어링...", flush=True)
-    bench2 = yf.download(cfg["bench"], period="2y", interval="1d",
-                         auto_adjust=True, progress=False)["Close"].dropna()
-    if isinstance(bench2, pd.DataFrame):
-        bench2 = bench2.iloc[:, 0]
     results = []
     for t, df in data.items():
         if t not in rs_rank.index:
@@ -378,9 +461,10 @@ def main(market: str) -> None:
     bench_close = bench["Close"].dropna()
     if isinstance(bench_close, pd.DataFrame):  # 단일 티커도 MultiIndex 가능
         bench_close = bench_close.iloc[:, 0]
+    bench_close = bench_close[bench_close.index <= day]
     export = results[:TOP_EXPORT]  # 저장소 크기 관리: 나머지는 TradingView 폴백
-    data5 = download_history([r["ticker"] for r in export],
-                             period="5y", min_len=1)
+    data5 = as_of(download_history([r["ticker"] for r in export],
+                                   period="5y", min_len=1), day)
     hist_dir.mkdir(parents=True, exist_ok=True)
     # 이전 실행의 잔여 파일 제거 (통과 종목이 바뀌므로).
     # 단 온디맨드 생성분은 보존한다 — '자체 차트 생성' 버튼은 미통과 종목에만
@@ -398,10 +482,10 @@ def main(market: str) -> None:
         export_history(r["ticker"], data5.get(r["ticker"], data[r["ticker"]]),
                        bench_close, hist_dir)
 
-    last_date = max(df.index[-1] for df in data.values())
     out = {
         "generated_at": pd.Timestamp.now().isoformat(),
-        "data_date": str(last_date.date()),
+        "data_date": str(day.date()),
+        "freshness": fresh,
         "market": market,
         "universe": cfg["label"],
         "universe_size": len(tickers),

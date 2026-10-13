@@ -1,0 +1,188 @@
+name: Backtest
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "검증 기간 (일) — 스냅샷이 쌓인 만큼만 거슬러 올라간다"
+        default: "30"
+      top:
+        description: "모의매매 시장별 상위 N 종목"
+        default: "5"
+      capital:
+        description: "모의매매 원금 (원)"
+        default: "10000000"
+      stop:
+        description: "손절 기준 (%) — 음수"
+        default: "-8"
+      target:
+        description: "익절 기준 (%) — 비우면 고정 익절 없음"
+        default: "25"
+      trail:
+        description: "추격손절 (%) — 최고가 대비, 음수. 비우면 미적용"
+        default: ""
+      breakeven:
+        description: "본전손절 발동 (%) — 비우면 미적용"
+        default: ""
+  # 작업 브랜치에서 백테스트 코드를 고치면 곧바로 실제 수치로 확인한다.
+  # (workflow_dispatch 버튼은 기본 브랜치에 파일이 있어야 뜨므로, 브랜치에서
+  #  돌릴 길을 따로 둔다. 백테스트 파일을 건드린 푸시에만 반응한다.)
+  push:
+    branches: ["claude/**"]
+    paths:
+      - "screener/backtest.py"
+      - "screener/test_backtest.py"
+      - "screener/papertrade.py"
+      - "screener/test_papertrade.py"
+      - "screener/validate.py"
+      - "screener/test_validate.py"
+      - "screener/robust.py"
+      - "screener/test_robust.py"
+      - ".github/workflows/backtest.yml"
+
+# 읽기만 한다 — 백테스트는 아무것도 커밋하지 않는다.
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 스냅샷 시계열을 git 이력에서 읽는다 — 얕은 클론이면 0개가 나온다.
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r screener/requirements.txt
+
+      - name: Unit tests
+        run: |
+          python screener/test_backtest.py
+          python screener/test_papertrade.py
+          python screener/test_validate.py
+          python screener/test_robust.py
+
+      # gap(실제 운용 가능)과 last(사후 정보 포함 상한)를 나란히 낸다.
+      # 두 수치의 차이가 곧 '마지막 등장일을 미리 안다고 가정했을 때의 이득'이다.
+      # 입력값은 셸에 직접 끼우지 않고 env로 넘긴다 (저장소가 공개라 dispatch
+      # 입력은 마스킹되지 않는다).
+      - name: Run backtest
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+        run: |
+          set -o pipefail
+          : > report.txt
+          for m in us; do
+            for r in gap last; do
+              echo "" | tee -a report.txt
+              echo "### $m · rule=$r · days=$DAYS" | tee -a report.txt
+              top=""
+              [ "$r" = "gap" ] && top="--top 20"
+              python screener/backtest.py "$m" --days "$DAYS" --rule "$r" \
+                $top --json "bt-$m-$r.json" 2>&1 | tee -a report.txt
+            done
+          done
+
+      # 손절·익절 규칙까지 넣은 모의매매 — 집계 통계가 아니라 체결 내역을 본다.
+      # 고정 익절(3:1 설계)과 추격손절(상승 열어둠)을 나란히 돌린다.
+      - name: Run papertrade
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+          TOP: ${{ inputs.top || '5' }}
+          CAPITAL: ${{ inputs.capital || '10000000' }}
+          STOP: ${{ inputs.stop || '-8' }}
+          TARGET: ${{ inputs.target || '25' }}
+          TRAIL: ${{ inputs.trail }}
+          BREAKEVEN: ${{ inputs.breakeven }}
+        run: |
+          set -o pipefail
+          common="--market us --days $DAYS --top $TOP --capital $CAPITAL --stop $STOP"
+          echo "" | tee -a report.txt
+          echo "### 모의매매 A · 고정 익절 $TARGET% (설계 손익비 3:1)" \
+            | tee -a report.txt
+          python screener/papertrade.py $common --target "$TARGET" \
+            --json pt-target.json 2>&1 | tee -a report.txt
+          echo "" | tee -a report.txt
+          echo "### 모의매매 B · 추격손절 ${TRAIL:--15}% (고정 익절 없음)" \
+            | tee -a report.txt
+          python screener/papertrade.py $common --no-target \
+            --trail "${TRAIL:--15}" --breakeven "${BREAKEVEN:-10}" \
+            --json pt-trail.json 2>&1 | tee -a report.txt
+
+      # 진입일 하나로는 아무것도 증명되지 않는다 — 코호트·대조군·격자로 검증.
+      - name: Validate rules
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+          TOP: ${{ inputs.top || '5' }}
+          STOP: ${{ inputs.stop || '-8' }}
+          TARGET: ${{ inputs.target || '25' }}
+          TRAIL: ${{ inputs.trail }}
+        run: |
+          set -o pipefail
+          for m in us; do
+            echo "" | tee -a report.txt
+            # 피봇 +X% 초과 제외 규칙의 상한 민감도 — 매도 규칙 두 가지 모두에서.
+            # 한 상한값에서만 좋으면 우연이다. 이웃 값과 두 규칙에서 함께 봐야 한다.
+            echo "### 엄격 검증 $m · 고정 익절 + 피봇 상한" | tee -a report.txt
+            python screener/validate.py "$m" --days "$DAYS" --top "$TOP" \
+              --stop "$STOP" --target "$TARGET" --grid \
+              --ext-caps 15,20,25,35,50 \
+              --json "val-$m-target.json" 2>&1 | tee -a report.txt
+            echo "" | tee -a report.txt
+            # 권장 규칙(추격손절)에서 피봇 괴리 진입 필터까지 함께 잰다.
+            echo "### 엄격 검증 $m · 추격손절 + 피봇 괴리·상한" | tee -a report.txt
+            python screener/validate.py "$m" --days "$DAYS" --top "$TOP" \
+              --stop "$STOP" --no-target --trail "${TRAIL:--15}" --ext-grid \
+              --ext-caps 15,20,25,35,50 \
+              --json "val-$m-trail.json" 2>&1 | tee -a report.txt
+          done
+
+      # 1단계 견고성 점검 — 실행 가능한 진입가(다음날 시가), 종목 단위 신뢰구간,
+      # 기여 상위 종목 제외, 무작위 200회 대조군, RS 동점 처리. 매도 규칙 두 가지 모두.
+      - name: Robustness (stage 1)
+        env:
+          DAYS: ${{ inputs.days || '30' }}
+          TOP: ${{ inputs.top || '5' }}
+          STOP: ${{ inputs.stop || '-8' }}
+          TARGET: ${{ inputs.target || '25' }}
+          TRAIL: ${{ inputs.trail }}
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 1단계 견고성 · 추격손절" | tee -a report.txt
+          python screener/robust.py --days "$DAYS" --top "$TOP" \
+            --stop "$STOP" --no-target --trail "${TRAIL:--15}" \
+            --json robust-trail.json 2>&1 | tee -a report.txt
+          echo "" | tee -a report.txt
+          echo "### 1단계 견고성 · 고정 익절" | tee -a report.txt
+          python screener/robust.py --days "$DAYS" --top "$TOP" \
+            --stop "$STOP" --target "$TARGET" \
+            --json robust-target.json 2>&1 | tee -a report.txt
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '```'
+            # 가격 다운로드 진행 로그는 요약에서 걷어낸다.
+            grep -v '^  가격 ' report.txt || cat report.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backtest
+          path: |
+            report.txt
+            bt-*.json
+            pt-*.json
+            val-*.json
+            robust-*.json
