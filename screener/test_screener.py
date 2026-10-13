@@ -96,4 +96,17 @@ data, day, info = S.ensure_fresh(universe(10, 90), D, r.refetch, r.wait)
 assert day == D and not info["stale"] and abs(info["fresh_ratio"] - 0.98) < 1e-9
 ok("ensure_fresh: 98% 채워지면 기준일 확정 (거래정지 등 소수 지연은 허용)")
 
+# 8) 기준 거래일 — 지수와 다수 종목 중 더 최근 쪽 (지수가 늦어도 종목을 자르지 않는다)
+bench_late = pd.Series([1.0] * 9, index=DAYS[:9])            # 지수는 D-1 까지
+assert S.expected_session(bench_late, universe(97, 3)) == D    # 종목 다수가 D → D
+bench_ok = pd.Series([1.0] * 10, index=DAYS)                   # 지수는 D
+assert S.expected_session(bench_ok, universe(10, 90)) == D     # 종목이 늦어도 D 기대
+assert S.expected_session(pd.Series(dtype=float), universe(10, 90)) == D1  # 지수 실패
+r = Recorder()
+data, day, info = S.ensure_fresh(universe(97, 3),
+                                 S.expected_session(bench_late, universe(97, 3)),
+                                 r.refetch, r.wait)
+assert day == D and not info["stale"]
+ok("expected_session: 지수가 늦은 날에도 최신 종목 데이터를 하루 전으로 자르지 않는다")
+
 print("\n전체 통과")

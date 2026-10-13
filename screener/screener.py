@@ -219,6 +219,18 @@ def common_last_date(data: dict[str, pd.DataFrame]) -> pd.Timestamp:
     return Counter(df.index[-1] for df in data.values()).most_common(1)[0][0]
 
 
+def expected_session(bench: pd.Series, data: dict[str, pd.DataFrame]
+                     ) -> pd.Timestamp:
+    """기준 거래일 = 지수 마지막 일봉과 다수 종목 마지막 날 중 더 최근.
+
+    지수만 보면, 지수 쪽이 늦게 들어온 날 멀쩡한 종목 데이터를 하루 전으로 잘라
+    버린다. 다수 종목만 보면, 종목 다수가 늦은 날을 못 알아챈다. 둘 중 최근 쪽을
+    기준으로 삼고 신선도는 ensure_fresh 가 판정한다.
+    """
+    common = common_last_date(data)
+    return max(bench.index[-1], common) if len(bench) else common
+
+
 def as_of(data: dict[str, pd.DataFrame], day: pd.Timestamp
           ) -> dict[str, pd.DataFrame]:
     """모든 종목을 day 까지로 자른다 — 한 스냅샷 안에서 날짜가 섞이지 않게."""
@@ -399,9 +411,7 @@ def main(market: str) -> None:
                          auto_adjust=True, progress=False)["Close"].dropna()
     if isinstance(bench2, pd.DataFrame):
         bench2 = bench2.iloc[:, 0]
-    # 지수를 못 받으면 종목들이 가장 많이 끝나는 날을 기준일로 쓴다 (예전엔 지수
-    # 실패가 치명적이지 않았다 — 그 성질을 지킨다)
-    expected = bench2.index[-1] if len(bench2) else common_last_date(data)
+    expected = expected_session(bench2, data)
     data, day, fresh = ensure_fresh(
         data, expected, lambda ts: download_history(ts), time.sleep)
     bench2 = bench2[bench2.index <= day]
