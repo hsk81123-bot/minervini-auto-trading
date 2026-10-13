@@ -56,6 +56,9 @@ except ValueError as e:
 HTML3 = """
 <table><tr><th>Symbol</th><th>Date added</th></tr>
 <tr><td>AAA</td><td>1957-03-04</td></tr><tr><td>NEW</td><td>2024-03-18</td></tr></table>"""
+assert S.parse_sectors(HTML3) == {}
+assert S.parse_sectors("""<table><tr><th>Symbol</th><th>GICS Sector</th></tr>
+<tr><td>BRK.B</td><td>Financials</td></tr></table>""") == {"BRK-B": "Financials"}
 cur3, ch3, added3 = S.parse_wiki(HTML3)
 assert ch3 == [] and added3 == {"AAA": "1957-03-04", "NEW": "2024-03-18"}
 _, ch4, _ = S.parse_wiki(HTML + HTML2.replace("AAA</td><td>A</td><td>OLD",
@@ -74,7 +77,14 @@ assert S.all_members({"current": cur, "changes": ch}, "2020-01-01") == \
     {"AAA", "BRK-B", "NEW", "OLD", "GONE", "BF-B"}
 assert S.all_members({"current": cur, "changes": ch}, "2022-01-01") == \
     {"AAA", "BRK-B", "NEW", "OLD"}
-ok("members_at: 변경일 이후 변경을 거꾸로 되돌림 · all_members: 기간 중 한 번이라도")
+# 편입 기록이 빠진 지금 구성종목은 편입일로 채운다 (편출 짝은 모름)
+full, fill = S.fill_additions(ch, {"AAA": "2015-05-01", "NEW": "2024-03-18",
+                                   "BRK-B": "1990-01-01"})
+assert fill == [{"date": "2015-05-01", "added": "AAA", "removed": None}]
+assert S.members_at(cur, full, "2015-04-30") == {"BRK-B", "GONE", "BF-B"}
+assert S.fill_additions([], {"AAA": "2015-05-01"}) == ([], [])
+ok("members_at: 변경일 이후 변경을 거꾸로 되돌림 · all_members: 기간 중 한 번이라도 · "
+   "편입 기록 채우기")
 
 # 3) SPY 대비 초과수익 — 시가 체결 청산이면 SPY 도 시가, 아니면 종가
 days = ["2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05"]

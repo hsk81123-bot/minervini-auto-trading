@@ -21,6 +21,8 @@ on:
       - "screener/test_spx.py"
       - "screener/template_check.py"
       - "screener/test_template.py"
+      - "screener/diagnose.py"
+      - "screener/test_diagnose.py"
       # 재구성은 스크리너의 임계값·지표를 그대로 따른다 — 스크리너가 바뀌면 다시 잰다
       - "screener/screener.py"
       - "screener/test_screener.py"
@@ -68,6 +70,7 @@ jobs:
           python screener/test_code33.py
           python screener/test_spx.py
           python screener/test_template.py
+          python screener/test_diagnose.py
 
       # 7년치 5천여 종목 일봉은 주 단위로 캐시한다 — 같은 주 재실행은 다시 받지 않는다.
       - name: Cache key
@@ -170,6 +173,9 @@ jobs:
           echo "" | tee -a report.txt
           echo "### 트렌드 템플릿 자체 vs SPY" | tee -a report.txt
           python screener/template_check.py --json template.json 2>&1 | tee -a report.txt
+          echo "" | tee -a report.txt
+          echo "### 진단 · 이상치" | tee -a report.txt
+          python screener/diagnose.py --json diagnose.json 2>&1 | tee -a report.txt
 
       - name: Validate (trailing stop)
         run: |
@@ -204,4 +210,5 @@ jobs:
             candidates.json
             spx.json
             template.json
+            diagnose.json
             .cache/us_fidelity.json

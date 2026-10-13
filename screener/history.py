@@ -31,6 +31,7 @@ git 에 쌓인 스냅샷은 2026-08-30 부터라 6주·상승장 하나·고유 
 """
 import gzip
 import json
+import os
 import pickle
 import sys
 import time
@@ -47,7 +48,8 @@ import robust as R
 import validate as V
 
 ROOT = Path(__file__).resolve().parent.parent
-CACHE = ROOT / ".cache"
+# 긴 기간 재구성 등 다른 캐시를 쓰려면 HISTORY_CACHE 로 바꾼다 (기본 .cache)
+CACHE = Path(os.environ.get("HISTORY_CACHE") or ROOT / ".cache")
 PRICES = CACHE / "us_prices.pkl"
 SNAPS = CACHE / "us_snaps.json.gz"
 FIDELITY = CACHE / "us_fidelity.json"

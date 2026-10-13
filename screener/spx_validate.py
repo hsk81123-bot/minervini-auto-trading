@@ -136,6 +136,34 @@ def parse_wiki(html: str) -> tuple[list[str], list[dict], dict[str, str]]:
     return current, out, added_on
 
 
+def parse_sectors(html: str) -> dict[str, str]:
+    """구성종목 표의 GICS 섹터 {티커: 섹터}. 지금 구성종목만 있다 (옛 종목은 모름)."""
+    for t in pd.read_html(io.StringIO(html)):
+        cols = [flat(c) for c in t.columns]
+        low = [c.lower() for c in cols]
+        if "symbol" in low and "gics sector" in low:
+            return {k: str(v) for k, v in zip(t[cols[low.index("symbol")]].map(tk),
+                                              t[cols[low.index("gics sector")]])
+                    if k and isinstance(v, str)}
+    return {}
+
+
+def fill_additions(changes: list[dict], added_on: dict[str, str],
+                   since: str = "2000-01-01") -> tuple[list[dict], list[dict]]:
+    """변경 이력에 편입 기록이 없는 지금 구성종목을 편입일로 채운다 → (합친 이력, 채운 것).
+
+    변경 이력이 아예 없으면(편입일만 쓰는 경우) 채우지 않는다 — 호출하는 쪽이 따로 다룬다.
+    """
+    if not changes:
+        return changes, []
+    have_add = {c["added"] for c in changes if c["added"]}
+    fill = [{"date": d, "added": t, "removed": None}
+            for t, d in sorted(added_on.items()) if t not in have_add and d >= since]
+    out = sorted(changes + fill, key=lambda c: (c["date"], c["added"] or "",
+                                                 c["removed"] or ""))
+    return out, fill
+
+
 def members_at(current: list[str], changes: list[dict], d: str) -> set[str]:
     """d 일의 구성종목 — 지금 목록에서 d 이후(d 초과)에 일어난 변경을 거꾸로 되돌린다.
 
@@ -165,7 +193,18 @@ def members() -> None:
         except Exception as e:                     # 한 문서가 없어도 다른 쪽은 쓴다
             print(f"  {url} 실패: {e}", flush=True)
     current, changes, added_on = parse_wiki(html)
+    sectors = parse_sectors(html)
     source = "changes"
+    # 변경 이력에 편입 기록이 없는 지금 구성종목은 표의 편입일(Date added)로 채운다.
+    # 기록이 빠진 종목을 그 전부터 구성종목으로 보면 미리 아는 셈이 된다.
+    changes, fill = fill_additions(changes, added_on)
+    if fill:
+        by_y: dict[str, int] = {}
+        for c in fill:
+            by_y[c["date"][:4]] = by_y.get(c["date"][:4], 0) + 1
+        print(f"  편입 기록이 없어 편입일로 채운 종목 {len(fill)}개 (연도별 {by_y}) — "
+              f"짝이 되는 편출 종목은 모른다 (그 해 구성종목 수가 500 아래로 줄어든다)",
+              flush=True)
     if not changes:
         source = "date_added"
         changes = [{"date": d, "added": t, "removed": None}
@@ -175,13 +214,14 @@ def members() -> None:
     CACHE.mkdir(parents=True, exist_ok=True)
     MEMBERS.write_text(json.dumps({"fetched": date.today().isoformat(),
                                    "source": source, "current": current,
-                                   "changes": changes}), encoding="utf-8")
+                                   "changes": changes, "sectors": sectors}),
+                       encoding="utf-8")
     since = [c for c in changes if c["date"] >= "2019-01-01"]
     by_year: dict[str, int] = {}
     for c in since:
         by_year[c["date"][:4]] = by_year.get(c["date"][:4], 0) + 1
     sizes = {y: len(members_at(current, changes, f"{y}-06-30"))
-             for y in range(2019, date.today().year + 1)}
+             for y in range(2004, date.today().year + 1)}
     print(f"  S&P 500 지금 {len(current)}종목 · 출처 {source} · 변경 {len(changes)}건 "
           f"(2019년 이후 {len(since)}건, 가장 오래된 "
           f"{changes[0]['date'] if changes else '-'}) → {MEMBERS}", flush=True)
