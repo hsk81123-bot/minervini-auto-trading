@@ -29,6 +29,7 @@
 │  ├─ marketcap.py                   # 시점 기준 시가총액 (SEC 발행주식수 × 분할·배당 되돌린 가격)
 │  ├─ baseline.py                    # 기준선 보고 (시총 가중 추적 검증 · 생존편향 보정치 · 판정)
 │  ├─ hypotheses.py                  # 사전 등록 가설 H1~H3 (ROADMAP 단계 2)
+│  ├─ earnings.py                    # 사전 등록 가설 H4: 실적 서프라이즈 드리프트 (SUE · 8-K 2.02)
 │  └─ requirements.txt
 ├─ docs/                            # GitHub Pages 정적 웹앱 (빌드 도구 없음)
 │  ├─ index.html                    # SPA 진입점 (해시 라우팅)
