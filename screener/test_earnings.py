@@ -106,10 +106,16 @@ assert ra["group"] == "hi" and abs(ra[5] - ((1.01 ** 5 - 1) - (1.001 ** 5 - 1)))
 assert abs(ra[60] - ((1.01 ** 60 - 1) - (1.001 ** 60 - 1))) < 1e-12   # 진입 = cal[11] 시가 기준 비율
 rb = next(r for r in rows if r["ticker"] == "B")
 assert rb["group"] == "lo" and rb[20] < 0
+# 발표 반응: 발표일(cal[10]) 전날 종가 → 다음날 종가
+assert abs(ra["react"] - ((1.01 ** 2 - 1) - (1.001 ** 2 - 1))) < 1e-12
+assert abs(rb["react"] - ((0.99 ** 2 - 1) - (1.001 ** 2 - 1))) < 1e-12
+j = p.cols["A"]
+assert Ea.reaction(p, spy, j, cal[0]) is None and Ea.reaction(p, spy, j, cal[-1]) is None
 only = Ea.event_study(events, p, spy, lambda d_: {"A"}, since="2014-01-01")
 assert [r["ticker"] for r in only] == ["A"]                        # 그 날 구성종목만
 tab = Ea.study_table(rows)
 assert tab[("hi", 5)]["n"] == 1 and tab[("lo", 60)]["mean"] < 0 and ("mid", 5) not in tab
+assert tab[("hi", "react")]["mean"] > 0 > tab[("lo", "react")]["mean"]
 assert Ea.bucket(2.0) == "hi" and Ea.bucket(-2.0) == "lo" and Ea.bucket(1.99) == "mid"
 ok("event_study: 발표 다음 거래일 시가 기준 초과수익 · 구성종목·기간 필터 · 그룹 표")
 

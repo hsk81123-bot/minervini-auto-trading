@@ -204,6 +204,20 @@ def bucket(sue: float) -> str:
     return "hi" if sue >= SUE_MIN else "lo" if sue <= -SUE_MIN else "mid"
 
 
+def reaction(p, spy: S.Spy, j: int, f: str) -> float | None:
+    """발표 반응 — 발표일 전날 종가 → 발표일 다음날 종가의 (종목 − SPY). 발표가 장 전이든 장 후든
+    반응이 이 구간 안에 들어온다. SUE 가 제대로 됐다면 높은 SUE 가 여기서 이득을 봐야 한다
+    (사후 추가한 진단: H4 결과가 영(0)으로 나오자 SUE 계산이 맞는지 확인하려고)."""
+    i = bisect_right(p.cal, f) - 1                    # f 이하 마지막 거래일 (발표일)
+    if i < 1 or i + 1 >= len(p.cal):
+        return None
+    a, b = p.c[i - 1, j], p.c[i + 1, j]
+    if not (a == a and b == b and a > 0):
+        return None
+    s0, s1 = spy.at(p.cal[i - 1], "close"), spy.at(p.cal[i + 1], "close")
+    return (b / a - 1) - (s1 / s0 - 1)
+
+
 def event_study(events: dict[str, list[dict]], p, spy: S.Spy, member_fn,
                 horizons=HORIZONS, since: str = EVAL_FROM) -> list[dict]:
     """이벤트마다 발표 다음 거래일 시가 → h 거래일 뒤 시가의 (종목 − SPY) 수익률."""
@@ -223,7 +237,8 @@ def event_study(events: dict[str, list[dict]], p, spy: S.Spy, member_fn,
             if not a == a or a <= 0:
                 continue
             row = {"ticker": t, "f": ev["f"], "sue": ev["sue"], "group": bucket(ev["sue"]),
-                   "q": f"{ev['f'][:4]}Q{(int(ev['f'][5:7]) - 1) // 3 + 1}"}
+                   "q": f"{ev['f'][:4]}Q{(int(ev['f'][5:7]) - 1) // 3 + 1}",
+                   "react": reaction(p, spy, j, ev["f"])}
             for h in horizons:
                 if i0 + h >= len(p.cal):
                     row[h] = None
@@ -237,7 +252,7 @@ def event_study(events: dict[str, list[dict]], p, spy: S.Spy, member_fn,
     return rows
 
 
-def study_table(rows: list[dict], horizons=HORIZONS) -> dict:
+def study_table(rows: list[dict], horizons=HORIZONS + ("react",)) -> dict:
     out = {}
     for g, _ in GROUPS:
         for h in horizons:
@@ -295,12 +310,13 @@ def run(argv: list[str]) -> int:
     print(f"  {'그룹':<14} {'호라이즌':>8} {'건수':>6} {'평균':>8} {'중앙값':>8} {'95% CI':>20} "
           f"{'+비율':>6}")
     for g, lbl in GROUPS:
-        for h in HORIZONS:
+        for h in ("react",) + HORIZONS:
             r = tab.get((g, h))
             if r:
                 ci = "-" if r["ci"] is None else \
                     f"[{r['ci'][0] * 100:+.2f}%, {r['ci'][1] * 100:+.2f}%]"
-                print(f"  {lbl:<14} {h:>6}일 {r['n']:>6} {E.pct(r['mean'])} {E.pct(r['median'])} "
+                hl = "반응 −1→+1" if h == "react" else f"{h}일"
+                print(f"  {lbl:<14} {hl:>10} {r['n']:>6} {E.pct(r['mean'])} {E.pct(r['median'])} "
                       f"{ci:>20} {r['win'] * 100:5.0f}%")
     print(f"  시대별 SUE≥2, 60거래일 평균 초과수익:", end="")
     eras = {}
@@ -314,6 +330,10 @@ def run(argv: list[str]) -> int:
     hi60, lo60 = tab.get(("hi", 60)), tab.get(("lo", 60))
     if hi60 and lo60:
         print(f"  SUE≥2 − SUE≤−2 (60일) = {E.pct(hi60['mean'] - lo60['mean']).strip()}")
+    hr, lr = tab.get(("hi", "react")), tab.get(("lo", "react"))
+    if hr and lr:
+        print(f"  SUE≥2 − SUE≤−2 (발표 반응 −1→+1일) = {E.pct(hr['mean'] - lr['mean']).strip()} "
+              f"— 양수여야 SUE 계산이 시장이 본 서프라이즈와 같은 방향이다")
     doc["study"] = {f"{g}-{h}": v for (g, h), v in tab.items()}
     doc["study_eras"] = eras
 
