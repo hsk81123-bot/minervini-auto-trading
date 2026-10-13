@@ -71,12 +71,14 @@ jobs:
           python screener/test_spx.py
           python screener/test_template.py
           python screener/test_diagnose.py
+          python screener/test_evalkit.py
+          python screener/test_marketcap.py
 
       # 7년치 5천여 종목 일봉은 주 단위로 캐시한다 — 같은 주 재실행은 다시 받지 않는다.
       - name: Cache key
         id: key
         run: |
-          echo "prices=us-prices-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+          echo "prices=us-prices-v2-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
       - name: Restore price cache
         id: cache

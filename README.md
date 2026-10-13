@@ -1,5 +1,8 @@
 # Minervini Auto Trading
 
+> 목표·검증 결과·진행 계획은 [ROADMAP.md](ROADMAP.md). 지금까지의 검증에서 이 저장소의 규칙은
+> SPY 를 이기지 못했다 — 기본 포트폴리오는 SPY 보유다.
+
 마크 미너비니(SEPA) 방법론 기반 주식 스크리닝 + 매매 관리 웹앱.
 
 ## 구조
@@ -22,6 +25,9 @@
 │  ├─ spx_validate.py                # S&P 500 풀 · SPY 기준 검증
 │  ├─ template_check.py              # 트렌드 템플릿 자체(통과 종목 전부 동일가중) vs SPY
 │  ├─ diagnose.py                    # 왜 졌나: 격차 분해 · 이상치 · 탐색 (진단, 판정 아님)
+│  ├─ evalkit.py                     # 후보 평가 공통 도구: ROADMAP 성공 기준 6개를 코드로 고정
+│  ├─ marketcap.py                   # 시점 기준 시가총액 (SEC 발행주식수 × 분할·배당 되돌린 가격)
+│  ├─ baseline.py                    # 기준선 보고 (시총 가중 추적 검증 · 생존편향 보정치 · 판정)
 │  └─ requirements.txt
 ├─ docs/                            # GitHub Pages 정적 웹앱 (빌드 도구 없음)
 │  ├─ index.html                    # SPA 진입점 (해시 라우팅)

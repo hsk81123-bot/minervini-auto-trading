@@ -1,0 +1,18 @@
+{
+  "updated": "2026-10-13",
+  "note": "시도한 가설 수. 많이 볼수록 우연히 좋아 보이는 것이 나온다 — evalkit.ledger_summary 가 Bonferroni 임계 z 를 계산한다. exploratory 의 approx 는 대략치.",
+  "pre_registered": [
+    {"id": "random-control-7", "count": 7, "note": "현재 규칙(RS 상위5)·C1·C2·C3·C4·C5·C1+C5 vs 통과 종목 무작위 5 (전체 시장 풀)"},
+    {"id": "spx-spy-7", "count": 7, "note": "같은 7개 규칙 vs SPY (S&P 500 풀)"},
+    {"id": "template-all-vs-spy", "count": 1, "note": "트렌드 템플릿 자체 (통과 종목 전부 동일가중)"},
+    {"id": "c1c5-posthoc-holdout", "count": 1, "note": "사후 등록: C1+C5 보류 기간"}
+  ],
+  "exploratory": [
+    {"id": "diagnose-holding", "count": 4, "note": "보유 기간 1·4·13·26주"},
+    {"id": "diagnose-topn", "count": 3, "note": "RS 상위 5·20·50"},
+    {"id": "diagnose-200dma", "count": 1, "note": "지수 200일선 타이밍"},
+    {"id": "diagnose-ablation", "count": 17, "note": "템플릿 조건 빼기 8·하나만 8·조건 없음 1"},
+    {"id": "validate-grids", "count": 25, "approx": true, "note": "validate --grid / --ext-grid / --ext-caps / 피봇 구간 / 추격손절·익절 변형"},
+    {"id": "diagnose-slices", "count": 10, "approx": true, "note": "격차 분해에서 본 시장 국면·섹터·규모·사건 구간 분할"}
+  ]
+}
