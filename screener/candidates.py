@@ -69,6 +69,12 @@ C5_MIN_STOP, C5_MAX_STOP = 2.0, 8.0
 C1_EPS, C1_REV = 0.25, 0.20
 
 DESIGN_PCTL, HOLDOUT_PCTL = 0.99, 0.95
+# 사후 등록 가설 — 설계 기간에서 탈락했지만 결과를 본 뒤 보류 기간을 한 번 재기로
+# 정한 후보. 기준은 같다(5개 모두, 무작위 대비 95백분위). 설계 결과를 보고 골랐으므로
+# 통과해도 미리 정한 후보의 통과보다 약한 증거다. 여기에 후보를 더 넣지 않는다.
+POSTHOC = {
+    "C1+C5 실적+돌파": "2026-10-13 등록 · 설계 기간 99백분위 · CI 하한 -0.11R 만 탈락",
+}
 CHECKS = (
     ("positive", "기대값 > 0"),
     ("ci", "종목 단위 95% 신뢰구간 하한 > 0"),
@@ -416,16 +422,24 @@ def main(argv: list[str]) -> int:
     reasons(doc["design"])
 
     lo, hi = periods["보류"]
-    print(f"\n  [보류 기간] {lo} ~ {hi} — 설계 기간 통과 후보만 한 번 계산")
+    print(f"\n  [보류 기간] {lo} ~ {hi} — 설계 기간 통과 후보(+ 사후 등록 가설)만 "
+          f"한 번 계산 · 기준: 무작위 대비 {HOLDOUT_PCTL * 100:.0f}백분위")
+    posthoc = [k for k in POSTHOC if k in trades and k not in passed]
     if not passed:
-        print(f"    설계 기간을 통과한 후보가 없다 — 보류 기간은 계산하지 않는다")
+        print(f"    설계 기간을 통과한 후보가 없다")
+    if not passed and not posthoc:
+        print(f"    보류 기간은 계산하지 않는다")
     else:
+        for k in posthoc:
+            print(f"    사후 등록: {k} — {POSTHOC[k]}")
+            print(f"      설계 결과를 본 뒤 고른 가설이라 통과해도 약한 증거다")
         rnd_h = [in_period(t, lo, hi) for t in rnd_all]
         header()
-        for k in passed:
+        for k in passed + posthoc:
             ev = evaluate(in_period(trades[k], lo, hi), rnd_h, HOLDOUT_PCTL)
+            ev["posthoc"] = k in posthoc
             doc["holdout"][k] = ev
-            show(k, ev)
+            show(k + (" (사후)" if k in posthoc else ""), ev)
         reasons(doc["holdout"])
     print(f"\n  ※ 생존 편향 때문에 모든 숫자는 실제보다 좋게 나왔을 가능성이 크다")
 

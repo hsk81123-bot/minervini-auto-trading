@@ -248,9 +248,13 @@ for y, v in cov.items():
     assert v[1] == expect, (y, v, expect)
 assert doc["design"]["C1 실적 성장"]["tickers"] == 4
 assert doc["design"]["C2 실적 가속"]["trades"] == 0
+# 사후 등록 가설은 설계 탈락이어도 보류 기간을 한 번 잰다 — 그 후보만
+assert set(doc["holdout"]) == set(C.POSTHOC) and not doc["design"]["C1+C5 실적+돌파"]["passed"]
+assert all(v["posthoc"] for v in doc["holdout"].values()) and "사후 등록:" in logs[1]
+assert "사후 등록:" not in logs[0]
 # 앞선 후보의 숫자는 펀더멘털 후보가 붙어도 그대로다
 for k in docs[0]["design"]:
     assert docs[0]["design"][k] == docs[1]["design"][k], k
-ok("main: 설계 탈락 → 보류 기간 미계산 · 타임라인 있을 때만 C1·C2 · 기존 후보 불변")
+ok("main: 설계 탈락 → 보류 기간 미계산 (사후 등록 가설만 예외) · 타임라인 있을 때만 C1·C2 · 기존 후보 불변")
 
 print("\n  전체 통과")
