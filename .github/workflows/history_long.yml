@@ -12,6 +12,8 @@ on:
       - "screener/baseline.py"
       - "screener/test_evalkit.py"
       - "screener/hypotheses.py"
+      - "screener/earnings.py"
+      - "screener/test_earnings.py"
       - "screener/test_hypotheses.py"
       - "screener/evalkit.py"
       - "screener/marketcap.py"
@@ -55,6 +57,7 @@ jobs:
           python screener/test_marketcap.py
           python screener/test_pit_fund.py
           python screener/test_hypotheses.py
+          python screener/test_earnings.py
 
       - name: Cache key
         id: key
@@ -146,6 +149,43 @@ jobs:
           echo "### 가설 H1~H3 (단계 2)" | tee -a report.txt
           python screener/hypotheses.py --json hypotheses.json 2>&1 | tee -a report.txt
 
+      # H4: 실적 발표일 = 8-K Item 2.02 제출일 (SEC submissions, 구성종목 약 860개).
+      # 주 단위로 캐시한다. 실패해도 나머지 결과는 그대로 나온다.
+      - name: Earnings dates key
+        id: ekey
+        run: echo "earn=us-earn-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore earnings dates cache
+        id: ecache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache-long/us_earn_dates.json.gz
+          key: ${{ steps.ekey.outputs.earn }}
+
+      - name: Fetch earnings dates (SEC 8-K 2.02)
+        id: earn
+        if: steps.ecache.outputs.cache-hit != 'true'
+        continue-on-error: true
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: python screener/earnings.py fetch 2>&1 | tail -5
+
+      - name: Save earnings dates cache
+        if: steps.ecache.outputs.cache-hit != 'true' && steps.earn.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: .cache-long/us_earn_dates.json.gz
+          key: ${{ steps.ekey.outputs.earn }}
+
+      # ROADMAP 단계 2: H4 실적 서프라이즈 드리프트 (평가 창 2014~, 보류 불가)
+      - name: Hypothesis H4 (stage 2)
+        if: hashFiles('.cache-long/us_earn_dates.json.gz') != ''
+        run: |
+          set -o pipefail
+          echo "" | tee -a report.txt
+          echo "### 가설 H4 (단계 2)" | tee -a report.txt
+          python screener/earnings.py run --json earnings.json 2>&1 | tee -a report.txt
+
       - name: Summary
         if: always()
         run: |
@@ -162,3 +202,4 @@ jobs:
             diagnose-long.json
             baseline.json
             hypotheses.json
+            earnings.json

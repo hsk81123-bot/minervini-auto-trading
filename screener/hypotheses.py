@@ -129,14 +129,14 @@ def schedules(ctx: dict) -> tuple[dict, dict]:
         "h3_active_share": mean(act) if act else 0.0}
 
 
-def build(ctx: dict) -> tuple[E.Frame, dict]:
+def add_schedules(ctx: dict, sched: dict) -> tuple[E.Frame, dict]:
+    """(신호일, 비중) 스케줄들을 기준선 프레임에 수익 계열로 붙인다. SPY 를 종목처럼 살 수 있다
+    (H2·H4 의 SPY 보충). 반환: (새 프레임, 연 비용 부담)."""
+    import template_check as T
     fr = ctx["fr"]
     px = dict(ctx["px"])
     px[SPY_TICKER] = ctx["spy_df"]
-    names = set(ctx["p"].cols) | {SPY_TICKER}
-    import template_check as T
-    p = T.Prices(px, names, ctx["p"].cal)
-    sched, stats = schedules(ctx)
+    p = T.Prices(px, set(ctx["p"].cols) | {SPY_TICKER}, ctx["p"].cal)
     fr2 = E.Frame(fr.signal, fr.d0, fr.d1)
     for k, v in fr.r.items():
         fr2.add(k, v)
@@ -147,6 +147,12 @@ def build(ctx: dict) -> tuple[E.Frame, dict]:
             raise RuntimeError(f"{k}: 주 달력이 기준선과 다르다")
         fr2.add(k, net)
         drag[k] = mean(g - n for g, n in zip(gross, net)) * 52
+    return fr2, drag
+
+
+def build(ctx: dict) -> tuple[E.Frame, dict]:
+    sched, stats = schedules(ctx)
+    fr2, drag = add_schedules(ctx, sched)
     stats["cost_drag"] = drag
     return fr2, stats
 

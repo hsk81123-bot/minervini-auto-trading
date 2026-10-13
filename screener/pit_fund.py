@@ -233,12 +233,9 @@ def prepare(c: dict[str, dict[str, list]]) -> dict:
             for field, tags in c.items()}
 
 
-def doc_asof(prep: dict, cutoff: str) -> dict:
-    """filed ≤ cutoff 인 행만으로 fundamentals.fetch_us 와 같은 모양의 문서.
-
-    태그 선택(best_series)도 그 시점에 보이던 행으로 한다 — 나중에 쓰기 시작한
-    태그를 미리 고르지 않게.
-    """
+def series_asof(prep: dict, cutoff: str) -> dict:
+    """filed ≤ cutoff 인 행만으로 필드별 원시 행 (태그 선택도 그 시점에 보이던 행으로 —
+    나중에 쓰기 시작한 태그를 미리 고르지 않게)."""
     series = {}
     for field, tags in prep.items():
         best = (None, ("", -1))
@@ -254,9 +251,21 @@ def doc_asof(prep: dict, cutoff: str) -> dict:
                 best = (rows, rank)
         if best[0]:
             series[field] = best[0]
-    quarters, annuals = F.assemble(series)
+    return series
+
+
+def doc_asof(prep: dict, cutoff: str) -> dict:
+    """filed ≤ cutoff 인 행만으로 fundamentals.fetch_us 와 같은 모양의 문서."""
+    quarters, annuals = F.assemble(series_asof(prep, cutoff))
     return {"market": "us", "quarters": quarters[:F.QUARTERS_KEEP],
             "annuals": annuals[:F.YEARS_KEEP]}
+
+
+def full_quarters(c: dict) -> list[dict]:
+    """한 종목의 전체 분기 이력 (오름차순, 자르지 않음) — SUE 처럼 긴 이력이 필요할 때.
+    값은 지금까지 공시된 최신본이다 (정정·분할 반영)."""
+    quarters, _ = F.assemble(series_asof(prepare(c), "9999-12-31"))
+    return sorted(quarters, key=lambda q: q["end"])
 
 
 def metrics(doc: dict) -> list | None:

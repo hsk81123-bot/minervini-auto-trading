@@ -145,6 +145,19 @@ for trial in range(30):
         assert T.doc_asof(prep, cutoff) == ref_doc(raw, cutoff), (trial, cutoff)
 ok("중복 제거·공시일 정렬 후에도 원본 행으로 계산한 문서와 같다 (30회 × 4시점)")
 
+# 전체 이력(자르지 않음): 20개 분기가 모두 나오고 오름차순
+rows_eps, rows_rev = [], []
+for k in range(20):
+    e = date(2015, 3, 31) + timedelta(days=round(91.3 * k))
+    f = (e + timedelta(days=35)).isoformat()
+    rows_eps.append(qrow(e.isoformat(), 1.0 + k * 0.1, f))
+    rows_rev.append(qrow(e.isoformat(), 100 + k, f))
+fq = T.full_quarters(T.compact(company(rows_rev, rows_eps)))
+assert len(fq) == 20 and [q["end"] for q in fq] == sorted(q["end"] for q in fq)
+assert abs(fq[0]["eps_diluted"] - 1.0) < 1e-9 and abs(fq[-1]["eps_diluted"] - 2.9) < 1e-9
+assert len(T.doc_asof(T.prepare(T.compact(company(rows_rev, rows_eps))), "9999-12-31")["quarters"]) == 12
+ok("full_quarters: 전체 이력(20분기) · doc_asof 는 12분기로 자름")
+
 # 발행주식수: 종류가 여럿이면 합 · 같은 행 중복은 한 번 · 정정 양식 포함 · 공시일 < 신호일
 def dei(rows):
     return {"facts": {"dei": {"EntityCommonStockSharesOutstanding":
