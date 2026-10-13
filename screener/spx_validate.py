@@ -56,6 +56,7 @@ MEMBERS = CACHE / "sp500_pit.json"
 EXTRA = CACHE / "sp500_extra.pkl"
 SNAPS = CACHE / "sp500_snaps.json.gz"
 WIKI = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+WIKI_HIST = "https://en.wikipedia.org/wiki/Historical_components_of_the_S%26P_500"
 UA = {"User-Agent": "Mozilla/5.0 (minervini-auto-trading research)"}
 BENCH = "SPY"
 
@@ -90,37 +91,49 @@ def pick_col(cols: list[str], group: str) -> str | None:
                 g[0] if g else None)
 
 
-def parse_wiki(html: str) -> tuple[list[str], list[dict]]:
-    """위키백과 S&P 500 문서 → (지금 구성종목, 변경 이력 [{date, added, removed}]).
+def parse_wiki(html: str) -> tuple[list[str], list[dict], dict[str, str]]:
+    """위키백과 문서들 → (지금 구성종목, 변경 이력 [{date, added, removed}],
+    지금 구성종목의 편입일 {티커: 날짜}).
 
     변경 이력 표는 2단 머리글(Added/Removed 아래 Ticker·Security)이다. pandas 가
     둘째 머리글 줄을 데이터로 읽는 경우도 있어 그 줄('Ticker')은 걸러낸다.
+    변경 이력 표가 여러 개(연도별 등)면 모두 모은다.
     """
-    current, changes, seen = None, None, []
+    current, added_on, seen = None, {}, []
+    found, changes = False, set()
     for t in pd.read_html(io.StringIO(html)):
         cols = [flat(c) for c in t.columns]
         seen.append(cols[:8])
         low = [c.lower() for c in cols]
         if current is None and "symbol" in low:
-            current = sorted({x for x in map(tk, t[cols[low.index("symbol")]]) if x})
+            sym = t[cols[low.index("symbol")]].map(tk)
+            current = sorted({x for x in sym if x})
+            if "date added" in low:
+                ds = pd.to_datetime(t[cols[low.index("date added")]],
+                                    errors="coerce", format="mixed")
+                added_on = {k: d.strftime("%Y-%m-%d") for k, d in zip(sym, ds)
+                            if k and not pd.isna(d)}
             continue
         date_c = next((c for c in cols if "date" in c.lower()), None)
         add_c, rem_c = pick_col(cols, "added"), pick_col(cols, "removed")
-        if changes is None and date_c and add_c and rem_c:
+        if date_c and add_c and rem_c:
+            found = True
             t.columns = cols
             ds = pd.to_datetime(t[date_c], errors="coerce", format="mixed")
             hdr = {"TICKER", "SYMBOL"}
-            changes = []
             for d, a, r in zip(ds, t[add_c], t[rem_c]):
                 a, r = tk(a), tk(r)
                 a, r = (None if a in hdr else a), (None if r in hdr else r)
                 if not pd.isna(d) and (a or r):
-                    changes.append({"date": d.strftime("%Y-%m-%d"),
-                                    "added": a, "removed": r})
-    if not current or changes is None:
-        raise ValueError("위키백과 표를 찾지 못했다 (구성종목 표 · 변경 이력 표). "
-                         f"읽은 표의 열: {seen}")
-    return current, sorted(changes, key=lambda c: c["date"])
+                    changes.add((d.strftime("%Y-%m-%d"), a, r))
+    if not current:
+        raise ValueError(f"위키백과 구성종목 표를 찾지 못했다. 읽은 표의 열: {seen}")
+    if not found:
+        print(f"  변경 이력 표 없음 — 읽은 표의 열: {seen}", flush=True)
+    out = [{"date": d, "added": a, "removed": r}
+           for d, a, r in sorted(changes, key=lambda x: (x[0], x[1] or "",
+                                                         x[2] or ""))]
+    return current, out, added_on
 
 
 def members_at(current: list[str], changes: list[dict], d: str) -> set[str]:
@@ -140,18 +153,41 @@ def members_at(current: list[str], changes: list[dict], d: str) -> set[str]:
 
 
 def members() -> None:
+    """지금 목록 + 변경 이력. 이력이 없으면 지금 구성종목의 편입일만으로 되돌린다
+    (이때는 편출된 옛 구성종목이 빠진다 — 출력과 JSON 에 표시)."""
     import requests
-    r = requests.get(WIKI, headers=UA, timeout=30)
-    r.raise_for_status()
-    current, changes = parse_wiki(r.text)
+    html = ""
+    for url in (WIKI, WIKI_HIST):
+        try:
+            r = requests.get(url, headers=UA, timeout=30)
+            r.raise_for_status()
+            html += r.text
+        except Exception as e:                     # 한 문서가 없어도 다른 쪽은 쓴다
+            print(f"  {url} 실패: {e}", flush=True)
+    current, changes, added_on = parse_wiki(html)
+    source = "changes"
+    if not changes:
+        source = "date_added"
+        changes = [{"date": d, "added": t, "removed": None}
+                   for t, d in sorted(added_on.items(), key=lambda x: x[1])]
+        print(f"  ! 변경 이력이 없어 편입일만 쓴다 — 기간 중 편출된 종목은 풀에서 "
+              f"빠진다 (생존 편향)", flush=True)
     CACHE.mkdir(parents=True, exist_ok=True)
     MEMBERS.write_text(json.dumps({"fetched": date.today().isoformat(),
-                                   "current": current, "changes": changes}),
-                       encoding="utf-8")
+                                   "source": source, "current": current,
+                                   "changes": changes}), encoding="utf-8")
     since = [c for c in changes if c["date"] >= "2019-01-01"]
-    print(f"  S&P 500 지금 {len(current)}종목 · 변경 이력 {len(changes)}건 "
-          f"(2019년 이후 {len(since)}건, 가장 오래된 {changes[0]['date']}) "
-          f"→ {MEMBERS}", flush=True)
+    by_year: dict[str, int] = {}
+    for c in since:
+        by_year[c["date"][:4]] = by_year.get(c["date"][:4], 0) + 1
+    sizes = {y: len(members_at(current, changes, f"{y}-06-30"))
+             for y in range(2019, date.today().year + 1)}
+    print(f"  S&P 500 지금 {len(current)}종목 · 출처 {source} · 변경 {len(changes)}건 "
+          f"(2019년 이후 {len(since)}건, 가장 오래된 "
+          f"{changes[0]['date'] if changes else '-'}) → {MEMBERS}", flush=True)
+    print(f"  연도별 변경 건수: {by_year}", flush=True)
+    print(f"  되돌린 구성종목 수(6/30): {sizes} — 500 근처가 아니면 이력이 빠진 것",
+          flush=True)
 
 
 def load_members() -> dict:
@@ -432,6 +468,10 @@ def validate(argv: list[str]) -> int:
           f"{C.TARGET_R:.0f} 익절)")
     print(f"  ※ 구성종목 중 그 날 가격이 있는 비율 {have * 100:.1f}% — 나머지(주로 "
           f"상장폐지)는 빠져 결과가 좋게 기운다", flush=True)
+    source = load_members().get("source", "changes")
+    if source != "changes":
+        print(f"  ※ 구성종목 출처: 지금 구성종목의 편입일뿐 — 기간 중 편출된 종목은 "
+              f"풀에 없다 (생존 편향이 더 크다)", flush=True)
 
     aux = {t: C.aux_indicators(px[t]) for t in pool if t in px}
     ohlc, index = H.to_ohlc(px, pool, first)
@@ -446,7 +486,8 @@ def validate(argv: list[str]) -> int:
         trades[k].sort(key=lambda t: (t["entry_date"],
                                       order[k].get((t["cohort"], t["ticker"]), 0)))
 
-    doc = {"first": first, "last": last, "member_price_coverage": have,
+    doc = {"first": first, "last": last, "member_source": source,
+           "member_price_coverage": have,
            "slots": SLOTS, "cost": COST, "c5": meta, "design": {}, "holdout": {}}
     periods = {"설계": (first, C.DESIGN_END), "보류": ("2024-01-01", last)}
 

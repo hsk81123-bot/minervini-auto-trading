@@ -30,7 +30,7 @@ HTML = """
 <tr><td>January 5, 2021</td><td></td><td></td><td>BF.B</td><td>bf</td><td>x</td></tr>
 <tr><td>not a date</td><td>ZZZ</td><td>z</td><td></td><td></td><td>x</td></tr>
 </table>"""
-cur, ch = S.parse_wiki(HTML)
+cur, ch, _ = S.parse_wiki(HTML)
 assert cur == ["AAA", "BRK-B", "NEW"]
 assert ch == [{"date": "2020-06-22", "added": "OLD", "removed": "GONE"},
               {"date": "2021-01-05", "added": None, "removed": "BF-B"},
@@ -44,16 +44,26 @@ HTML2 = """
 <tr><th></th><th>Ticker</th><th>Security</th><th>Ticker</th><th>Security</th><th></th></tr>
 <tr><td>March 18, 2024</td><td>AAA</td><td>A</td><td>OLD</td><td>Old</td><td>x</td></tr>
 </tbody></table>"""
-cur2, ch2 = S.parse_wiki(HTML2)
+cur2, ch2, _ = S.parse_wiki(HTML2)
 assert cur2 == ["AAA"]
 assert ch2 == [{"date": "2024-03-18", "added": "AAA", "removed": "OLD"}], ch2
 try:
     S.parse_wiki("<table><tr><th>Foo</th></tr><tr><td>1</td></tr></table>")
-    raise AssertionError("표가 없으면 실패해야 한다")
+    raise AssertionError("구성종목 표가 없으면 실패해야 한다")
 except ValueError as e:
     assert "Foo" in str(e)                                 # 진단용으로 열 이름을 보여준다
-ok("parse_wiki: 2단 머리글 · 한 줄 머리글(둘째 줄이 데이터) · 날짜 정렬 · "
-   "'.'→'-' · 빈 칸과 날짜 아닌 행 제외 · 실패 시 열 이름 출력")
+# 변경 이력 표가 없는 문서: 편입일만 · 변경 이력 표가 여럿이면 모두 모은다
+HTML3 = """
+<table><tr><th>Symbol</th><th>Date added</th></tr>
+<tr><td>AAA</td><td>1957-03-04</td></tr><tr><td>NEW</td><td>2024-03-18</td></tr></table>"""
+cur3, ch3, added3 = S.parse_wiki(HTML3)
+assert ch3 == [] and added3 == {"AAA": "1957-03-04", "NEW": "2024-03-18"}
+_, ch4, _ = S.parse_wiki(HTML + HTML2.replace("AAA</td><td>A</td><td>OLD",
+                                                "XYZ</td><td>A</td><td>OLD"))
+assert {"date": "2024-03-18", "added": "XYZ", "removed": "OLD"} in ch4
+assert len(ch4) == 4 and ch4 == sorted(ch4, key=lambda c: c["date"])
+ok("parse_wiki: 2단·한 줄 머리글 · 여러 표 합치기 · 편입일 · '.'→'-' · "
+   "빈 칸과 날짜 아닌 행 제외 · 실패 시 열 이름 출력")
 
 # 2) 시점별 구성종목: 변경일에는 이미 바뀐 상태
 assert S.members_at(cur, ch, "2024-03-18") == {"AAA", "BRK-B", "NEW"}
