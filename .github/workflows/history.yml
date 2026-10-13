@@ -17,6 +17,8 @@ on:
       - "screener/pit_fund.py"
       - "screener/test_pit_fund.py"
       - "screener/fundamentals.py"
+      - "screener/spx_validate.py"
+      - "screener/test_spx.py"
       # 재구성은 스크리너의 임계값·지표를 그대로 따른다 — 스크리너가 바뀌면 다시 잰다
       - "screener/screener.py"
       - "screener/test_screener.py"
@@ -62,13 +64,14 @@ jobs:
           python screener/test_pit_fund.py
           python screener/test_fundamentals.py
           python screener/test_code33.py
+          python screener/test_spx.py
 
       # 7년치 5천여 종목 일봉은 주 단위로 캐시한다 — 같은 주 재실행은 다시 받지 않는다.
       - name: Cache key
         id: key
         run: |
           echo "prices=us-prices-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
-          echo "facts=us-facts-v1-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+          echo "facts=us-facts-v2-$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
 
       - name: Restore price cache
         id: cache
@@ -89,6 +92,12 @@ jobs:
         with:
           path: .cache/us_prices.pkl
           key: ${{ steps.key.outputs.prices }}
+
+      # S&P 500 시점별 구성종목(위키백과 변경 이력). SEC 추출에 옛 구성종목도 넣으려고
+      # 먼저 받는다. 실패하면 S&P 500 검증만 빠진다.
+      - name: S&P 500 members
+        continue-on-error: true
+        run: python screener/spx_validate.py members
 
       # 시점 기준 펀더멘털(C1·C2): SEC 일괄 XBRL(1GB 남짓)에서 필요한 태그만 추려
       # 주 단위로 캐시한다. 실패해도 가격 기반 후보는 그대로 돈다.
@@ -139,6 +148,17 @@ jobs:
           echo "### 후보 규칙" | tee -a report.txt
           python screener/candidates.py --json candidates.json 2>&1 | tee -a report.txt
 
+      # S&P 500 풀 · SPY 기준: 유니버스 밖 옛 구성종목 가격 + SPY → 시점별 풀 재구성 → 검증
+      - name: S&P 500 validate
+        if: hashFiles('.cache/sp500_pit.json') != ''
+        run: |
+          set -o pipefail
+          python screener/spx_validate.py prices
+          python screener/spx_validate.py rebuild
+          echo "" | tee -a report.txt
+          echo "### S&P 500 풀 · SPY 기준" | tee -a report.txt
+          python screener/spx_validate.py validate --json spx.json 2>&1 | tee -a report.txt
+
       - name: Validate (trailing stop)
         run: |
           set -o pipefail
@@ -170,4 +190,5 @@ jobs:
             report.txt
             history-*.json
             candidates.json
+            spx.json
             .cache/us_fidelity.json
