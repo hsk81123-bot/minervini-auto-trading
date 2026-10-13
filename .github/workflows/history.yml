@@ -12,6 +12,9 @@ on:
     paths:
       - "screener/history.py"
       - "screener/test_history.py"
+      # 재구성은 스크리너의 임계값·지표를 그대로 따른다 — 스크리너가 바뀌면 다시 잰다
+      - "screener/screener.py"
+      - "screener/test_screener.py"
       - ".github/workflows/history.yml"
 
 # 읽기만 한다 — 재구성 결과는 커밋하지 않는다 (수백 MB, 캐시·아티팩트로만).
@@ -44,6 +47,7 @@ jobs:
 
       - name: Unit tests
         run: |
+          python screener/test_screener.py
           python screener/test_history.py
           python screener/test_robust.py
           python screener/test_papertrade.py
