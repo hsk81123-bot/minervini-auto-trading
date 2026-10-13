@@ -289,6 +289,12 @@ def sec_concept(cik: str, tag: str) -> tuple[list[dict], str | None]:
     return units[unit], unit
 
 
+def tag_rank(rows: list[dict]) -> tuple[str, int]:
+    """(최신 분기 종료일, 분기 수) — 큰 쪽이 더 나은 태그다 (best_series 참고)."""
+    qs = pick_periods(rows, 80, 100)
+    return max((q["end"] for q in qs), default=""), len(qs)
+
+
 def best_series(cik: str, tags: list[str]) -> tuple[list[dict], str | None]:
     """후보 태그 중 '커버리지가 가장 좋은' 것을 고른다.
 
@@ -306,8 +312,7 @@ def best_series(cik: str, tags: list[str]) -> tuple[list[dict], str | None]:
         rows, _ = sec_concept(cik, tag)
         if not rows:
             continue
-        qs = pick_periods(rows, 80, 100)
-        rank = (max((q["end"] for q in qs), default=""), len(qs))
+        rank = tag_rank(rows)
         if rank > best[2]:
             best = (rows, tag, rank)
     if best[1]:
@@ -315,18 +320,12 @@ def best_series(cik: str, tags: list[str]) -> tuple[list[dict], str | None]:
     return best[0], best[1]
 
 
-def fetch_us(ticker: str, cik: str) -> dict:
-    """미국 한 종목의 분기/연간 원시치."""
-    series: dict[str, list[dict]] = {}
-    rows, revenue_tag = best_series(cik, REVENUE_TAGS)
-    if rows:
-        series["revenue"] = rows
-    for field, tags in list(US_TAGS.items()) + list(US_INSTANT_TAGS.items()):
-        rows, _ = best_series(cik, tags)
-        if rows:
-            series[field] = rows
+def assemble(series: dict[str, list[dict]]) -> tuple[list[dict], list[dict]]:
+    """필드별 원시 행 → (분기, 연간), 최신부터.
 
-    # 분기/연간 정리: 매출 기준으로 기간을 잡고 나머지를 같은 종료일에 맞춘다
+    분기/연간 정리: 매출 기준으로 기간을 잡고 나머지를 같은 종료일에 맞춘다.
+    시점 기준 재구성(pit_fund.py)도 이 함수를 그대로 쓴다.
+    """
     quarters: dict[str, dict] = {}
     annuals: dict[str, dict] = {}
     for field in ("revenue", "operating_income", "net_income", "eps_diluted"):
@@ -346,7 +345,23 @@ def fetch_us(ticker: str, cik: str) -> dict:
             slot = annuals.setdefault(item["end"], {
                 "end": item["end"], "start": item["start"]})
             slot[field] = item["val"]
+    by_end = lambda x: x["end"]
+    return (sorted(quarters.values(), key=by_end, reverse=True),
+            sorted(annuals.values(), key=by_end, reverse=True))
 
+
+def fetch_us(ticker: str, cik: str) -> dict:
+    """미국 한 종목의 분기/연간 원시치."""
+    series: dict[str, list[dict]] = {}
+    rows, revenue_tag = best_series(cik, REVENUE_TAGS)
+    if rows:
+        series["revenue"] = rows
+    for field, tags in list(US_TAGS.items()) + list(US_INSTANT_TAGS.items()):
+        rows, _ = best_series(cik, tags)
+        if rows:
+            series[field] = rows
+
+    quarters, annuals = assemble(series)
     equity = [{"end": r["end"], "value": r["val"]}
               for r in pick_instants(series.get("equity", []))][:QUARTERS_KEEP]
 
@@ -356,10 +371,8 @@ def fetch_us(ticker: str, cik: str) -> dict:
         "source": "SEC EDGAR companyconcept",
         "revenue_tag": revenue_tag,
         "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "quarters": sorted(quarters.values(), key=lambda x: x["end"],
-                           reverse=True)[:QUARTERS_KEEP],
-        "annuals": sorted(annuals.values(), key=lambda x: x["end"],
-                          reverse=True)[:YEARS_KEEP],
+        "quarters": quarters[:QUARTERS_KEEP],
+        "annuals": annuals[:YEARS_KEEP],
         "equity": equity,
     }
 

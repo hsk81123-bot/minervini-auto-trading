@@ -6,7 +6,9 @@
 후보 선정이 그 날까지의 데이터만 쓰는지, 돌파 확인·손절폭 계산이 정한 대로인지,
 설계 기간에서 탈락한 후보의 보류 기간을 계산하지 않는지 확인한다.
 """
+import gzip
 import io
+import json
 import sys
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -111,6 +113,7 @@ prices["S7"] = frame(flat)
 rows["S8"] = {"rs": 70, "raw": 1.0, "vcp": 50, "pivot": 10.2, "vstop": 9.69}  # RS 미달
 prices["S8"] = frame(up, v_up)
 aux5 = {t: C.aux_indicators(df) for t, df in prices.items()}
+prices5 = prices
 sig = prices["S1"].index[59].strftime("%Y-%m-%d")
 called = []
 filled, n_setup = C.pick_c5({"date": sig, "rows": rows}, aux5, prices,
@@ -169,7 +172,29 @@ assert C.in_period(good, "2020-01-01", "2020-12-31") == \
     [t for t in good if t["cohort"].startswith("2020")]
 ok("evaluate: 5개 기준 · 한 종목 의존이면 탈락")
 
-# 8) 설계 기간에서 탈락하면 보류 기간을 계산하지 않는다 (끝까지 돌려 본다)
+# 8) 펀더멘털 후보 — 조건·순서·C1+C5 한정
+F = lambda e, r, o=None, a=None: {"eps_growth": e, "revenue_growth": r,
+                                  "opm_change": o, "eps_accel": a}
+assert C.c1_ok(F(0.25, 0.20)) and not C.c1_ok(F(0.24, 0.5))
+assert not C.c1_ok(F(0.5, None)) and not C.c1_ok(None)
+assert C.c2_ok(F(None, None, 0.01, True)) and not C.c2_ok(F(1, 1, 0.0, True))
+assert not C.c2_ok(F(1, 1, 0.05, None)) and not C.c2_ok(None)
+fund = {"A": F(0.30, 0.25, 0.01, True), "B": F(0.90, 0.30), "C": F(0.30, 0.10),
+        "D": F(0.30, 0.40, 0.02, True), "E": None}
+asked = []
+fund_at = lambda t, d: asked.append(d) or fund.get(t)
+p1 = C.pick_c1(snap, fund_at)
+assert [p["ticker"] for p in p1] == ["B", "A", "D"]     # EPS 성장 → RS → 티커
+assert set(asked) == {day} and p1[0]["stop"] == C.BASE_STOP
+assert [p["ticker"] for p in C.pick_c2(snap, fund_at)] == ["D", "A"]  # 같은 RS → 원점수
+filled, n_setup = C.pick_c5({"date": sig, "rows": rows}, aux5, prices5,
+                            lambda df, d: {}, allow=lambda t: t != "S2")
+assert n_setup == 5 and [f["ticker"] for f in filled] == ["S6"]   # S2 대신 S6 이 셋업에
+cov = C.coverage([{"date": "2023-05-05", "rows": snap["rows"]}], fund_at)
+assert cov == {"2023": (5, 4, 3, 2)}
+ok("c1_ok·c2_ok · pick_c1 EPS 성장 순 · pick_c2 RS 순 · C1+C5 셋업 한정 · 커버리지")
+
+# 9) 설계 기간에서 탈락하면 보류 기간을 계산하지 않는다 (끝까지 돌려 본다)
 days = pd.bdate_range("2019-01-02", "2024-06-28")
 prices = {}
 for k in range(8):
@@ -181,23 +206,51 @@ snaps = [{"date": d.strftime("%Y-%m-%d"), "weekly": True,
           "rows": {f"T{k}": {"rs": 99 - k, "raw": 1.0 + k * 0.01, "vcp": 10,
                              "pivot": 60.0, "vstop": 40.0} for k in range(8)}}
          for d in weekly]
-orig = H.load_prices, H.load_snaps, C.N_PERM
+here = Path(__file__).resolve().parent
+orig = H.load_prices, H.load_snaps, C.N_PERM, C.PF.TIMELINE
 H.load_prices = lambda: {"prices": prices}
 H.load_snaps = lambda: snaps
 C.N_PERM = 5
-out = Path(__file__).resolve().parent / ".test_candidates.json"
+out = here / ".test_candidates.json"
+tl_path = here / ".test_fund_pit.json.gz"
+tl_rows = [[f"{y + 1}-01-01", f"{y}-12-31", 0.5, 0.3, None, None]
+           for y in range(2018, 2024)]
+# T0~T3 이 해마다 1월 1일에 EPS +50%·매출 +30% 를 공시했다 (가속·마진은 모름)
+with gzip.open(tl_path, "wt", encoding="utf-8") as f:
+    json.dump({f"T{k}": tl_rows for k in range(4)}, f)
+docs, logs = [], []
 try:
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        assert C.main(["--json", str(out)]) == 0
-    import json
-    doc = json.loads(out.read_text(encoding="utf-8"))
+    for tl in (here / ".없음", tl_path):
+        C.PF.TIMELINE = tl
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            assert C.main(["--json", str(out)]) == 0
+        docs.append(json.loads(out.read_text(encoding="utf-8")))
+        logs.append(buf.getvalue())
 finally:
-    H.load_prices, H.load_snaps, C.N_PERM = orig
+    H.load_prices, H.load_snaps, C.N_PERM, C.PF.TIMELINE = orig
     out.unlink(missing_ok=True)
+    tl_path.unlink(missing_ok=True)
+doc = docs[0]
 assert set(doc["design"]) == {"C3 덜 오른 강세주", "C4 변동성 조정", "C5 피봇 돌파 진입"}
 assert not any(v["passed"] for v in doc["design"].values())     # 보합 → 기대값 0
-assert doc["holdout"] == {} and "보류 기간은 계산하지 않는다" in buf.getvalue()
-ok("main: 설계 탈락 → 보류 기간 미계산")
+assert doc["holdout"] == {} and "보류 기간은 계산하지 않는다" in logs[0]
+assert doc["fundamentals"] is None and "C1·C2 생략" in logs[0]
+doc = docs[1]
+assert {"C1 실적 성장", "C2 실적 가속", "C1+C5 실적+돌파"} <= set(doc["design"])
+cov = doc["fundamentals"]["coverage"]
+# 데이터는 T0~T3 뿐이고, 분기 종료 200일이 지나면 없는 셈이다
+assert all(v[1] == v[2] and 0 < v[1] <= v[0] / 2 and v[3] == 0
+           for v in cov.values())
+for y, v in cov.items():
+    expect = sum(C.PF.lookup(tl_rows, s["date"]) is not None
+                 for s in snaps[:-1] if s["date"][:4] == y) * 4
+    assert v[1] == expect, (y, v, expect)
+assert doc["design"]["C1 실적 성장"]["tickers"] == 4
+assert doc["design"]["C2 실적 가속"]["trades"] == 0
+# 앞선 후보의 숫자는 펀더멘털 후보가 붙어도 그대로다
+for k in docs[0]["design"]:
+    assert docs[0]["design"][k] == docs[1]["design"][k], k
+ok("main: 설계 탈락 → 보류 기간 미계산 · 타임라인 있을 때만 C1·C2 · 기존 후보 불변")
 
 print("\n  전체 통과")

@@ -17,6 +17,15 @@
          — 미너비니의 실제 진입(피봇 돌파). 거래량은 그 날 장 마감 뒤에야 아는
            값이라 장중 체결로 가정하지 않고 다음날 시가에 산다.
 
+펀더멘털 후보 (.cache/us_fund_pit.json.gz 가 있을 때만 — pit_fund.py 참고).
+신호일 d 에는 공시일 < d 인 SEC 숫자만 쓴다. 최근 분기가 200일 넘게 지났으면
+데이터 없음으로 보고 뺀다. 성장률은 전년 동기 대비, 전년 값이 0 이하면 뺀다.
+  C1     최근 분기 EPS +25% 이상 & 매출 +20% 이상, EPS 성장률 순 상위 5
+         · -8% / 3R — SEPA 의 '왜 오르는가'
+  C2     EPS 성장률이 최근 3개 분기 연속 상승 & 영업이익률이 전년 동기보다 높음,
+         RS 순 상위 5 · -8% / 3R — 실적 가속 (코드33 의 본래 뜻)
+  C1+C5  C5 와 같되 셋업을 C1 조건을 넘는 종목으로 한정
+
 검증 방식 (결과를 보기 전에 고정):
   설계 기간 2019-02 ~ 2023-12 에서 아래를 모두 넘어야 하고, 넘은 후보만 보류 기간
   2024-01 ~ 끝을 한 번 계산한다(코드가 강제한다 — 탈락한 후보의 보류 기간 숫자는
@@ -43,6 +52,7 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import history as H
 import papertrade as P
+import pit_fund as PF
 import robust as R
 import validate as V
 
@@ -56,6 +66,7 @@ C3_RS, C3_MAX_EXT = 80, 0.10
 C4_ATR_MULT, C4_MIN, C4_MAX = 2.0, 4.0, 15.0
 C5_RS, C5_BELOW, C5_DAYS, C5_VOL = 80, 0.05, 5, 1.5
 C5_MIN_STOP, C5_MAX_STOP = 2.0, 8.0
+C1_EPS, C1_REV = 0.25, 0.20
 
 DESIGN_PCTL, HOLDOUT_PCTL = 0.99, 0.95
 CHECKS = (
@@ -140,11 +151,13 @@ def c5_stop(entry_ref: float, vstop: float | None) -> float:
     return min(C5_MAX_STOP, max(C5_MIN_STOP, (1 - vstop / entry_ref) * 100))
 
 
-def pick_c5(snap: dict, aux: dict, prices: dict, vcp_fn) -> tuple[list[dict], int]:
-    """(체결된 거래, 셋업 수). 셋업은 RS 순 상위 5, 그중 돌파가 확인된 것만 산다."""
+def pick_c5(snap: dict, aux: dict, prices: dict, vcp_fn, allow=None
+            ) -> tuple[list[dict], int]:
+    """(체결된 거래, 셋업 수). 셋업은 RS 순 상위 5, 그중 돌파가 확인된 것만 산다.
+    allow(ticker) 가 있으면 그 조건을 넘는 종목만 셋업이 될 수 있다 (C1+C5)."""
     setups = []
     for t, r in snap["rows"].items():
-        if r["rs"] < C5_RS:
+        if r["rs"] < C5_RS or (allow is not None and not allow(t)):
             continue
         piv = r.get("pivot")
         vstop = r.get("vstop")
@@ -166,6 +179,59 @@ def pick_c5(snap: dict, aux: dict, prices: dict, vcp_fn) -> tuple[list[dict], in
             filled.append(dict(s, entry_date=d,
                                stop=c5_stop(s["pivot"], s["vstop"])))
     return filled, len(setups)
+
+
+def c1_ok(f: dict | None) -> bool:
+    return (f is not None and f["eps_growth"] is not None
+            and f["revenue_growth"] is not None
+            and f["eps_growth"] >= C1_EPS and f["revenue_growth"] >= C1_REV)
+
+
+def c2_ok(f: dict | None) -> bool:
+    return (f is not None and f["eps_accel"] is True
+            and f["opm_change"] is not None and f["opm_change"] > 0)
+
+
+def pick_c1(snap: dict, fund_at) -> list[dict]:
+    rows = []
+    for t, r in snap["rows"].items():
+        f = fund_at(t, snap["date"])
+        if c1_ok(f):
+            rows.append({"ticker": t, "rs": r["rs"], "eps_growth": f["eps_growth"]})
+    rows.sort(key=lambda x: (-x["eps_growth"], -x["rs"], x["ticker"]))
+    return [dict(x, stop=BASE_STOP, entry_date=snap["date"]) for x in rows[:TOP]]
+
+
+def pick_c2(snap: dict, fund_at) -> list[dict]:
+    rows = [{"ticker": t, "rs": r["rs"], "raw": r.get("raw") or 0}
+            for t, r in snap["rows"].items() if c2_ok(fund_at(t, snap["date"]))]
+    rows.sort(key=lambda x: (-x["rs"], -x["raw"], x["ticker"]))
+    return [dict(x, stop=BASE_STOP, entry_date=snap["date"]) for x in rows[:TOP]]
+
+
+def fund_lookup(timeline: dict):
+    """(종목, 신호일) → 그 날 알 수 있던 지표. 같은 질의가 반복되므로 기억해 둔다."""
+    memo: dict = {}
+
+    def at(t: str, d: str) -> dict | None:
+        if (t, d) not in memo:
+            memo[(t, d)] = PF.lookup(timeline.get(t), d)
+        return memo[(t, d)]
+    return at
+
+
+def coverage(snaps: list[dict], fund_at) -> dict[str, tuple[int, int, int, int]]:
+    """연도별 (통과 종목·주, 펀더멘털 있음, C1 충족, C2 충족)."""
+    out: dict[str, list[int]] = {}
+    for s in snaps:
+        c = out.setdefault(s["date"][:4], [0, 0, 0, 0])
+        for t in s["rows"]:
+            f = fund_at(t, s["date"])
+            c[0] += 1
+            c[1] += f is not None
+            c[2] += c1_ok(f)
+            c[3] += c2_ok(f)
+    return {y: tuple(v) for y, v in sorted(out.items())}
 
 
 # ---------------------------------------------------------------- 실행·집계
@@ -253,7 +319,7 @@ def main(argv: list[str]) -> int:
 
     pool = {t for s in snaps for t in s["rows"]}
     print(f"\n{'=' * 100}")
-    print(f"  US 후보 규칙 검증 (가격 기반 C3·C4·C5)  주간 신호 {len(snaps)}개 "
+    print(f"  US 후보 규칙 검증 (C1~C5)  주간 신호 {len(snaps)}개 "
           f"({first} ~ {last}) · 설계 ~{DESIGN_END} / 보류 2024-01-01~")
     print(f"{'=' * 100}")
     print(f"  공통: 트렌드 템플릿 통과 종목 안에서 선정 · 다음날 시가 진입 · 익절 = "
@@ -286,6 +352,31 @@ def main(argv: list[str]) -> int:
         n_setup += n
     cands["C5 피봇 돌파 진입"] = c5
     n_fill = sum(len(p) for _, p in c5)
+
+    fund_doc = None
+    if PF.TIMELINE.exists():
+        fund_at = fund_lookup(PF.load_timeline())
+        cov = coverage(snaps, fund_at)
+        tot = [sum(v[i] for v in cov.values()) for i in range(4)]
+        print(f"\n  [펀더멘털 커버리지] 공시일 < 신호일 · 최근 분기 {PF.STALE_DAYS}일 이내")
+        print(f"  {'연도':<6} {'통과 종목·주':>12} {'데이터 있음':>10} "
+              f"{'C1 충족':>8} {'C2 충족':>8}")
+        for y, (n, have, a, b) in list(cov.items()) + [("전체", tuple(tot))]:
+            print(f"  {y:<6} {n:>12} {have:>6} ({have / n * 100:3.0f}%) "
+                  f"{a:>8} {b:>8}")
+        cands["C1 실적 성장"] = [(s["date"], pick_c1(s, fund_at)) for s in snaps]
+        cands["C2 실적 가속"] = [(s["date"], pick_c2(s, fund_at)) for s in snaps]
+        c15, n15 = [], 0
+        for s in snaps:
+            filled, n = pick_c5(s, aux, prices, vcp_at,
+                                lambda t, d=s["date"]: c1_ok(fund_at(t, d)))
+            c15.append((s["date"], filled))
+            n15 += n
+        cands["C1+C5 실적+돌파"] = c15
+        fund_doc = {"coverage": cov, "c15_setups": n15,
+                    "c15_filled": sum(len(p) for _, p in c15)}
+    else:
+        print(f"\n  펀더멘털 타임라인 없음({PF.TIMELINE.name}) — C1·C2 생략")
     # 참고: 3단계의 현재 규칙(RS 상위 5)을 같은 청산 조건으로
     ref = [(c, [dict(r, stop=BASE_STOP, entry_date=c) for r in rows])
            for c, rows in V.cohorts(snaps + [snaps[-1]], TOP, 1)]
@@ -302,8 +393,8 @@ def main(argv: list[str]) -> int:
     ref_tr = simulate_picks(ref, ohlc, index)
 
     doc = {"design_end": DESIGN_END, "first": first, "last": last,
-           "c5_setups": n_setup, "c5_filled": n_fill, "design": {},
-           "holdout": {}}
+           "c5_setups": n_setup, "c5_filled": n_fill, "fundamentals": fund_doc,
+           "design": {}, "holdout": {}}
     lo, hi = periods["설계"]
     rnd_d = [in_period(t, lo, hi) for t in rnd_all]
     print(f"\n  [설계 기간] {lo} ~ {hi} — 기준: 무작위 대비 "
@@ -315,8 +406,10 @@ def main(argv: list[str]) -> int:
     for k, tr in trades.items():
         ev = evaluate(in_period(tr, lo, hi), rnd_d, DESIGN_PCTL)
         doc["design"][k] = ev
-        extra = (f"  (셋업 {n_setup} 중 돌파 체결 {n_fill})"
-                 if k.startswith("C5") else "")
+        extra = (f"  (셋업 {n_setup} 중 돌파 체결 {n_fill})" if k.startswith("C5")
+                 else f"  (셋업 {fund_doc['c15_setups']} 중 돌파 체결 "
+                      f"{fund_doc['c15_filled']})" if k.startswith("C1+C5")
+                 else "")
         show(k, ev, extra)
         if ev["passed"]:
             passed.append(k)
