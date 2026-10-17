@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""SPY 타이밍 판정 — PLAN.md §3 C1~C8, §7 통계, 부록 A 구간을 그대로 구현한다.
+"""SPY 타이밍 판정 — PLAN.md §3 C1~C8(+§3.1 종합점수 S), §7 통계, 부록 A 구간을 그대로 구현한다.
 
 사용법 (Actions: timing.yml — 원자료는 Actions 에서만 받을 수 있다):
     python screener/timing_eval.py fetch        # S0: 받기 + 점검 + 해시
@@ -173,6 +173,13 @@ def placebo(w: pd.Series, ret: pd.Series, rf: pd.Series, cost_bp: float, actual_
             "p95": float(np.percentile(cg, 95))}
 
 
+def score(sm: dict, sb: dict) -> dict:
+    """PLAN §3.1 종합점수: 수익 개선 : 낙폭 감소 = 5 : 5, B0 대비 상대치."""
+    s_ret = (sm["cagr"] - sb["cagr"]) / abs(sb["cagr"])
+    s_dd = (abs(sb["mdd"]) - abs(sm["mdd"])) / abs(sb["mdd"])
+    return {"s_ret": s_ret, "s_dd": s_dd, "S": 0.5 * s_ret + 0.5 * s_dd}
+
+
 # ---------------------------------------------------------------- 연구 객체
 class Study:
     """한 데이터(SPY 또는 French) 위에서 규칙들을 같은 조건으로 계산·판정한다."""
@@ -261,6 +268,8 @@ class Study:
         # C5: 비용 25bp
         r25, _ = self.run(spec, cost=25.0)
         out["detail"]["cagr_25bp"] = T.cagr(r25)
+        out["detail"]["S_25bp"] = score(T.summarize(r25, self.df["RF"]), T.summarize(
+            self.run(baseline_specs()["B0"], cost=25.0)[0], self.df["RF"]))["S"]
         out["checks"]["C5"] = bool(out["detail"]["cagr_25bp"] > sb["cagr"])
         # C6: Calmar vs B1(같은 ω; A2 는 두 ω 모두), B2
         bs = baseline_specs()
@@ -271,8 +280,13 @@ class Study:
         b2 = self.run({"rule": "mix", "params": {"w": e}})[0]
         s2 = T.summarize(b2, self.df["RF"])
         out["detail"].update(b1_calmar=b1c, b2_cagr=s2["cagr"], b2_calmar=s2["calmar"], b2_e=e)
+        sc = score(sm, sb)
+        s_b1 = {om: score(self.summary(bs[f"B1({om:g})"]), sb)["S"] for om in oms}
+        s_b2 = score(s2, sb)["S"]
+        out["detail"].update(score=sc, s_b1=s_b1, s_b2=s_b2)
         out["checks"]["C6"] = bool(all(sm["calmar"] >= v for v in b1c.values())
-                                   and sm["cagr"] >= s2["cagr"] and sm["calmar"] > s2["calmar"])
+                                   and sm["cagr"] >= s2["cagr"] and sm["calmar"] > s2["calmar"]
+                                   and all(sc["S"] > v for v in s_b1.values()) and sc["S"] > s_b2)
         # C7: 이웃
         if with_neighbors:
             ncg = []
@@ -303,15 +317,17 @@ def print_frontier(st: Study, title: str) -> dict:
     print(f"\n  [{title}] 평가 {st.df.loc[st.start:].index[0].date()} ~ "
           f"{st.df.index[-1].date()} · 편도 5bp · 종가 체결")
     print(f"  {'':<8} {'연복리':>8} {'시가체결':>8} {'MDD':>8} {'변동성':>7} {'Sharpe':>6} "
-          f"{'Calmar':>6} {'노출':>5} {'연거래':>6}  최악의 해")
+          f"{'Calmar':>6} {'5:5점수S':>8} {'노출':>5} {'연거래':>6}  최악의 해")
+    sb0 = st.summary(bs["B0"])
     rows = {}
     for nm, spec in bs.items():
         s = st.summary(spec)
         so = st.summary(spec, mode="open")["cagr"] if st.has_open else None
-        rows[nm] = dict(s, cagr_open=so)
+        sc = score(s, sb0)
+        rows[nm] = dict(s, cagr_open=so, **sc)
         wy = f"{s['worst_year'][0]} {s['worst_year'][1] * 100:+.1f}%"
         print(f"  {nm:<8} {pct(s['cagr'])} {pct(so)} {pct(s['mdd'])} {s['vol'] * 100:6.1f}% "
-              f"{s['sharpe']:6.2f} {s['calmar']:6.2f} {s.get('exposure', 1):5.2f} "
+              f"{s['sharpe']:6.2f} {s['calmar']:6.2f} {sc['S']:+8.3f} {s.get('exposure', 1):5.2f} "
               f"{s.get('trades_per_year', 0):6.1f}  {wy}")
     print(f"  시대별 연복리:  " + "  ".join(f"{lab}" for lab, _, _ in st.eras))
     for nm in ("B0", "B1(0)", "B1(0.5)", "B3(0)", "B3(0.5)", "B4"):
@@ -342,6 +358,9 @@ def print_verdict(res: dict) -> None:
           + f" · 플라시보 {d['placebo']['percentile'] * 100:.0f}번째")
     if "neighbors" in d:
         print(f"            이웃 연복리 " + " ".join(pct(v, 7).strip() for v in d["neighbors"]))
+    sc = d["score"]
+    print(f"            5:5 점수 S {sc['S']:+.3f} (수익 {sc['s_ret']:+.2f} · 낙폭 {sc['s_dd']:+.2f}) vs B1 "
+          + "/".join(f"{v:+.3f}" for v in d["s_b1"].values()) + f" · B2 {d['s_b2']:+.3f} · 25bp S {d['S_25bp']:+.3f}")
     print(f"            판정 {marks} → {'통과' if res['passed'] else '탈락'}")
 
 
@@ -396,6 +415,9 @@ def cmd_candidates(out: dict) -> None:
             passed.append(name)
     out["candidates"] = res
     print(f"\n  요약: 7개 중 통과 {len(passed)}개 {passed}")
+    print(f"  5:5 점수 S 순위 (통과 여부와 별개, 높을수록 좋음): " + " > ".join(
+        f"{n} {r['detail']['score']['S']:+.3f}" for n, r in sorted(
+            res.items(), key=lambda kv: -kv[1]["detail"]["score"]["S"])))
     print(f"  (참고) 낙폭만 작고 수익은 비슷한 규칙(연복리 B0 −1%p 이내, MDD ≤ B0 의 60%): "
           + (", ".join(n for n, r in res.items()
                        if r["detail"]["cagr"] >= r["detail"]["b0_cagr"] - 0.01

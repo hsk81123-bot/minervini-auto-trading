@@ -51,6 +51,14 @@ bs = TE.baseline_specs()
 assert list(bs) == ["B0", "B4", "B1(0)", "B3(0)", "B1(0.5)", "B3(0.5)"]
 ok("후보 7개·이웃 23개·구간·임계값이 PLAN.md / ledger.json 과 같다")
 
+# 0b) 종합점수 S (PLAN §3.1): 수익 개선 : 낙폭 감소 = 5 : 5, B0 대비 상대치
+sc = TE.score({"cagr": 0.12, "mdd": -0.30}, {"cagr": 0.10, "mdd": -0.50})
+assert close(sc["s_ret"], 0.2) and close(sc["s_dd"], 0.4) and close(sc["S"], 0.3)
+assert close(TE.score({"cagr": 0.10, "mdd": -0.50}, {"cagr": 0.10, "mdd": -0.50})["S"], 0.0)
+assert TE.score({"cagr": 0.025, "mdd": 0.0}, {"cagr": 0.10, "mdd": -0.50})["S"] > 0   # 전액 현금도 양수 → C1·C4 문턱이 따로 필요
+assert "§3.1" in plan and "C6(c)" in plan
+ok("score: S = 0.5·수익 개선 + 0.5·낙폭 감소")
+
 # 1) NW 회귀가 evalkit 의 검증된 구현과 같다
 rng = np.random.default_rng(1)
 x = rng.normal(0, 0.02, 400)
@@ -151,6 +159,8 @@ try:
     assert all(isinstance(v, bool) for v in res["checks"].values())
     assert len(res["detail"]["neighbors"]) == 2 and res["detail"]["eras_won"][1] == 3
     assert "cagr_open" in res["detail"]
+    assert close(res["detail"]["score"]["S"], 0.5 * res["detail"]["score"]["s_ret"] + 0.5 * res["detail"]["score"]["s_dd"])
+    assert set(res["detail"]["s_b1"]) == {0.0} and "S_25bp" in res["detail"]
     TE.print_verdict(res)
     # 시가 없는 자료(French 형태)는 C1 에서 시가 체결을 건너뛴다
     nf = df.copy()
