@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-13",
+  "updated": "2026-10-17",
   "note": "시도한 가설 수. 많이 볼수록 우연히 좋아 보이는 것이 나온다 — evalkit.ledger_summary 가 Bonferroni 임계 z 를 계산한다. exploratory 의 approx 는 대략치.",
   "pre_registered": [
     {
@@ -31,6 +31,18 @@
       "id": "h4-2026-10-13",
       "count": 1,
       "note": "H4 실적 서프라이즈 드리프트 (SUE≥2, 8-K 2.02 발표일, 84일 보유; 파라미터는 ROADMAP.md 에 고정)"
+    },
+    {
+      "id": "spy-timing-A1-A4",
+      "count": 4,
+      "plan_commit": "2d9cf1a34122eba47ad84554e44e0088bfcc74d8",
+      "note": "SPY 타이밍 후보 A1 절대모멘텀 · A2 변동성 타깃 · A3 추세×변동성 · A4 추세+반등 (PLAN.md §6 에 정의 동결)"
+    },
+    {
+      "id": "spy-timing-baselines",
+      "count": 2,
+      "plan_commit": "2d9cf1a34122eba47ad84554e44e0088bfcc74d8",
+      "note": "베이스라인 B1(200일선 이식)·B3(Faber 10개월) — B0·B2 는 비교용이라 세지 않음"
     }
   ],
   "exploratory": [
@@ -70,6 +82,12 @@
       "id": "h4-event-study",
       "count": 15,
       "note": "이벤트 스터디 3그룹 × 호라이즌 3 + 시대별 3 + 발표 반응(−1→+1) 3그룹 (사후 추가)"
+    },
+    {
+      "id": "spy-timing-neighbors",
+      "count": 13,
+      "plan_commit": "2d9cf1a34122eba47ad84554e44e0088bfcc74d8",
+      "note": "C7 파라미터 이웃 (A1 2 · A2 3 · A3 4 · A4 4)"
     }
   ]
 }
