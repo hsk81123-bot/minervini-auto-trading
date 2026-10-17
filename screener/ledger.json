@@ -43,6 +43,18 @@
       "count": 2,
       "plan_commit": "2d9cf1a34122eba47ad84554e44e0088bfcc74d8",
       "note": "베이스라인 B1(200일선 이식)·B3(Faber 10개월) — B0·B2 는 비교용이라 세지 않음"
+    },
+    {
+      "id": "spy-timing-omega50-candidates",
+      "count": 3,
+      "plan_commit": "6857f2f4dd4fd9a8f701098cb0f46279616c098c",
+      "note": "ω=0.5(5:5) 변형 A1(0.5)·A3(0.5)·A4(0.5) — 위험 회피 상태에서 SPY 50:현금 50 (PLAN v3)"
+    },
+    {
+      "id": "spy-timing-omega50-baselines",
+      "count": 2,
+      "plan_commit": "6857f2f4dd4fd9a8f701098cb0f46279616c098c",
+      "note": "B1(0.5)·B3(0.5) 베이스라인"
     }
   ],
   "exploratory": [
@@ -88,6 +100,12 @@
       "count": 13,
       "plan_commit": "2d9cf1a34122eba47ad84554e44e0088bfcc74d8",
       "note": "C7 파라미터 이웃 (A1 2 · A2 3 · A3 4 · A4 4)"
+    },
+    {
+      "id": "spy-timing-neighbors-omega50",
+      "count": 10,
+      "plan_commit": "6857f2f4dd4fd9a8f701098cb0f46279616c098c",
+      "note": "ω=0.5 후보의 C7 이웃 (A1 2 · A3 4 · A4 4)"
     }
   ]
 }
