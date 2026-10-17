@@ -1,0 +1,451 @@
+# -*- coding: utf-8 -*-
+"""SPY 타이밍 판정 — PLAN.md §3 C1~C8, §7 통계, 부록 A 구간을 그대로 구현한다.
+
+사용법 (Actions: timing.yml — 원자료는 Actions 에서만 받을 수 있다):
+    python screener/timing_eval.py fetch        # S0: 받기 + 점검 + 해시
+    python screener/timing_eval.py frontier     # S2: 베이스라인 프런티어 (SPY · French)
+    python screener/timing_eval.py candidates   # S3: 후보 판정 → 통과한 것만 S4 보류 1회
+"""
+import json
+import math
+import sys
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import evalkit as E
+import timing as T
+
+SEED = 20261017
+T_MIN, T_MIN_HOLDOUT = 3.0, 2.0
+ERA_FRAC, ERA_MIN_DAYS = 0.8, 126
+PLACEBO_N, BOOT_N, BOOT_BLOCK, MIN_SHIFT = 1000, 2000, 252, 252
+NEIGHBOR_TOL = 0.015
+PLACEBO_PCT = 0.95
+NW_LAGS = 8
+
+# 부록 A (고정)
+ERAS = {
+    "spy": [("1994–99", "1994-05-02", "1999-12-31"), ("2000–02", "2000-01-01", "2002-12-31"),
+            ("2003–07", "2003-01-01", "2007-12-31"), ("2008–09", "2008-01-01", "2009-12-31"),
+            ("2010–19", "2010-01-01", "2019-12-31"), ("2020~", "2020-01-01", "2099-12-31")],
+    "french": [("1927–40", "1927-11-01", "1940-12-31"), ("1941–55", "1941-01-01", "1955-12-31"),
+               ("1956–70", "1956-01-01", "1970-12-31"), ("1971–81", "1971-01-01", "1981-12-31"),
+               ("1982–92", "1982-01-01", "1992-12-31")]}
+CRISES = {
+    "spy": [("닷컴 2000-03~2002-10", "2000-03-24", "2002-10-09"),
+            ("금융위기 2007-10~2009-03", "2007-10-09", "2009-03-09"),
+            ("코로나 2020-02~03", "2020-02-19", "2020-03-23"),
+            ("2022 하락장", "2022-01-03", "2022-10-12")],
+    "french": [("대공황 1929-09~1932-06", "1929-09-01", "1932-06-30"),
+               ("1937-03~1938-03", "1937-03-01", "1938-03-31"),
+               ("1973-74", "1973-01-01", "1974-12-31"), ("1987-08~12", "1987-08-01", "1987-12-31")]}
+WHIPSAW = [("1994", "1994-02-01", "1994-12-31"), ("1998", "1998-07-17", "1998-10-08"),
+           ("2011", "2011-07-22", "2011-10-03"), ("2015-16", "2015-08-18", "2016-02-11"),
+           ("2018Q4", "2018-10-03", "2018-12-24")]
+
+# 후보 · 베이스라인 정의 (PLAN §2, §6) — 이웃은 파라미터를 하나씩만 바꾼다
+BASE_PARAMS = {"absmom": {"months": 12}, "voltarget": {"window": 21, "target": 0.15, "band": 0.05},
+               "trendvol": {"sma_n": 200, "vol_thr": 0.20}, "pullback": {"sma_n": 200, "rsi_thr": 10.0, "exit_n": 5}}
+NEIGHBORS = {"absmom": [{"months": 10}, {"months": 14}],
+             "voltarget": [{"window": 42}, {"target": 0.12}, {"target": 0.18}],
+             "trendvol": [{"sma_n": 150}, {"sma_n": 250}, {"vol_thr": 0.16}, {"vol_thr": 0.24}],
+             "pullback": [{"rsi_thr": 5.0}, {"rsi_thr": 15.0}, {"exit_n": 3}, {"exit_n": 7}]}
+LABEL = {"absmom": "A1", "voltarget": "A2", "trendvol": "A3", "pullback": "A4"}
+OMEGAS = (0.0, 0.5)
+
+
+def candidate_specs() -> dict[str, dict]:
+    out = {}
+    for rule in ("absmom", "voltarget", "trendvol", "pullback"):
+        for om in ((None,) if rule == "voltarget" else OMEGAS):
+            name = LABEL[rule] if om is None else f"{LABEL[rule]}({om:g})"
+            kw = {} if om is None else {"off": om}
+            out[name] = {"rule": rule, "params": {**BASE_PARAMS[rule], **kw},
+                         "neighbors": [{**BASE_PARAMS[rule], **kw, **nb} for nb in NEIGHBORS[rule]],
+                         "omega": om}
+    return out
+
+
+def baseline_specs() -> dict[str, dict]:
+    out = {"B0": {"rule": "hold", "params": {}}, "B4": {"rule": "mix", "params": {"w": 0.5}}}
+    for om in OMEGAS:
+        out[f"B1({om:g})"] = {"rule": "sma", "params": {"n": 200, "off": om}}
+        out[f"B3({om:g})"] = {"rule": "faber", "params": {"months": 10, "off": om}}
+    return out
+
+
+# ---------------------------------------------------------------- 통계
+def nw_ols(X: np.ndarray, y: np.ndarray, lags: int = NW_LAGS) -> tuple[np.ndarray, np.ndarray]:
+    """OLS 계수와 Newey-West(Bartlett) t 값. X 에는 상수열을 직접 넣는다."""
+    n = len(y)
+    xtx_inv = np.linalg.inv(X.T @ X)
+    b = xtx_inv @ X.T @ y
+    u = y - X @ b
+    Xu = X * u[:, None]
+    S = Xu.T @ Xu
+    for l in range(1, lags + 1):
+        G = Xu[l:].T @ Xu[:-l]
+        S += (1 - l / (lags + 1)) * (G + G.T)
+    V = xtx_inv @ S @ xtx_inv * n / (n - X.shape[1])
+    return b, b / np.sqrt(np.diag(V))
+
+
+def weekly(x: pd.Series) -> pd.Series:
+    """일 수익률 → 금요일 기준 주간 복리 수익률 (관측이 없는 주는 뺀다)."""
+    prod = (1.0 + x).resample("W-FRI").prod() - 1.0
+    return prod[x.resample("W-FRI").count() > 0]
+
+
+def regress(r: pd.Series, mkt: pd.Series, rf: pd.Series) -> dict:
+    """주간 초과수익 회귀: 알파(연율)·베타·NW t, Treynor–Mazuy 타이밍 계수 c."""
+    y = weekly(r) - weekly(rf)
+    x = weekly(mkt) - weekly(rf)
+    y, x = y.align(x, join="inner")
+    yv, xv = y.to_numpy(), x.to_numpy()
+    b, t = nw_ols(np.column_stack([np.ones(len(xv)), xv]), yv)
+    b2, t2 = nw_ols(np.column_stack([np.ones(len(xv)), xv, xv ** 2]), yv)
+    return {"alpha_ann": float(b[0] * 52), "t_alpha": float(t[0]), "beta": float(b[1]),
+            "tm_c": float(b2[2]), "tm_t": float(t2[2]), "weeks": len(xv)}
+
+
+def stationary_indices(n: int, B: int, mean_block: int, rng: np.random.Generator) -> np.ndarray:
+    """Politis–Romano 정상 블록 부트스트랩의 색인 (B×n)."""
+    p = 1.0 / mean_block
+    restart = rng.random((B, n)) < p
+    restart[:, 0] = True
+    starts = rng.integers(0, n, size=(B, n))
+    idx = np.empty((B, n), dtype=np.int64)
+    idx[:, 0] = starts[:, 0]
+    for t in range(1, n):
+        idx[:, t] = np.where(restart[:, t], starts[:, t], (idx[:, t - 1] + 1) % n)
+    return idx
+
+
+def _mdd_paths(r: np.ndarray) -> np.ndarray:
+    """경로(행)마다 최대낙폭 (시작 자산 1)."""
+    w = np.cumprod(1.0 + r, axis=1)
+    w = np.concatenate([np.ones((w.shape[0], 1)), w], axis=1)
+    return (w / np.maximum.accumulate(w, axis=1) - 1.0).min(axis=1)
+
+
+def bootstrap_diff(rc: pd.Series, rb: pd.Series, B: int = BOOT_N, mean_block: int = BOOT_BLOCK,
+                   seed: int = SEED, chunk: int = 250) -> dict:
+    """(후보 − B0) 연복리 차이와 최대낙폭 차이의 95% 구간 (같은 날짜 쌍을 함께 다시 뽑음)."""
+    rng = np.random.default_rng(seed)
+    a, b = rc.to_numpy(), rb.reindex(rc.index).to_numpy()
+    n = len(a)
+    yrs = T.years_between(rc.index)
+    la, lb = np.log1p(a), np.log1p(b)
+    cd, md = [], []
+    for k in range(0, B, chunk):
+        idx = stationary_indices(n, min(chunk, B - k), mean_block, rng)
+        cd.append(np.expm1(la[idx].sum(1) / yrs) - np.expm1(lb[idx].sum(1) / yrs))
+        md.append(_mdd_paths(a[idx]) - _mdd_paths(b[idx]))
+    cd, md = np.concatenate(cd), np.concatenate(md)
+    return {"cagr_diff_ci": (float(np.percentile(cd, 2.5)), float(np.percentile(cd, 97.5))),
+            "mdd_diff_ci": (float(np.percentile(md, 2.5)), float(np.percentile(md, 97.5)))}
+
+
+def placebo(w: pd.Series, ret: pd.Series, rf: pd.Series, cost_bp: float, actual_cagr: float,
+            B: int = PLACEBO_N, min_shift: int = MIN_SHIFT, seed: int = SEED,
+            chunk: int = 200) -> dict:
+    """비중 경로를 원형으로 밀어(≥ min_shift 일) 타이밍 정보만 지운 대조의 연복리 분포."""
+    rng = np.random.default_rng(seed)
+    wv = w.to_numpy()
+    rv, fv = ret.to_numpy(), rf.to_numpy()
+    n = len(wv)
+    yrs = T.years_between(w.index)
+    cost = cost_bp / 1e4
+    shifts = rng.integers(min_shift, n - min_shift, size=B)
+    cg = np.empty(B)
+    for k in range(0, B, chunk):
+        sh = shifts[k:k + chunk]
+        idx = (np.arange(n)[None, :] - sh[:, None]) % n
+        ws = wv[idx]
+        dw = np.abs(ws - np.roll(ws, 1, axis=1))
+        dw[:, 0] = 0.0
+        r = ws * rv[None, :] + (1.0 - ws) * fv[None, :] - cost * dw
+        cg[k:k + chunk] = np.expm1(np.log1p(r).sum(1) / yrs)
+    return {"percentile": float((cg < actual_cagr).mean()), "median": float(np.median(cg)),
+            "p95": float(np.percentile(cg, 95))}
+
+
+# ---------------------------------------------------------------- 연구 객체
+class Study:
+    """한 데이터(SPY 또는 French) 위에서 규칙들을 같은 조건으로 계산·판정한다."""
+
+    def __init__(self, df: pd.DataFrame, kind: str, t_min: float = T_MIN):
+        self.df, self.kind, self.t_min = df, kind, t_min
+        self.start = T.EVAL_START[kind]
+        self.has_open = not df["O"].isna().all()
+        self.eras, self.crises = ERAS[kind], CRISES[kind]
+        self._sig: dict = {}
+        self._run: dict = {}
+
+    def sig(self, spec: dict) -> pd.Series:
+        key = (spec["rule"], tuple(sorted(spec["params"].items())))
+        if key not in self._sig:
+            self._sig[key] = T.signal(self.df, spec["rule"], **spec["params"])
+        return self._sig[key]
+
+    def run(self, spec: dict, cost: float = T.COST_BP, mode: str = "close"):
+        key = (spec["rule"], tuple(sorted(spec["params"].items())), cost, mode)
+        if key not in self._run:
+            if spec["rule"] == "mix":
+                r = T.static_mix(self.df, spec["params"]["w"], cost)
+                w = pd.Series(spec["params"]["w"], index=self.df.index)
+            else:
+                r, w = T.run(self.df, self.sig(spec), cost, mode)
+            r, w = r.loc[self.start:], w.loc[self.start:]
+            if r.isna().any() or w.isna().any():
+                raise ValueError(f"평가 구간에 미정의 값이 있다: {spec} ({r.isna().sum()}개)")
+            self._run[key] = (r, w)
+        return self._run[key]
+
+    def summary(self, spec: dict, cost: float = T.COST_BP, mode: str = "close") -> dict:
+        r, w = self.run(spec, cost, mode)
+        return T.summarize(r, self.df["RF"], w)
+
+    def era_cagrs(self, r: pd.Series) -> dict:
+        out = {}
+        for lab, lo, hi in self.eras:
+            x = r.loc[lo:hi]
+            if len(x) >= ERA_MIN_DAYS:
+                out[lab] = T.cagr(x)
+        return out
+
+    def window_mdd(self, r: pd.Series, lo: str, hi: str) -> float | None:
+        x = r.loc[lo:hi]
+        return T.max_dd(x) if len(x) >= 5 else None
+
+    # ---- 판정 (PLAN §3) -------------------------------------------------
+    def judge(self, name: str, spec: dict, with_neighbors: bool = True) -> dict:
+        b0 = self.run(baseline_specs()["B0"])[0]
+        rc, wc = self.run(spec)
+        out = {"name": name, "checks": {}, "detail": {}}
+        sm, sb = T.summarize(rc, self.df["RF"], wc), T.summarize(b0, self.df["RF"])
+        out["detail"].update(cagr=sm["cagr"], mdd=sm["mdd"], b0_cagr=sb["cagr"], b0_mdd=sb["mdd"],
+                             calmar=sm["calmar"], sharpe=sm["sharpe"], exposure=sm["exposure"],
+                             trades_per_year=sm["trades_per_year"], worst_year=sm["worst_year"])
+        # C1: 종가·시가 체결
+        c1 = sm["cagr"] > sb["cagr"]
+        if self.has_open:
+            ro, _ = self.run(spec, mode="open")
+            out["detail"]["cagr_open"] = T.cagr(ro)
+            c1 = c1 and out["detail"]["cagr_open"] > sb["cagr"]
+        out["checks"]["C1"] = bool(c1)
+        # C2: 알파 t + 부트스트랩
+        reg = regress(rc, self.df["TR"].pct_change().loc[rc.index], self.df["RF"].loc[rc.index])
+        bt = bootstrap_diff(rc, b0)
+        out["detail"].update(reg=reg, boot=bt)
+        out["checks"]["C2"] = bool(reg["alpha_ann"] > 0 and reg["t_alpha"] >= self.t_min
+                                   and bt["cagr_diff_ci"][0] > 0)
+        # C3: 시대
+        ec, eb = self.era_cagrs(rc), self.era_cagrs(b0)
+        won = sum(1 for k in ec if ec[k] > eb[k])
+        need = math.ceil(ERA_FRAC * len(ec) - 1e-9)
+        out["detail"]["eras"] = {k: (ec[k], eb[k]) for k in ec}
+        out["detail"]["eras_won"] = (won, need)
+        out["checks"]["C3"] = bool(won >= need)
+        # C4: 낙폭 (전체 + 위기 구간, B0 보다 작거나 같음)
+        crisis = {}
+        for lab, lo, hi in self.crises:
+            a, b = self.window_mdd(rc, lo, hi), self.window_mdd(b0, lo, hi)
+            if a is not None:
+                crisis[lab] = (a, b)
+        out["detail"]["crisis"] = crisis
+        out["checks"]["C4"] = bool(sm["mdd"] >= sb["mdd"] and all(a >= b for a, b in crisis.values()))
+        # C5: 비용 25bp
+        r25, _ = self.run(spec, cost=25.0)
+        out["detail"]["cagr_25bp"] = T.cagr(r25)
+        out["checks"]["C5"] = bool(out["detail"]["cagr_25bp"] > sb["cagr"])
+        # C6: Calmar vs B1(같은 ω; A2 는 두 ω 모두), B2
+        bs = baseline_specs()
+        oms = OMEGAS if spec.get("omega") is None and spec["rule"] == "voltarget" else (
+            (spec["params"].get("off", 0.0),))
+        b1c = {om: self.summary(bs[f"B1({om:g})"])["calmar"] for om in oms}
+        e = float(wc.mean())
+        b2 = self.run({"rule": "mix", "params": {"w": e}})[0]
+        s2 = T.summarize(b2, self.df["RF"])
+        out["detail"].update(b1_calmar=b1c, b2_cagr=s2["cagr"], b2_calmar=s2["calmar"], b2_e=e)
+        out["checks"]["C6"] = bool(all(sm["calmar"] >= v for v in b1c.values())
+                                   and sm["cagr"] >= s2["cagr"] and sm["calmar"] > s2["calmar"])
+        # C7: 이웃
+        if with_neighbors:
+            ncg = []
+            for nb in spec["neighbors"]:
+                ncg.append(self.summary({"rule": spec["rule"], "params": nb})["cagr"])
+            out["detail"]["neighbors"] = ncg
+            near = sum(1 for v in ncg if abs(v - sm["cagr"]) <= NEIGHBOR_TOL)
+            out["checks"]["C7"] = bool(near >= math.ceil(0.8 * len(ncg) - 1e-9)
+                                       and min(ncg) >= sb["cagr"] - NEIGHBOR_TOL)
+        else:
+            out["checks"]["C7"] = None
+        # C8: 플라시보
+        pl = placebo(wc, self.df["TR"].pct_change().loc[rc.index], self.df["RF"].loc[rc.index],
+                     T.COST_BP, sm["cagr"])
+        out["detail"]["placebo"] = pl
+        out["checks"]["C8"] = bool(pl["percentile"] >= PLACEBO_PCT)
+        out["passed"] = all(v is True for v in out["checks"].values())
+        return out
+
+
+# ---------------------------------------------------------------- 출력
+def pct(x, w=8):
+    return f"{'-':>{w}}" if x is None else f"{x * 100:+{w - 1}.2f}%"
+
+
+def print_frontier(st: Study, title: str) -> dict:
+    bs = baseline_specs()
+    print(f"\n  [{title}] 평가 {st.df.loc[st.start:].index[0].date()} ~ "
+          f"{st.df.index[-1].date()} · 편도 5bp · 종가 체결")
+    print(f"  {'':<8} {'연복리':>8} {'시가체결':>8} {'MDD':>8} {'변동성':>7} {'Sharpe':>6} "
+          f"{'Calmar':>6} {'노출':>5} {'연거래':>6}  최악의 해")
+    rows = {}
+    for nm, spec in bs.items():
+        s = st.summary(spec)
+        so = st.summary(spec, mode="open")["cagr"] if st.has_open else None
+        rows[nm] = dict(s, cagr_open=so)
+        wy = f"{s['worst_year'][0]} {s['worst_year'][1] * 100:+.1f}%"
+        print(f"  {nm:<8} {pct(s['cagr'])} {pct(so)} {pct(s['mdd'])} {s['vol'] * 100:6.1f}% "
+              f"{s['sharpe']:6.2f} {s['calmar']:6.2f} {s.get('exposure', 1):5.2f} "
+              f"{s.get('trades_per_year', 0):6.1f}  {wy}")
+    print(f"  시대별 연복리:  " + "  ".join(f"{lab}" for lab, _, _ in st.eras))
+    for nm in ("B0", "B1(0)", "B1(0.5)", "B3(0)", "B3(0.5)", "B4"):
+        ec = st.era_cagrs(st.run(bs[nm])[0])
+        print(f"    {nm:<8} " + "  ".join(pct(ec.get(lab), 7) for lab, _, _ in st.eras))
+    print(f"  위기 구간 낙폭 (시작일 100% 기준):")
+    for lab, lo, hi in st.crises:
+        print(f"    {lab:<26} " + "  ".join(
+            f"{nm} {pct(st.window_mdd(st.run(bs[nm])[0], lo, hi), 7).strip()}"
+            for nm in ("B0", "B1(0)", "B1(0.5)", "B3(0)", "B4")))
+    return rows
+
+
+def print_verdict(res: dict) -> None:
+    d = res["detail"]
+    marks = " ".join(f"{k}:{'O' if v else ('-' if v is None else 'X')}" for k, v in res["checks"].items())
+    reg = d["reg"]
+    print(f"  {res['name']:<9} 연복리 {pct(d['cagr'])} (시가 {pct(d.get('cagr_open'))}) vs B0 "
+          f"{pct(d['b0_cagr'])} · MDD {pct(d['mdd'])} vs {pct(d['b0_mdd'])} · Calmar {d['calmar']:.2f} "
+          f"· 노출 {d['exposure']:.2f} · 연 거래 {d['trades_per_year']:.1f}")
+    print(f"            알파 {reg['alpha_ann'] * 100:+.2f}% t {reg['t_alpha']:+.2f} β {reg['beta']:.2f} "
+          f"TM c {reg['tm_c']:+.2f}(t {reg['tm_t']:+.1f}) · 연수익 차 95% "
+          f"[{d['boot']['cagr_diff_ci'][0] * 100:+.2f}%, {d['boot']['cagr_diff_ci'][1] * 100:+.2f}%] · "
+          f"MDD 차 95% [{d['boot']['mdd_diff_ci'][0] * 100:+.1f}, {d['boot']['mdd_diff_ci'][1] * 100:+.1f}]%p")
+    print(f"            시대 {d['eras_won'][0]}/{d['eras_won'][1]}필요 · 25bp {pct(d['cagr_25bp'])} · "
+          f"B2(e={d['b2_e']:.2f}) {pct(d['b2_cagr'])} Calmar {d['b2_calmar']:.2f} · B1 Calmar "
+          + "/".join(f"{v:.2f}" for v in d["b1_calmar"].values())
+          + f" · 플라시보 {d['placebo']['percentile'] * 100:.0f}번째")
+    if "neighbors" in d:
+        print(f"            이웃 연복리 " + " ".join(pct(v, 7).strip() for v in d["neighbors"]))
+    print(f"            판정 {marks} → {'통과' if res['passed'] else '탈락'}")
+
+
+# ---------------------------------------------------------------- 명령
+def check_data() -> None:
+    """S0 점검: 범위·결측·이상치·IRX·French 와 SPY 의 일치."""
+    df = T.load_spy()
+    print(f"\n  [S0 데이터 점검]")
+    print(f"  SPY {df.index[0].date()} ~ {df.index[-1].date()} · {len(df)}행 · 결측 "
+          f"{int(df[['O', 'C', 'TR']].isna().sum().sum())}")
+    gaps = df.index.to_series().diff().dt.days
+    print(f"  거래일 간격 5일 초과 {int((gaps > 5).sum())}회 (최대 {int(gaps.max())}일)")
+    ret = df["TR"].pct_change()
+    print(f"  일수익 최대 {ret.max() * 100:+.1f}% · 최소 {ret.min() * 100:+.1f}% · "
+          f"TR/C 비율 {df['TR'].iloc[0] / df['C'].iloc[0]:.3f} → {df['TR'].iloc[-1] / df['C'].iloc[-1]:.3f}")
+    print(f"  IRX 점검 {df.attrs['irx_info']} · RF 연환산 평균 "
+          f"{((1 + df['RF']).prod() ** (1 / T.years_between(df.index)) - 1) * 100:.2f}%")
+    for f in ("spy.csv", "irx.csv", "french.csv"):
+        p = T.CACHE / f
+        if p.exists():
+            print(f"  {f}  sha256 {T.sha256(p)}")
+    if (T.CACHE / "french.csv").exists():
+        fr = T.load_french()
+        print(f"  French {fr.index[0].date()} ~ {fr.index[-1].date()} · {len(fr)}행")
+        both = pd.concat([fr["TR"].pct_change(), df["TR"].pct_change()], axis=1, join="inner").dropna()
+        both.columns = ["french", "spy"]
+        o = both
+        print(f"  French–SPY 겹치는 {len(o)}일 일수익 상관 {o.corr().iloc[0, 1]:.4f} · 연복리 "
+              f"French {T.cagr(o['french']) * 100:.2f}% vs SPY {T.cagr(o['spy']) * 100:.2f}%")
+    else:
+        print("  French 자료 없음 — 보류는 '참고'로 격하된다 (PLAN §4)")
+
+
+def cmd_frontier(out: dict) -> None:
+    spy = T.load_spy()
+    out["frontier_spy"] = print_frontier(Study(spy, "spy"), "S2 프런티어 · SPY")
+    if (T.CACHE / "french.csv").exists():
+        out["frontier_french"] = print_frontier(Study(T.load_french(), "french"),
+                                                "S2 프런티어 · French 시장수익 (보류 구간 자료 — 베이스라인만)")
+
+
+def cmd_candidates(out: dict) -> None:
+    spy = T.load_spy()
+    st = Study(spy, "spy")
+    print(f"\n  [S3 후보 판정 · SPY 설계] PLAN §3 C1~C8 · 평가 {st.start}~ · ROADMAP 과 같은 잣대")
+    res, passed = {}, []
+    for name, spec in candidate_specs().items():
+        r = st.judge(name, spec)
+        print_verdict(r)
+        res[name] = r
+        if r["passed"]:
+            passed.append(name)
+    out["candidates"] = res
+    print(f"\n  요약: 7개 중 통과 {len(passed)}개 {passed}")
+    print(f"  (참고) 낙폭만 작고 수익은 비슷한 규칙(연복리 B0 −1%p 이내, MDD ≤ B0 의 60%): "
+          + (", ".join(n for n, r in res.items()
+                       if r["detail"]["cagr"] >= r["detail"]["b0_cagr"] - 0.01
+                       and abs(r["detail"]["mdd"]) <= 0.6 * abs(r["detail"]["b0_mdd"])) or "없음"))
+    print(f"  휩소 구간 5개 (보조): " + " · ".join(
+        f"{lab}" for lab, _, _ in WHIPSAW))
+    for lab, lo, hi in WHIPSAW:
+        row = "  ".join(f"{nm} {pct(T.cagr(st.run(sp)[0].loc[lo:hi]) if len(st.run(sp)[0].loc[lo:hi]) > 20 else None, 7).strip()}"
+                        for nm, sp in (("B0", baseline_specs()["B0"]), ("B1(0)", baseline_specs()["B1(0)"]),
+                                       ("B1(.5)", baseline_specs()["B1(0.5)"])))
+        print(f"    {lab:<8} {row}")
+    # S4: 통과한 후보만, 한 번
+    print(f"\n  [S4 보류 · French 시장수익 1926~1992] 설계 통과 후보만 한 번")
+    if not passed:
+        print(f"    설계를 통과한 후보가 없다 — 보류는 계산하지 않는다 (PLAN §8 S3 중단 기준: "
+              f"무레버리지 SPY 타이밍은 B0 를 이기지 못했다)")
+    elif not (T.CACHE / "french.csv").exists():
+        print("    French 자료가 없어 보류를 계산할 수 없다 (참고로 격하)")
+    else:
+        fr = Study(T.load_french(), "french", t_min=T_MIN_HOLDOUT)
+        out["holdout"] = {}
+        for name in passed:
+            r = fr.judge(name, candidate_specs()[name])
+            print_verdict(r)
+            out["holdout"][name] = r
+
+
+def main(argv: list[str]) -> int:
+    cmd = argv[0] if argv else ""
+    out_json = argv[argv.index("--json") + 1] if "--json" in argv else None
+    out: dict = {}
+    if cmd == "fetch":
+        h = T.fetch()
+        print(f"  받음: {h}")
+        check_data()
+    elif cmd == "check":
+        check_data()
+    elif cmd == "frontier":
+        cmd_frontier(out)
+    elif cmd == "candidates":
+        cmd_candidates(out)
+    else:
+        sys.exit(__doc__)
+    if out_json and out:
+        Path(out_json).write_text(json.dumps(out, ensure_ascii=False, indent=1, default=str),
+                                  encoding="utf-8")
+    return 0
+
+
+if __name__ == "__main__":
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        sys.stdout.reconfigure(encoding="utf-8")
+    sys.exit(main(sys.argv[1:]))

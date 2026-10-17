@@ -1,0 +1,67 @@
+name: SPY timing (PLAN.md)
+
+# PLAN.md 의 SPY 타이밍 연구: S0 데이터 점검 → S2 베이스라인 프런티어 → S3 후보 판정
+# (설계 통과 후보만 S4 French 보류 1회). 원자료(SPY·^IRX·French)는 Actions 에서만 받는다.
+# 정의는 PLAN.md 커밋에서 동결 — 결과를 보고 파라미터를 바꾸지 않는다.
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - ".github/workflows/timing.yml"
+      - "screener/timing.py"
+      - "screener/timing_eval.py"
+      - "screener/test_timing.py"
+      - "screener/test_timing_eval.py"
+      - "screener/ledger.json"
+      - "PLAN.md"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: timing-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  TIMING_CACHE: ${{ github.workspace }}/.cache-timing
+
+jobs:
+  timing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r screener/requirements.txt
+
+      - name: Unit tests
+        run: |
+          python screener/test_timing.py
+          python screener/test_timing_eval.py
+          python screener/test_evalkit.py
+
+      - name: S0 fetch + data check
+        run: python screener/timing_eval.py fetch
+
+      - name: S2 baseline frontier
+        run: python screener/timing_eval.py frontier --json timing_frontier.json
+
+      - name: S3 candidates (+ S4 holdout for design passers)
+        run: python screener/timing_eval.py candidates --json timing_candidates.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: timing-results
+          path: |
+            timing_frontier.json
+            timing_candidates.json
+          if-no-files-found: ignore
