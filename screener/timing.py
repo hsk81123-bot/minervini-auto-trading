@@ -81,6 +81,49 @@ def parse_french(text: str) -> pd.DataFrame:
     return df.sort_index()
 
 
+FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
+FRED_IDS = ("BAA10Y", "T10Y3M", "DGS10")      # 무디스 Baa−10년 국채 스프레드(%), 10년−3개월(%), 10년 금리(%)
+
+
+def parse_fred(text: str) -> pd.Series:
+    """FRED 그래프 CSV(첫 열 날짜, 둘째 열 값, 결측은 '.' 또는 빈칸) → 일별 시리즈."""
+    df = pd.read_csv(io.StringIO(text), na_values=[".", ""])
+    s = pd.Series(pd.to_numeric(df.iloc[:, 1], errors="coerce").to_numpy(),
+                  index=pd.to_datetime(df.iloc[:, 0]), name=str(df.columns[1]))
+    return s.sort_index()
+
+
+def fetch_macro() -> dict[str, str]:
+    """금리·스프레드 원자료를 받아 CSV 로 저장하고 SHA-256 을 돌려준다 (Actions 전용)."""
+    import requests
+
+    CACHE.mkdir(parents=True, exist_ok=True)
+    hashes = {}
+    for sid in FRED_IDS:
+        r = requests.get(FRED_URL.format(sid), timeout=60, headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        s = parse_fred(r.text)
+        s.to_csv(CACHE / f"fred_{sid}.csv", header=True)
+        hashes[f"fred_{sid}.csv"] = sha256(CACHE / f"fred_{sid}.csv")
+    return hashes
+
+
+def macro_aligned(s: pd.Series, index: pd.DatetimeIndex, max_gap: int = 5, lag: int = 1) -> pd.Series:
+    """거래일에 맞춘 매크로 값. 직전 값을 최대 max_gap 거래일 채우고, 발표 지연을 보수적으로
+    보아 lag 거래일 늦춘다 (t 일 종가 신호는 t−lag 일자까지의 값만 쓴다)."""
+    union = s.index.union(index)
+    return s.reindex(union).ffill(limit=max_gap).reindex(index).shift(lag)
+
+
+def load_macro(index: pd.DatetimeIndex, cache: Path | None = None) -> pd.DataFrame:
+    cache = cache or CACHE
+    cols = {}
+    for sid in FRED_IDS:
+        raw = pd.read_csv(cache / f"fred_{sid}.csv", index_col=0, parse_dates=True).iloc[:, 0]
+        cols[sid] = macro_aligned(raw.astype("float64"), index)
+    return pd.DataFrame(cols, index=index)
+
+
 # ---------------------------------------------------------------- 적재
 def bey(discount_pct: pd.Series | float):
     """13주 국채 할인율(%) → 채권수익률(BEY, 소수). 91일 기준 P = 100(1 − d·91/360)."""

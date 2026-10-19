@@ -420,6 +420,27 @@ def check_data() -> None:
         print("  French 자료 없음 — 보류는 '참고'로 격하된다 (PLAN §4)")
 
 
+def check_macro() -> None:
+    """금리·스프레드 자료 점검: 범위·결측·값 범위·SPY 거래일 정렬 (성과는 보지 않는다)."""
+    spy = T.load_spy()
+    m = T.load_macro(spy.index)
+    print(f"\n  [매크로 자료 점검 · FRED] SPY 거래일 {spy.index[0].date()} ~ {spy.index[-1].date()} 에 정렬(전일 값 사용)")
+    for sid in T.FRED_IDS:
+        raw = pd.read_csv(T.CACHE / f"fred_{sid}.csv", index_col=0, parse_dates=True).iloc[:, 0]
+        col = m[sid].loc[T.EVAL_START["spy"]:]
+        first = raw.first_valid_index()
+        gaps = raw.dropna().index.to_series().diff().dt.days
+        print(f"  {sid:<7} 원자료 {first.date()} ~ {raw.last_valid_index().date()} · 유효 {int(raw.notna().sum())}개 · "
+              f"최소 {raw.min():.2f} 최대 {raw.max():.2f} · 최근 {raw.dropna().iloc[-1]:.2f} · 7일 초과 공백 {int((gaps > 7).sum())}회"
+              f" · 평가기간 정렬 후 결측 {int(col.isna().sum())}개 · sha256 {T.sha256(T.CACHE / f'fred_{sid}.csv')[:16]}")
+    long_nan = {sid: m[sid].loc[T.EVAL_START["spy"]:].isna().sum() for sid in T.FRED_IDS}
+    print(f"  평가 시작({T.EVAL_START['spy']}) 이후 정렬 결측: {long_nan}")
+    need = {sid: pd.read_csv(T.CACHE / f'fred_{sid}.csv', index_col=0, parse_dates=True).iloc[:, 0].first_valid_index()
+            for sid in T.FRED_IDS}
+    print(f"  252거래일 이동평균이 평가 시작 전에 정의되려면 원자료가 약 1993-03 이전에 시작해야 한다: "
+          + ", ".join(f"{k} {v.date()}" for k, v in need.items()))
+
+
 def cmd_frontier(out: dict) -> None:
     spy = T.load_spy()
     out["frontier_spy"] = print_frontier(Study(spy, "spy"), "S2 프런티어 · SPY")
@@ -574,6 +595,11 @@ def main(argv: list[str]) -> int:
         h = T.fetch()
         print(f"  받음: {h}")
         check_data()
+    elif cmd == "fetchmacro":
+        print(f"  받음: {T.fetch_macro()}")
+        check_macro()
+    elif cmd == "checkmacro":
+        check_macro()
     elif cmd == "check":
         check_data()
     elif cmd == "frontier":

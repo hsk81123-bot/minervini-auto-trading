@@ -63,6 +63,9 @@ jobs:
       - name: S3 candidates (+ S4 holdout for design passers)
         run: python screener/timing_eval.py candidates --json timing_candidates.json
 
+      - name: Macro data (FRED) fetch + coverage check
+        run: python screener/timing_eval.py fetchmacro
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
