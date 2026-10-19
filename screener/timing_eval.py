@@ -7,6 +7,7 @@
     python screener/timing_eval.py yearly       # 기준선 연도별 표 (기술 통계)
     python screener/timing_eval.py macro        # PLAN §13 금리·신용 신호 M1~M6
     python screener/timing_eval.py macro2       # PLAN §14 신용+금리 인상 결합 M7~M9
+    python screener/timing_eval.py annual       # 보유·200일선·M9 의 1년 단위 수익률·MDD 평균/표준편차
     python screener/timing_eval.py defense      # PLAN §12 급락 방어·급등 포착 D1~D4
     python screener/timing_eval.py candidates   # S3: 후보 판정 → 통과한 것만 S4 보류 1회
 """
@@ -582,6 +583,59 @@ def print_tables(st: Study, cols: tuple[str, ...], allspecs: dict, out: dict, ke
     print(f"  {'연거래':<5}" + "".join(f"{st.summary(allspecs[c])['trades_per_year']:15.1f}" for c in cols))
 
 
+def calendar_year_stats(r: pd.Series, min_days: int = 245) -> pd.DataFrame:
+    """달력 연도별 수익률과 그 해 안의 최대낙폭(해 첫날 100%). 거래일이 min_days 미만인 해(부분 연도)는 뺀다."""
+    rows = {}
+    for y, x in r.groupby(r.index.year):
+        if len(x) >= min_days:
+            rows[y] = {"ret": float((1.0 + x).prod() - 1.0), "mdd": T.max_dd(x)}
+    return pd.DataFrame(rows).T
+
+
+def rolling_stats(r: pd.Series, win: int = 252) -> pd.DataFrame:
+    """win 거래일 롤링 창(하루씩 이동, 겹침)의 수익률과 창 안 최대낙폭(창 첫날 100%)."""
+    from numpy.lib.stride_tricks import sliding_window_view
+    a = r.to_numpy(dtype="float64")
+    wealth = np.cumprod(1.0 + sliding_window_view(a, win), axis=1)
+    w0 = np.concatenate([np.ones((wealth.shape[0], 1)), wealth], axis=1)
+    mdd = (w0 / np.maximum.accumulate(w0, axis=1) - 1.0).min(axis=1)
+    return pd.DataFrame({"ret": wealth[:, -1] - 1.0, "mdd": mdd}, index=r.index[win - 1:])
+
+
+def dist(x: pd.Series) -> dict:
+    return {"mean": float(x.mean()), "std": float(x.std(ddof=1)), "median": float(x.median()),
+            "min": float(x.min()), "max": float(x.max()), "n": int(len(x))}
+
+
+def cmd_annual(out: dict) -> None:
+    """보유·200일선·M9 의 1년 단위 수익률·MDD 의 평균과 표준편차 (달력 연도 / 롤링 252거래일). 기술 통계."""
+    spy = T.load_spy()
+    df = spy.join(T.load_macro(spy.index))
+    st = Study(df, "spy")
+    specs = {"B0 보유": baseline_specs()["B0"], "B1 200일선": baseline_specs()["B1(0)"], "M9": macro2_specs()["M9"]}
+    runs = {n: st.run(sp)[0] for n, sp in specs.items()}
+    out["annual"] = {}
+    for title, fn in (("달력 연도 (완전한 해만: 1995~2025, 해 첫날 100% 기준 MDD)", calendar_year_stats),
+                      ("롤링 12개월 (252거래일, 하루씩 이동·겹침, 창 첫날 100% 기준 MDD)", rolling_stats)):
+        tabs = {n: fn(r) for n, r in runs.items()}
+        out["annual"][title] = {n: {"ret": dist(tb["ret"]), "mdd": dist(tb["mdd"])} for n, tb in tabs.items()}
+        k = len(next(iter(tabs.values())))
+        print(f"\n  [{title}] 표본 {k}개 · 평가 {st.start}~ · 종가 체결 · 편도 5bp")
+        print(f"  {'':<11} {'수익률 평균':>10} {'표준편차':>8} {'중앙값':>8} {'최악':>8} {'최고':>8} │ {'MDD 평균':>9} {'표준편차':>8} {'중앙값':>8} {'최악':>8}")
+        for n, tb in tabs.items():
+            a, b = dist(tb["ret"]), dist(tb["mdd"])
+            print(f"  {n:<11} {pct(a['mean'], 10)} {pct(a['std'], 8)} {pct(a['median'], 8)} {pct(a['min'], 8)} {pct(a['max'], 8)} │ "
+                  f"{pct(b['mean'], 9)} {pct(b['std'], 8)} {pct(b['median'], 8)} {pct(b['min'], 8)}")
+        base = tabs["B0 보유"]
+        for n in ("B1 200일선", "M9"):
+            d = tabs[n]["ret"] - base["ret"]
+            print(f"  {n} − 보유: 수익률 차이 평균 {pct(d.mean(), 8).strip()} (표준편차 {pct(d.std(ddof=1), 8).strip()}) · "
+                  f"보유보다 수익 높은 비율 {(d > 0).mean() * 100:.0f}% · MDD 가 보유보다 얕은 비율 {(tabs[n]['mdd'] > base['mdd']).mean() * 100:.0f}%")
+        d = tabs["M9"]["ret"] - tabs["B1 200일선"]["ret"]
+        print(f"  M9 − 200일선: 수익률 차이 평균 {pct(d.mean(), 8).strip()} (표준편차 {pct(d.std(ddof=1), 8).strip()}) · "
+              f"200일선보다 수익 높은 비율 {(d > 0).mean() * 100:.0f}% · MDD 가 더 얕은 비율 {(tabs['M9']['mdd'] > tabs['B1 200일선']['mdd']).mean() * 100:.0f}%")
+
+
 def cmd_macro(out: dict, combo: bool = False) -> None:
     """PLAN §13(M1~M6) / §14(M7~M9, combo=True) 를 C1~C8(+C6(c)) 로 판정. 보류(French)는 신호를 계산할 수 없어 없다."""
     spy = T.load_spy()
@@ -677,6 +731,8 @@ def main(argv: list[str]) -> int:
         cmd_yearly(out)
     elif cmd == "macro":
         cmd_macro(out)
+    elif cmd == "annual":
+        cmd_annual(out)
     elif cmd == "macro2":
         cmd_macro(out, combo=True)
     elif cmd == "defense":

@@ -244,6 +244,22 @@ finally:
     TE.CRISES.clear(); TE.CRISES.update(saved[2])
 ok("macro: 합성 매크로 프레임에서 C1~C8 판정")
 
+# 6c) 1년 단위 통계: 달력 연도(부분 연도 제외)·롤링 252일의 수익률과 창 안 MDD
+ixa = pd.bdate_range("2020-01-01", "2022-06-30")
+ra = pd.Series(0.0004, index=ixa)
+ra.loc["2021-03-01"] = -0.10                                # 2021 년에 −10% 하루
+cy = TE.calendar_year_stats(ra)
+assert list(cy.index) == [2020, 2021] and close(cy.loc[2021, "ret"], (1 + ra.loc["2021"]).prod() - 1)
+assert cy.loc[2020, "mdd"] > -0.001 and close(cy.loc[2021, "mdd"], -0.10 + 0.0, 2e-3)           # 2022 는 부분 연도라 제외
+rs = TE.rolling_stats(ra, 252)
+assert len(rs) == len(ra) - 251 and rs.index[0] == ra.index[251]
+w0_ = ra.iloc[:252]
+assert close(rs["ret"].iloc[0], (1 + w0_).prod() - 1) and close(rs["mdd"].iloc[0], T.max_dd(w0_))
+assert rs["mdd"].min() <= -0.0999 and (rs["mdd"] <= 0).all()
+dd_ = TE.dist(pd.Series([0.1, 0.2, 0.3]))
+assert close(dd_["mean"], 0.2) and close(dd_["std"], 0.1) and dd_["n"] == 3 and dd_["min"] == 0.1
+ok("calendar_year_stats / rolling_stats / dist: 부분 연도 제외, 창 안 MDD")
+
 # 7) 프런티어 출력이 돈다 (베이스라인 6종)
 T.EVAL_START["spy"] = "2016-06-01"
 TE.ERAS["spy"] = [("a", "2016-06-01", "2099-12-31")]

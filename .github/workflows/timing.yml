@@ -72,6 +72,9 @@ jobs:
       - name: S3m2 credit + rate-hike combos M7-M9 (PLAN v8 section 14)
         run: python screener/timing_eval.py macro2 --json timing_macro2.json
 
+      - name: Annual stats (hold / 200-day / M9)
+        run: python screener/timing_eval.py annual --json timing_annual.json
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -83,4 +86,5 @@ jobs:
             timing_defense.json
             timing_macro.json
             timing_macro2.json
+            timing_annual.json
           if-no-files-found: ignore
