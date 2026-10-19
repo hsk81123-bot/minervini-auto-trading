@@ -67,6 +67,12 @@
       "count": 6,
       "plan_commit": "eb1e6d7f77e3eb553f4a0cb6858768b6e2f1a4ee",
       "note": "금리·신용 신호 M1(CS)·M2(곡선)·M3(금리 인상 국면)·M4(G·CS)·M5(max)·M6(3신호 평균) — PLAN v7 §13"
+    },
+    {
+      "id": "spy-timing-macro-combo-M7-M9",
+      "count": 3,
+      "plan_commit": "4bffb0b2ecb494f958c63ec1ec38eefcc189dbd9",
+      "note": "신용+금리 인상 결합 M7(CS·RT)·M8(평균)·M9(max(G,CS)·RT) — PLAN v8 §14, 부록 F 를 본 뒤의 사후 가설"
     }
   ],
   "exploratory": [
@@ -130,6 +136,12 @@
       "count": 14,
       "plan_commit": "eb1e6d7f77e3eb553f4a0cb6858768b6e2f1a4ee",
       "note": "M1~M6 의 C7 이웃 (CS n 150/250 · θ ±0.5 · h 0.75/1.25)"
+    },
+    {
+      "id": "spy-timing-macro-combo-neighbors",
+      "count": 12,
+      "plan_commit": "4bffb0b2ecb494f958c63ec1ec38eefcc189dbd9",
+      "note": "M7~M9 의 C7 이웃 (CS n 150/250 · h 0.75/1.25, 후보당 4개)"
     }
   ]
 }
