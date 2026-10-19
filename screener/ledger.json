@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-17",
+  "updated": "2026-10-19",
   "note": "시도한 가설 수. 많이 볼수록 우연히 좋아 보이는 것이 나온다 — evalkit.ledger_summary 가 Bonferroni 임계 z 를 계산한다. exploratory 의 approx 는 대략치.",
   "pre_registered": [
     {
@@ -55,6 +55,12 @@
       "count": 2,
       "plan_commit": "6857f2f4dd4fd9a8f701098cb0f46279616c098c",
       "note": "B1(0.5)·B3(0.5) 베이스라인"
+    },
+    {
+      "id": "spy-timing-defense-D1-D4",
+      "count": 4,
+      "plan_commit": "a34c44c11d275c06187697acd932c871a37c7da2",
+      "note": "급락 방어·급등 포착 D1(Q)·D2(G·Q)·D3(max)·D4(평균) — PLAN v6 §12"
     }
   ],
   "exploratory": [
@@ -106,6 +112,12 @@
       "count": 10,
       "plan_commit": "6857f2f4dd4fd9a8f701098cb0f46279616c098c",
       "note": "ω=0.5 후보의 C7 이웃 (A1 2 · A3 4 · A4 4)"
+    },
+    {
+      "id": "spy-timing-defense-neighbors",
+      "count": 16,
+      "plan_commit": "a34c44c11d275c06187697acd932c871a37c7da2",
+      "note": "D1~D4 의 C7 이웃 (x 0.08/0.12 · N 42/84, 후보당 4개)"
     }
   ]
 }
