@@ -42,7 +42,7 @@ def _flat(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def fetch() -> dict[str, str]:
+def fetch(with_french: bool = True) -> dict[str, str]:
     """원자료를 받아 CSV 로 저장하고 SHA-256 을 돌려준다 (원본은 커밋하지 않는다)."""
     import yfinance as yf
     import requests
@@ -58,6 +58,8 @@ def fetch() -> dict[str, str]:
     irx.to_csv(CACHE / "irx.csv")
     for name in ("spy.csv", "irx.csv"):
         hashes[name] = sha256(CACHE / name)
+    if not with_french:
+        return hashes
     try:
         r = requests.get(FRENCH_URL, timeout=60)
         r.raise_for_status()
@@ -315,28 +317,34 @@ def sig_ddfilter(df: pd.DataFrame, mode: str = "and", sma_n: int = 200, x: float
     return off + (1.0 - off) * on
 
 
-def sig_macro(df: pd.DataFrame, mode: str = "m1", cs_n: int = 200, theta: float = 0.0, h: float = 1.0,
-              sma_n: int = 200, off: float = 0.0) -> pd.Series:
-    """PLAN §13 M1~M6. df 에 R3M·R10·CS(load_macro)가 있어야 한다. 모두 엄격 부등호, 정의 전은 NaN.
-    CSon: CS > SMA_cs_n(CS) · YCon: R10−R3M > θ · RTon: R3M − 252일 최저 < h · G: C > SMA_sma_n(C).
-    m1 CSon · m2 YCon · m3 RTon · m4 G·CSon · m5 max(G,CSon) · m6 (G+CSon+YCon)/3 · (§14) m7 CSon·RTon · m8 (CSon+RTon)/2 · m9 max(G,CSon)·RTon."""
+def macro_flags(df: pd.DataFrame, cs_n: int = 200, theta: float = 0.0, h: float = 1.0,
+                sma_n: int = 200) -> dict[str, pd.Series]:
+    """PLAN §13 의 이진 구성요소 G·CSon·YCon·RTon (엄격 부등호, 정의 전은 NaN).
+    CSon: CS > SMA_cs_n(CS) · YCon: R10−R3M > θ · RTon: R3M − 252일 최저 < h · G: C > SMA_sma_n(C)."""
     def flag(cond: pd.Series, defined: pd.Series) -> pd.Series:
         f = cond.astype("float64")
         f[~defined] = np.nan
         return f
 
     cs_avg = df["CS"].rolling(cs_n).mean()
-    csn = flag(df["CS"] > cs_avg, cs_avg.notna() & df["CS"].notna())
-    yc = flag((df["R10"] - df["R3M"]) > theta, df["R10"].notna() & df["R3M"].notna())
     lo = df["R3M"].rolling(252).min()
-    rt = flag((df["R3M"] - lo) < h, lo.notna() & df["R3M"].notna())
     ma = df["C"].rolling(sma_n).mean()
-    g = flag(df["C"] > ma, ma.notna())
-    on = {"m1": csn, "m2": yc, "m3": rt, "m4": g * csn,
-          "m5": pd.concat([g, csn], axis=1).max(axis=1, skipna=False),
-          "m6": (g + csn + yc) / 3.0,
-          "m7": csn * rt, "m8": (csn + rt) / 2.0,
-          "m9": pd.concat([g, csn], axis=1).max(axis=1, skipna=False) * rt}[mode]
+    return {"G": flag(df["C"] > ma, ma.notna()),
+            "CSon": flag(df["CS"] > cs_avg, cs_avg.notna() & df["CS"].notna()),
+            "YCon": flag((df["R10"] - df["R3M"]) > theta, df["R10"].notna() & df["R3M"].notna()),
+            "RTon": flag((df["R3M"] - lo) < h, lo.notna() & df["R3M"].notna())}
+
+
+def sig_macro(df: pd.DataFrame, mode: str = "m1", cs_n: int = 200, theta: float = 0.0, h: float = 1.0,
+              sma_n: int = 200, off: float = 0.0) -> pd.Series:
+    """PLAN §13·§14 M1~M9. df 에 R3M·R10·CS(load_macro)가 있어야 한다. 구성요소는 macro_flags.
+    m1 CSon · m2 YCon · m3 RTon · m4 G·CSon · m5 max(G,CSon) · m6 (G+CSon+YCon)/3 ·
+    m7 CSon·RTon · m8 (CSon+RTon)/2 · m9 max(G,CSon)·RTon."""
+    f = macro_flags(df, cs_n, theta, h, sma_n)
+    g, csn, yc, rt = f["G"], f["CSon"], f["YCon"], f["RTon"]
+    gmax = pd.concat([g, csn], axis=1).max(axis=1, skipna=False)
+    on = {"m1": csn, "m2": yc, "m3": rt, "m4": g * csn, "m5": gmax, "m6": (g + csn + yc) / 3.0,
+          "m7": csn * rt, "m8": (csn + rt) / 2.0, "m9": gmax * rt}[mode]
     return off + (1.0 - off) * on
 
 
