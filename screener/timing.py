@@ -315,8 +315,31 @@ def sig_ddfilter(df: pd.DataFrame, mode: str = "and", sma_n: int = 200, x: float
     return off + (1.0 - off) * on
 
 
+def sig_macro(df: pd.DataFrame, mode: str = "m1", cs_n: int = 200, theta: float = 0.0, h: float = 1.0,
+              sma_n: int = 200, off: float = 0.0) -> pd.Series:
+    """PLAN §13 M1~M6. df 에 R3M·R10·CS(load_macro)가 있어야 한다. 모두 엄격 부등호, 정의 전은 NaN.
+    CSon: CS > SMA_cs_n(CS) · YCon: R10−R3M > θ · RTon: R3M − 252일 최저 < h · G: C > SMA_sma_n(C).
+    m1 CSon · m2 YCon · m3 RTon · m4 G·CSon · m5 max(G,CSon) · m6 (G+CSon+YCon)/3."""
+    def flag(cond: pd.Series, defined: pd.Series) -> pd.Series:
+        f = cond.astype("float64")
+        f[~defined] = np.nan
+        return f
+
+    cs_avg = df["CS"].rolling(cs_n).mean()
+    csn = flag(df["CS"] > cs_avg, cs_avg.notna() & df["CS"].notna())
+    yc = flag((df["R10"] - df["R3M"]) > theta, df["R10"].notna() & df["R3M"].notna())
+    lo = df["R3M"].rolling(252).min()
+    rt = flag((df["R3M"] - lo) < h, lo.notna() & df["R3M"].notna())
+    ma = df["C"].rolling(sma_n).mean()
+    g = flag(df["C"] > ma, ma.notna())
+    on = {"m1": csn, "m2": yc, "m3": rt, "m4": g * csn,
+          "m5": pd.concat([g, csn], axis=1).max(axis=1, skipna=False),
+          "m6": (g + csn + yc) / 3.0}[mode]
+    return off + (1.0 - off) * on
+
+
 RULES = {"sma": sig_sma, "faber": sig_faber, "absmom": sig_absmom, "voltarget": sig_voltarget,
-         "trendvol": sig_trendvol, "pullback": sig_pullback, "ddfilter": sig_ddfilter}
+         "trendvol": sig_trendvol, "pullback": sig_pullback, "ddfilter": sig_ddfilter, "macro": sig_macro}
 
 
 def signal(df: pd.DataFrame, rule: str, **params) -> pd.Series:

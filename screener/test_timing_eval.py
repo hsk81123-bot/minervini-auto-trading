@@ -63,10 +63,25 @@ for name, d in ds.items():
         assert len(diff) == 1 and diff[0] in ("x", "n"), (name, nb)
 assert sum(len(d["neighbors"]) for d in ds.values()) == 16
 assert "§12" in plan and "x = 0.10" in plan and "N = 63" in plan
-assert "spy-timing-defense-D1-D4" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] == 149
+assert "spy-timing-defense-D1-D4" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] >= 149
 for _, lo, hi in TE.SURGES:
     assert lo in plan and hi in plan, (lo, hi)
 ok("D1~D4·이웃 16개·급등 구간·장부 149건이 PLAN §12 와 같다")
+
+# 0c) 금리·신용 신호 M1~M6 이 PLAN §13 / ledger 와 같다
+ms = TE.macro_specs()
+assert list(ms) == ["M1", "M2", "M3", "M4", "M5", "M6"]
+assert [d["params"]["mode"] for d in ms.values()] == ["m1", "m2", "m3", "m4", "m5", "m6"]
+for name, d in ms.items():
+    assert {k: v for k, v in d["params"].items() if k != "mode"} == {"sma_n": 200, "cs_n": 200, "theta": 0.0, "h": 1.0}
+    assert d["omega"] == 0.0
+    for nb in d["neighbors"]:
+        diff = [k for k in nb if nb[k] != d["params"][k]]
+        assert len(diff) == 1 and diff[0] in ("cs_n", "theta", "h"), (name, nb)
+assert [len(d["neighbors"]) for d in ms.values()] == [2, 2, 2, 2, 2, 4] and sum(len(d["neighbors"]) for d in ms.values()) == 14
+assert "§13" in plan and "h = 1.0" in plan and "θ = 0" in plan
+assert "spy-timing-macro-M1-M6" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] >= 169
+ok("M1~M6·이웃 14개·장부 169건이 PLAN §13 과 같다")
 
 # 0b) 종합점수 S (PLAN §3.1): 수익 개선 : 낙폭 감소 = 5 : 5, B0 대비 상대치
 sc = TE.score({"cagr": 0.12, "mdd": -0.30}, {"cagr": 0.10, "mdd": -0.50})
@@ -195,6 +210,26 @@ finally:
     TE.ERAS.clear(); TE.ERAS.update(saved[1])
     TE.CRISES.clear(); TE.CRISES.update(saved[2])
 ok("Study: 평가 구간·시대(126일 미만 제외)·판정 C1~C8 틀·시가 없는 자료")
+
+# 6b) 매크로 후보 판정이 합성 자료에서 돈다 (R3M·R10·CS 열이 있는 프레임)
+mdf = df.copy()
+mdf["CS"] = np.cumsum(rng.normal(0, 0.01, len(mdf)))
+mdf["R3M"] = 2.0 + np.abs(np.cumsum(rng.normal(0, 0.02, len(mdf))))
+mdf["R10"] = mdf["R3M"] + 1.0 + np.cumsum(rng.normal(0, 0.01, len(mdf)))
+T.EVAL_START["spy"] = "2016-06-01"
+TE.ERAS["spy"] = [("a", "2016-06-01", "2017-12-31"), ("b", "2018-01-01", "2099-12-31")]
+TE.CRISES["spy"] = [("c1", "2018-09-01", "2018-12-31")]
+try:
+    stm = TE.Study(mdf, "spy")
+    rm = stm.judge("M6", ms["M6"])
+    assert set(rm["checks"]) == {f"C{i}" for i in range(1, 9)} and len(rm["detail"]["neighbors"]) == 4
+    assert all(isinstance(x, bool) for x in rm["checks"].values())
+    TE.print_verdict(rm)
+finally:
+    T.EVAL_START.clear(); T.EVAL_START.update(saved[0])
+    TE.ERAS.clear(); TE.ERAS.update(saved[1])
+    TE.CRISES.clear(); TE.CRISES.update(saved[2])
+ok("macro: 합성 매크로 프레임에서 C1~C8 판정")
 
 # 7) 프런티어 출력이 돈다 (베이스라인 6종)
 T.EVAL_START["spy"] = "2016-06-01"

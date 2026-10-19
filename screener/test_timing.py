@@ -173,6 +173,30 @@ assert T.sig_ddfilter(dd, mode="avg", off=0.5, **kw).iloc[3:].tolist() == [1, .7
 assert T.signal(dd, "ddfilter", mode="or", **kw).iloc[3:].tolist() == [1, 1, 1, 0]
 ok("sig_ddfilter: Q 만 / G·Q / max / 평균 — (G,Q) 네 조합이 각각 다른 값")
 
+# 12c) 금리·신용 신호 M1~M6 (PLAN §13) — cs_n=2, sma_n=2: idx1..5 의 (G, CSon, YCon) = (1,1,1)(0,0,1)(1,0,0)(0,1,1)(0,0,0)
+mc = frame([10, 11, 10, 12, 11, 9.0])
+mc["CS"] = [1, 2, 1, 1, 3, 2.0]
+mc["R3M"] = 2.0
+mc["R10"] = [3, 3, 3, 2, 2.5, 1.0]
+kw = dict(cs_n=2, sma_n=2)
+m = {k: T.sig_macro(mc, mode=k, **kw) for k in ("m1", "m2", "m4", "m5", "m6")}
+assert m["m1"].iloc[1:].tolist() == [1, 0, 0, 1, 0] and np.isnan(m["m1"].iloc[0])        # 3번째 CS=1, 평균 1 → 동률은 꺼짐
+assert m["m2"].iloc[:].tolist() == [1, 1, 1, 0, 1, 0]                                     # R10−R3M: 1,1,1,0,.5,−1 (0 은 꺼짐)
+assert m["m4"].iloc[1:].tolist() == [1, 0, 0, 0, 0]
+assert m["m5"].iloc[1:].tolist() == [1, 0, 1, 1, 0]
+assert np.allclose(m["m6"].iloc[1:], [1, 1 / 3, 1 / 3, 2 / 3, 0]) and np.isnan(m["m6"].iloc[0])
+assert T.sig_macro(mc, mode="m1", off=0.5, **kw).iloc[1:].tolist() == [1, .5, .5, 1, .5]
+assert T.sig_macro(mc, mode="m2", theta=0.5, **kw).iloc[:].tolist() == [1, 1, 1, 0, 0, 0]  # θ=0.5: .5 는 꺼짐(엄격)
+mr = frame([100.0] * 300)
+mr["CS"] = 0.0
+mr["R10"] = 4.0
+mr["R3M"] = [1.0] * 280 + [2.0] * 20
+r3 = T.sig_macro(mr, mode="m3")
+assert r3.iloc[:251].isna().all() and (r3.iloc[251:280] == 1).all() and (r3.iloc[280:] == 0).all()   # 최저+1.0 은 꺼짐
+assert (T.sig_macro(mr, mode="m3", h=1.25).iloc[251:] == 1).all()
+assert T.signal(mc, "macro", mode="m4", **kw).iloc[1:].tolist() == [1, 0, 0, 0, 0]
+ok("sig_macro: M1~M6 — CS 추세·곡선 역전·긴축 국면·AND/OR/평균, 엄격 부등호, 252일 최저")
+
 # 13) 신호 분기
 d = frame([1, 2, 3.0])
 assert T.signal(d, "hold").tolist() == [1, 1, 1] and T.signal(d, "mix", w=0.3).tolist() == [.3] * 3
@@ -284,15 +308,22 @@ tr = 100.0 * np.cumprod(1 + rng.normal(0.0004, 0.012, n))
 base = pd.DataFrame({"C": tr * np.linspace(1.0, 0.9, n), "TR": tr}, index=idx)
 base["O"] = base["C"] * (1 + rng.normal(0, 0.002, n))
 base["RF"] = 0.0001
+base["CS"] = np.cumsum(rng.normal(0, 0.01, n)) - 1.0
+base["R3M"] = 3.0 + np.cumsum(rng.normal(0, 0.03, n))
+base["R10"] = 4.5 + np.cumsum(rng.normal(0, 0.03, n))
 k = 400
 alt = base.copy()
 mult = np.exp(np.cumsum(rng.normal(0, 0.05, n - k - 1)))
 for col in ("C", "TR", "O"):
     alt.iloc[k + 1:, alt.columns.get_loc(col)] = alt[col].iloc[k + 1:].to_numpy() * mult
+for col in ("CS", "R3M", "R10"):
+    alt.iloc[k + 1:, alt.columns.get_loc(col)] = alt[col].iloc[k + 1:].to_numpy() + rng.normal(0, 1.0, n - k - 1)
 cases = [("sma", {}), ("sma", {"n": 150, "off": 0.5}), ("faber", {}), ("absmom", {}),
          ("absmom", {"months": 10, "off": 0.5}), ("voltarget", {}), ("trendvol", {}),
          ("trendvol", {"off": 0.5}), ("ddfilter", {"mode": "q"}), ("ddfilter", {"mode": "and"}),
-         ("ddfilter", {"mode": "or", "x": 0.08, "n": 42}), ("ddfilter", {"mode": "avg"}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
+         ("ddfilter", {"mode": "or", "x": 0.08, "n": 42}), ("ddfilter", {"mode": "avg"}),
+         ("macro", {"mode": "m1"}), ("macro", {"mode": "m2"}), ("macro", {"mode": "m3"}), ("macro", {"mode": "m4", "cs_n": 150}),
+         ("macro", {"mode": "m5"}), ("macro", {"mode": "m6", "theta": 0.5}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
 for rule, p in cases:
     s0, s1 = T.signal(base, rule, **p), T.signal(alt, rule, **p)
     a, b = s0.iloc[:k + 1], s1.iloc[:k + 1]
@@ -301,7 +332,7 @@ for rule, p in cases:
     w0, w1 = T.run(base, s0, 5.0, "close")[1], T.run(alt, s1, 5.0, "close")[1]
     x, y = w0.iloc[:k + 3], w1.iloc[:k + 3]
     assert ((x == y) | (x.isna() & y.isna())).all()
-ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (14개 규칙 설정)")
+ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (20개 규칙 설정)")
 
 # 20) 신호가 충분히 정의된다
 for rule, p in cases:

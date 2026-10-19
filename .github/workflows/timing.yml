@@ -63,8 +63,11 @@ jobs:
       - name: S3 candidates (+ S4 holdout for design passers)
         run: python screener/timing_eval.py candidates --json timing_candidates.json
 
-      - name: Macro data (FRED) fetch + coverage check
+      - name: Macro data (Treasury CMT + HY/Treasury funds) fetch + coverage check
         run: python screener/timing_eval.py fetchmacro
+
+      - name: S3m macro candidates M1-M6 (PLAN v7 section 13)
+        run: python screener/timing_eval.py macro --json timing_macro.json
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -75,4 +78,5 @@ jobs:
             timing_candidates.json
             timing_yearly.json
             timing_defense.json
+            timing_macro.json
           if-no-files-found: ignore
