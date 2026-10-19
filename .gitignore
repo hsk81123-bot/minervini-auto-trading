@@ -16,3 +16,6 @@ sync/last_run.log
 
 # 과거 재구성 캐시 (history.py — 수백 MB, Actions 캐시로만 보관)
 .cache/
+
+# 연구용 원자료 캐시 (공개 저장소 — 커밋하지 않는다)
+.cache-*/
