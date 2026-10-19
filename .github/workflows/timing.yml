@@ -54,6 +54,9 @@ jobs:
       - name: S2 baseline frontier
         run: python screener/timing_eval.py frontier --json timing_frontier.json
 
+      - name: Yearly baseline table (descriptive)
+        run: python screener/timing_eval.py yearly --json timing_yearly.json
+
       - name: S3 candidates (+ S4 holdout for design passers)
         run: python screener/timing_eval.py candidates --json timing_candidates.json
 
@@ -64,4 +67,5 @@ jobs:
           path: |
             timing_frontier.json
             timing_candidates.json
+            timing_yearly.json
           if-no-files-found: ignore

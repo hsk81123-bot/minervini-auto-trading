@@ -187,4 +187,21 @@ finally:
     TE.CRISES.clear(); TE.CRISES.update(saved[2])
 ok("print_frontier: 베이스라인 6종 한 표")
 
+# 8) 연도별 표: 첫 해/마지막 해, 보유 수익률 = 해 안의 일수익 복리, 200일선 규칙의 노출·변경 횟수
+T.EVAL_START["spy"] = "2016-06-01"
+try:
+    st = TE.Study(df, "spy")
+    rows = TE.yearly_table(st, ("B0", "B1(0)"))
+    assert [r["year"] for r in rows] == sorted({d.year for d in st.run(bs["B0"])[0].index})
+    r0 = st.run(bs["B0"])[0]
+    y17 = rows[1]
+    assert y17["year"] == 2017 and close(y17["B0"]["ret"], (1 + r0[r0.index.year == 2017]).prod() - 1)
+    assert all(r["B0"]["exposure"] == 1.0 and r["B0"]["switches"] <= 1 for r in rows)
+    assert all(0.0 <= r["B1(0)"]["exposure"] <= 1.0 for r in rows)
+    assert sum(r["B1(0)"]["switches"] for r in rows) >= 1
+    assert all(r["B1(0)"]["mdd"] <= 0.0 for r in rows)
+finally:
+    T.EVAL_START.clear(); T.EVAL_START.update(saved[0])
+ok("yearly_table: 연도별 수익·MDD·노출·변경 횟수")
+
 print("\n모두 통과")

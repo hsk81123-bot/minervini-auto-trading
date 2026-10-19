@@ -4,6 +4,7 @@
 사용법 (Actions: timing.yml — 원자료는 Actions 에서만 받을 수 있다):
     python screener/timing_eval.py fetch        # S0: 받기 + 점검 + 해시
     python screener/timing_eval.py frontier     # S2: 베이스라인 프런티어 (SPY · French)
+    python screener/timing_eval.py yearly       # 기준선 연도별 표 (기술 통계)
     python screener/timing_eval.py candidates   # S3: 후보 판정 → 통과한 것만 S4 보류 1회
 """
 import json
@@ -402,6 +403,44 @@ def cmd_frontier(out: dict) -> None:
                                                 "S2 프런티어 · French 시장수익 (보류 구간 자료 — 베이스라인만)")
 
 
+def yearly_table(st: Study, names: tuple[str, ...]) -> list[dict]:
+    """달력 연도별 수익률·그 해 안의 최대낙폭(해 첫날 100%)·SPY 노출·비중 변경 횟수 (기술 통계)."""
+    bs = baseline_specs()
+    runs = {nm: st.run(bs[nm]) for nm in names}
+    years = sorted({d.year for d in runs[names[0]][0].index})
+    rows = []
+    for y in years:
+        row = {"year": y}
+        for nm in names:
+            r, w = runs[nm]
+            ry, wy = r[r.index.year == y], w[w.index.year == y]
+            row[nm] = {"ret": float((1.0 + ry).prod() - 1.0), "mdd": T.max_dd(ry),
+                       "exposure": float(wy.mean()),
+                       "switches": int(((wy - w.shift(1).loc[wy.index]).abs() > 1e-9).sum())}
+        rows.append(row)
+    return rows
+
+
+def cmd_yearly(out: dict) -> None:
+    st = Study(T.load_spy(), "spy")
+    names = ("B0", "B1(0)")
+    rows = yearly_table(st, names)
+    out["yearly"] = rows
+    print(f"\n  [연도별 · SPY 보유(B0) vs 200일선 규칙(B1(0))] 종가 체결 · 편도 5bp · 연 MDD 는 그 해 첫날 100% 기준")
+    print(f"  {'연도':<6} {'B0 수익':>8} {'B0 MDD':>8} | {'B1 수익':>8} {'B1 MDD':>8} {'수익차':>7} {'MDD차':>7} {'SPY노출':>7} {'변경':>4}")
+    for r in rows:
+        b0, b1 = r["B0"], r["B1(0)"]
+        print(f"  {r['year']:<6} {pct(b0['ret'])} {pct(b0['mdd'])} | {pct(b1['ret'])} {pct(b1['mdd'])} "
+              f"{pct(b1['ret'] - b0['ret'], 7)} {pct(b1['mdd'] - b0['mdd'], 7)} {b1['exposure'] * 100:6.0f}% {b1['switches']:4d}")
+    n = len(rows)
+    win = sum(1 for r in rows if r["B1(0)"]["ret"] > r["B0"]["ret"])
+    shallow = sum(1 for r in rows if r["B1(0)"]["mdd"] >= r["B0"]["mdd"])
+    print(f"  B1 이 B0 보다 수익 높은 해 {win}/{n} · 연 MDD 가 같거나 얕은 해 {shallow}/{n}")
+    r0, r1 = st.run(baseline_specs()["B0"])[0], st.run(baseline_specs()["B1(0)"])[0]
+    print(f"  전체: B0 연복리 {pct(T.cagr(r0)).strip()} MDD {pct(T.max_dd(r0)).strip()} · "
+          f"B1 연복리 {pct(T.cagr(r1)).strip()} MDD {pct(T.max_dd(r1)).strip()}")
+
+
 def cmd_candidates(out: dict) -> None:
     spy = T.load_spy()
     st = Study(spy, "spy")
@@ -457,6 +496,8 @@ def main(argv: list[str]) -> int:
         check_data()
     elif cmd == "frontier":
         cmd_frontier(out)
+    elif cmd == "yearly":
+        cmd_yearly(out)
     elif cmd == "candidates":
         cmd_candidates(out)
     else:
