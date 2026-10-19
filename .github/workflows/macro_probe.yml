@@ -1,0 +1,27 @@
+name: Macro data probe
+
+# 금리·신용스프레드 자료 경로가 Actions 에서 열리는지 짧은 시간 제한으로 점검한다 (성과 계산 없음).
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+    paths:
+      - ".github/workflows/macro_probe.yml"
+      - "screener/macro_probe.py"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: screener/requirements.txt
+      - run: pip install -r screener/requirements.txt
+      - run: python screener/macro_probe.py
