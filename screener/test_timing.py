@@ -252,15 +252,14 @@ with tempfile.TemporaryDirectory() as td:
     assert lf["O"].isna().all()
 ok("load_spy / parse_french / load_french")
 
-# 18b) FRED 파싱·정렬: '.' 결측, 직전 값 채움, 발표 지연 1거래일
-txt = "observation_date,BAA10Y\n2024-01-02,2.10\n2024-01-03,.\n2024-01-04,2.30\n2024-01-08,2.50\n"
-fs = T.parse_fred(txt)
-assert fs.name == "BAA10Y" and fs.isna().tolist() == [False, True, False, False] and fs.iloc[2] == 2.30
-ftxt = ("Title: x\nSeries ID:    BAA10Y\nFrequency:   Daily\n\nDATE       VALUE\n"
-        "2024-01-02  2.10\n2024-01-03  .\n2024-01-04  2.30\n")
-ft = T.parse_fred_txt(ftxt)
-assert ft.name == "BAA10Y" and ft.isna().tolist() == [False, True, False] and ft.iloc[2] == 2.30
+# 18b) 재무부 CSV 파싱 · 매크로 정렬(결측 채움 한도·1거래일 지연) · 적재
+ttxt = ('Date,"1 Mo","3 Mo","6 Mo","10 Yr"\n01/02/2024,5.5,5.4,5.2,3.95\n01/03/2024,5.6,N/A,5.2,3.90\n'
+        '01/04/2024,5.6,5.3,5.2,3.99\n')
+tp = T.parse_treasury(ttxt)
+assert list(tp.columns) == ["R3M", "R10"] and tp.index[0] == pd.Timestamp("2024-01-02")
+assert tp["R3M"].isna().tolist() == [False, True, False] and tp["R10"].iloc[2] == 3.99
 ix6 = pd.bdate_range("2024-01-02", periods=6)
+fs = pd.Series([2.10, np.nan, 2.30, 2.50], index=D("2024-01-02", "2024-01-03", "2024-01-04", "2024-01-08"))
 al = T.macro_aligned(fs, ix6)
 assert np.isnan(al.iloc[0])                              # 지연 1일 → 첫날은 값 없음
 assert al.iloc[1] == 2.10 and al.iloc[2] == 2.10         # 1/3 은 결측이라 1/2 값을 채움, 1/4 신호는 1/3(채움) 사용
@@ -269,11 +268,13 @@ assert al.iloc[4] == 2.30 and al.iloc[5] == 2.50         # 1/8 값은 1/9 신호
 far = T.macro_aligned(pd.Series([1.0], index=D("2024-01-02")), pd.bdate_range("2024-01-02", periods=12))
 assert far.iloc[1:7].eq(1.0).all() and far.iloc[8:].isna().all()     # 채움은 최대 5거래일
 with tempfile.TemporaryDirectory() as td:
-    for sid in T.FRED_IDS:
-        pd.Series([1.0, 2.0, 3.0], index=pd.bdate_range("2024-01-02", periods=3), name=sid).rename_axis("observation_date").to_csv(Path(td) / f"fred_{sid}.csv")
-    mm = T.load_macro(pd.bdate_range("2024-01-02", periods=4), Path(td))
-    assert list(mm.columns) == list(T.FRED_IDS) and mm["DGS10"].iloc[1:].tolist() == [1.0, 2.0, 3.0]
-ok("parse_fred / macro_aligned: 결측·채움 한도·1거래일 지연 / load_macro")
+    ixm = pd.bdate_range("2024-01-02", periods=4)
+    pd.DataFrame({"R3M": [5.0, 5.1, 5.2, 5.3], "R10": [4.0, 4.1, 4.2, 4.3]}, index=ixm).rename_axis("date").to_csv(Path(td) / "macro_rates.csv")
+    pd.DataFrame({"VWEHX": [10.0, 11.0, 12.1, 12.1], "VFITX": [10.0, 10.0, 10.0, 11.0]}, index=ixm).rename_axis("date").to_csv(Path(td) / "macro_credit.csv")
+    mm = T.load_macro(ixm, Path(td))
+    assert list(mm.columns) == ["R3M", "R10", "CS"] and mm["R10"].iloc[1:].tolist() == [4.0, 4.1, 4.2]
+    assert close(mm["CS"].iloc[2], math.log(1.1)) and close(mm["CS"].iloc[3], math.log(1.21))
+ok("parse_treasury / macro_aligned: 결측·채움 한도·1거래일 지연 / load_macro(CS = ln HY/국채)")
 
 # 19) 누수 시험: k 이후의 가격을 마음대로 바꿔도 sig[:k+1] 은 그대로 (모든 규칙)
 rng = np.random.default_rng(7)

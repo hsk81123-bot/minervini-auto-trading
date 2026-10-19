@@ -421,24 +421,29 @@ def check_data() -> None:
 
 
 def check_macro() -> None:
-    """금리·스프레드 자료 점검: 범위·결측·값 범위·SPY 거래일 정렬 (성과는 보지 않는다)."""
+    """금리·신용 대용 자료 점검: 범위·결측·값 범위·SPY 거래일 정렬 (성과는 보지 않는다)."""
     spy = T.load_spy()
     m = T.load_macro(spy.index)
-    print(f"\n  [매크로 자료 점검 · FRED] SPY 거래일 {spy.index[0].date()} ~ {spy.index[-1].date()} 에 정렬(전일 값 사용)")
-    for sid in T.FRED_IDS:
-        raw = pd.read_csv(T.CACHE / f"fred_{sid}.csv", index_col=0, parse_dates=True).iloc[:, 0]
-        col = m[sid].loc[T.EVAL_START["spy"]:]
-        first = raw.first_valid_index()
-        gaps = raw.dropna().index.to_series().diff().dt.days
-        print(f"  {sid:<7} 원자료 {first.date()} ~ {raw.last_valid_index().date()} · 유효 {int(raw.notna().sum())}개 · "
-              f"최소 {raw.min():.2f} 최대 {raw.max():.2f} · 최근 {raw.dropna().iloc[-1]:.2f} · 7일 초과 공백 {int((gaps > 7).sum())}회"
-              f" · 평가기간 정렬 후 결측 {int(col.isna().sum())}개 · sha256 {T.sha256(T.CACHE / f'fred_{sid}.csv')[:16]}")
-    long_nan = {sid: m[sid].loc[T.EVAL_START["spy"]:].isna().sum() for sid in T.FRED_IDS}
-    print(f"  평가 시작({T.EVAL_START['spy']}) 이후 정렬 결측: {long_nan}")
-    need = {sid: pd.read_csv(T.CACHE / f'fred_{sid}.csv', index_col=0, parse_dates=True).iloc[:, 0].first_valid_index()
-            for sid in T.FRED_IDS}
-    print(f"  252거래일 이동평균이 평가 시작 전에 정의되려면 원자료가 약 1993-03 이전에 시작해야 한다: "
-          + ", ".join(f"{k} {v.date()}" for k, v in need.items()))
+    rates = pd.read_csv(T.CACHE / "macro_rates.csv", index_col=0, parse_dates=True)
+    cred = pd.read_csv(T.CACHE / "macro_credit.csv", index_col=0, parse_dates=True)
+    start = T.EVAL_START["spy"]
+    print(f"\n  [매크로 자료 점검] SPY 거래일 {spy.index[0].date()} ~ {spy.index[-1].date()} 에 정렬 (1거래일 지연)")
+    for c in ("R3M", "R10"):
+        r = rates[c]
+        gaps = r.dropna().index.to_series().diff().dt.days
+        print(f"  {c:<4} 재무부 {r.first_valid_index().date()} ~ {r.last_valid_index().date()} · 유효 {int(r.notna().sum())}개 · "
+              f"최소 {r.min():.2f} 최대 {r.max():.2f} · 최근 {r.dropna().iloc[-1]:.2f} · 7일 초과 공백 {int((gaps > 7).sum())}회")
+    for c in T.CREDIT_TICKERS:
+        print(f"  {c:<6} 야후 {cred.index[0].date()} ~ {cred.index[-1].date()} · {len(cred)}행")
+    print(f"  CS(ln HY/국채) 범위 {np.log(cred.iloc[:, 0] / cred.iloc[:, 1]).min():.3f} ~ "
+          f"{np.log(cred.iloc[:, 0] / cred.iloc[:, 1]).max():.3f}")
+    nan = {c: int(m[c].loc[start:].isna().sum()) for c in m.columns}
+    print(f"  평가 시작({start}) 이후 정렬 결측: {nan}")
+    sma = {c: m[c].rolling(250).mean().loc[start:].isna().sum() for c in ("R3M", "R10", "CS")}
+    print(f"  250거래일 평균이 평가 시작 후 미정의인 날 수: {sma}  · 252일 최저(금리) 미정의 "
+          f"{int(m['R3M'].rolling(252).min().loc[start:].isna().sum())}")
+    for f in ("macro_rates.csv", "macro_credit.csv"):
+        print(f"  {f}  sha256 {T.sha256(T.CACHE / f)}")
 
 
 def cmd_frontier(out: dict) -> None:
@@ -597,8 +602,7 @@ def main(argv: list[str]) -> int:
         check_data()
     elif cmd == "fetchmacro":
         print(f"  받음: {T.fetch_macro()}")
-        if all((T.CACHE / f"fred_{sid}.csv").exists() for sid in T.FRED_IDS):
-            check_macro()
+        check_macro()
     elif cmd == "checkmacro":
         check_macro()
     elif cmd == "check":

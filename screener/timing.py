@@ -81,63 +81,43 @@ def parse_french(text: str) -> pd.DataFrame:
     return df.sort_index()
 
 
-FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={}"
-FRED_IDS = ("BAA10Y", "T10Y3M", "DGS10")      # 무디스 Baa−10년 국채 스프레드(%), 10년−3개월(%), 10년 금리(%)
+TREASURY_URL = ("https://home.treasury.gov/resource-center/data-chart-center/interest-rates/"
+                "daily-treasury-rates.csv/{y}/all?type=daily_treasury_yield_curve&field_tdr_date_value={y}&page&_format=csv")
+TREASURY_START = 1990
+CREDIT_TICKERS = ("VWEHX", "VFITX")     # 뱅가드 하이일드 회사채 펀드 / 중기 국채 펀드 (수정종가 = 분배금 포함 총수익)
 
 
-def parse_fred(text: str) -> pd.Series:
-    """FRED 그래프 CSV(첫 열 날짜, 둘째 열 값, 결측은 '.' 또는 빈칸) → 일별 시리즈."""
-    df = pd.read_csv(io.StringIO(text), na_values=[".", ""])
-    s = pd.Series(pd.to_numeric(df.iloc[:, 1], errors="coerce").to_numpy(),
-                  index=pd.to_datetime(df.iloc[:, 0]), name=str(df.columns[1]))
-    return s.sort_index()
+def parse_treasury(text: str) -> pd.DataFrame:
+    """재무부 일별 수익률곡선 CSV(MM/DD/YYYY) → DataFrame(index=날짜, R3M, R10 단위 %)."""
+    df = pd.read_csv(io.StringIO(text))
+    d = pd.to_datetime(df["Date"], format="%m/%d/%Y")
+    return pd.DataFrame({"R3M": pd.to_numeric(df["3 Mo"], errors="coerce").to_numpy(),
+                         "R10": pd.to_numeric(df["10 Yr"], errors="coerce").to_numpy()},
+                        index=pd.DatetimeIndex(d, name="date")).sort_index()
 
 
-def parse_fred_txt(text: str) -> pd.Series:
-    """FRED /data/ID.txt (머리말 뒤 'DATE VALUE' 표) → 일별 시리즈. 결측은 '.'."""
-    rows, started = [], False
-    for line in text.splitlines():
-        parts = line.split()
-        if len(parts) == 2 and parts[0] == "DATE":
-            started = True
-            continue
-        if started and len(parts) == 2 and len(parts[0]) == 10:
-            rows.append((pd.Timestamp(parts[0]), np.nan if parts[1] == "." else float(parts[1])))
-    sid = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("Series ID")), "x")
-    return pd.Series(dict(rows), name=sid).sort_index()
-
-
-def fetch_macro(tries: int = 3, timeout: int = 150) -> dict[str, str]:
-    """금리·스프레드 원자료를 받아 CSV 로 저장하고 SHA-256 을 돌려준다 (Actions 전용).
-    FRED 가 느려서 (그래프 CSV → 텍스트) 순으로 재시도한다. 시도 결과는 모두 출력한다."""
-    import time
+def fetch_macro() -> dict[str, str]:
+    """금리(재무부 3개월·10년 CMT)와 신용 대용(하이일드−국채 펀드 수정종가)을 받아 CSV 로 저장한다 (Actions 전용).
+    FRED 는 Actions 에서 시간 초과로 열리지 않았다 (macro_probe 2026-10-19)."""
     import requests
+    import yfinance as yf
 
     CACHE.mkdir(parents=True, exist_ok=True)
-    hashes = {}
-    ua = {"User-Agent": "Mozilla/5.0 (research script; contact via repo)"}
-    for sid in FRED_IDS:
-        got = None
-        for kind, url, parse in (("csv", FRED_URL.format(sid), parse_fred),
-                                 ("txt", f"https://fred.stlouisfed.org/data/{sid}.txt", parse_fred_txt)):
-            for k in range(tries):
-                t0 = time.time()
-                try:
-                    r = requests.get(url, timeout=(15, timeout), headers=ua)
-                    r.raise_for_status()
-                    got = parse(r.text)
-                    print(f"  FRED {sid} {kind} 시도 {k + 1}: 성공 {time.time() - t0:.1f}s {len(got)}행", flush=True)
-                    break
-                except Exception as e:
-                    print(f"  FRED {sid} {kind} 시도 {k + 1}: 실패 {time.time() - t0:.1f}s {type(e).__name__}", flush=True)
-                    time.sleep(3 * (k + 1))
-            if got is not None:
-                break
-        if got is None:
-            print(f"  FRED {sid}: 받지 못했다", flush=True)
-            continue
-        got.to_csv(CACHE / f"fred_{sid}.csv", header=True)
-        hashes[f"fred_{sid}.csv"] = sha256(CACHE / f"fred_{sid}.csv")
+    hashes, parts = {}, []
+    for y in range(TREASURY_START, pd.Timestamp.today().year + 1):
+        r = requests.get(TREASURY_URL.format(y=y), timeout=(10, 60), headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        parts.append(parse_treasury(r.text))
+    rates = pd.concat(parts).sort_index()
+    rates = rates[~rates.index.duplicated(keep="last")]
+    rates.to_csv(CACHE / "macro_rates.csv")
+    cols = {}
+    for tk in CREDIT_TICKERS:
+        d = _flat(yf.download(tk, start="1985-01-01", interval="1d", auto_adjust=False, progress=False))
+        cols[tk] = d["Adj Close"].dropna()
+    pd.DataFrame(cols).dropna().to_csv(CACHE / "macro_credit.csv")
+    for name in ("macro_rates.csv", "macro_credit.csv"):
+        hashes[name] = sha256(CACHE / name)
     return hashes
 
 
@@ -149,12 +129,13 @@ def macro_aligned(s: pd.Series, index: pd.DatetimeIndex, max_gap: int = 5, lag: 
 
 
 def load_macro(index: pd.DatetimeIndex, cache: Path | None = None) -> pd.DataFrame:
+    """SPY 거래일에 맞춘 R3M·R10(%)·CS(= ln(하이일드 펀드 TR / 국채 펀드 TR), 클수록 신용 양호). 모두 1거래일 지연."""
     cache = cache or CACHE
-    cols = {}
-    for sid in FRED_IDS:
-        raw = pd.read_csv(cache / f"fred_{sid}.csv", index_col=0, parse_dates=True).iloc[:, 0]
-        cols[sid] = macro_aligned(raw.astype("float64"), index)
-    return pd.DataFrame(cols, index=index)
+    rates = pd.read_csv(cache / "macro_rates.csv", index_col=0, parse_dates=True)
+    cred = pd.read_csv(cache / "macro_credit.csv", index_col=0, parse_dates=True)
+    cs = np.log(cred[CREDIT_TICKERS[0]] / cred[CREDIT_TICKERS[1]])
+    cols = {"R3M": rates["R3M"], "R10": rates["R10"], "CS": cs}
+    return pd.DataFrame({k: macro_aligned(v.astype("float64"), index) for k, v in cols.items()}, index=index)
 
 
 # ---------------------------------------------------------------- 적재
