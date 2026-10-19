@@ -319,7 +319,7 @@ def sig_macro(df: pd.DataFrame, mode: str = "m1", cs_n: int = 200, theta: float 
               sma_n: int = 200, off: float = 0.0) -> pd.Series:
     """PLAN §13 M1~M6. df 에 R3M·R10·CS(load_macro)가 있어야 한다. 모두 엄격 부등호, 정의 전은 NaN.
     CSon: CS > SMA_cs_n(CS) · YCon: R10−R3M > θ · RTon: R3M − 252일 최저 < h · G: C > SMA_sma_n(C).
-    m1 CSon · m2 YCon · m3 RTon · m4 G·CSon · m5 max(G,CSon) · m6 (G+CSon+YCon)/3."""
+    m1 CSon · m2 YCon · m3 RTon · m4 G·CSon · m5 max(G,CSon) · m6 (G+CSon+YCon)/3 · (§14) m7 CSon·RTon · m8 (CSon+RTon)/2 · m9 max(G,CSon)·RTon."""
     def flag(cond: pd.Series, defined: pd.Series) -> pd.Series:
         f = cond.astype("float64")
         f[~defined] = np.nan
@@ -334,7 +334,9 @@ def sig_macro(df: pd.DataFrame, mode: str = "m1", cs_n: int = 200, theta: float 
     g = flag(df["C"] > ma, ma.notna())
     on = {"m1": csn, "m2": yc, "m3": rt, "m4": g * csn,
           "m5": pd.concat([g, csn], axis=1).max(axis=1, skipna=False),
-          "m6": (g + csn + yc) / 3.0}[mode]
+          "m6": (g + csn + yc) / 3.0,
+          "m7": csn * rt, "m8": (csn + rt) / 2.0,
+          "m9": pd.concat([g, csn], axis=1).max(axis=1, skipna=False) * rt}[mode]
     return off + (1.0 - off) * on
 
 

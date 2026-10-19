@@ -6,6 +6,7 @@
     python screener/timing_eval.py frontier     # S2: 베이스라인 프런티어 (SPY · French)
     python screener/timing_eval.py yearly       # 기준선 연도별 표 (기술 통계)
     python screener/timing_eval.py macro        # PLAN §13 금리·신용 신호 M1~M6
+    python screener/timing_eval.py macro2       # PLAN §14 신용+금리 인상 결합 M7~M9
     python screener/timing_eval.py defense      # PLAN §12 급락 방어·급등 포착 D1~D4
     python screener/timing_eval.py candidates   # S3: 후보 판정 → 통과한 것만 S4 보류 1회
 """
@@ -105,6 +106,20 @@ def macro_specs() -> dict[str, dict]:
         base = {**BASE_MAC, "mode": mode}
         out[name] = {"rule": "macro", "params": base, "omega": 0.0,
                      "neighbors": [{**base, **nb} for nb in MAC_NEIGH[name]]}
+    return out
+
+
+# PLAN §14: 신용 + 금리 인상 결합 M7~M9 (새 파라미터 없음, 이웃은 CS n 과 h 를 하나씩만 바꿈)
+MAC2_MODES = {"M7": "m7", "M8": "m8", "M9": "m9"}
+MAC2_NEIGH = [{"cs_n": 150}, {"cs_n": 250}, {"h": 0.75}, {"h": 1.25}]
+
+
+def macro2_specs() -> dict[str, dict]:
+    out = {}
+    for name, mode in MAC2_MODES.items():
+        base = {**BASE_MAC, "mode": mode}
+        out[name] = {"rule": "macro", "params": base, "omega": 0.0,
+                     "neighbors": [{**base, **nb} for nb in MAC2_NEIGH]}
     return out
 
 
@@ -567,13 +582,14 @@ def print_tables(st: Study, cols: tuple[str, ...], allspecs: dict, out: dict, ke
     print(f"  {'연거래':<5}" + "".join(f"{st.summary(allspecs[c])['trades_per_year']:15.1f}" for c in cols))
 
 
-def cmd_macro(out: dict) -> None:
-    """PLAN §13: M1~M6 를 C1~C8(+C6(c)) 로 판정. 보류(French)는 신호를 계산할 수 없어 없다."""
+def cmd_macro(out: dict, combo: bool = False) -> None:
+    """PLAN §13(M1~M6) / §14(M7~M9, combo=True) 를 C1~C8(+C6(c)) 로 판정. 보류(French)는 신호를 계산할 수 없어 없다."""
     spy = T.load_spy()
     df = spy.join(T.load_macro(spy.index))
     st = Study(df, "spy")
-    bs, ms = baseline_specs(), macro_specs()
-    print(f"\n  [S3m 금리·신용 신호 · SPY 설계] PLAN §13 · 평가 {st.start}~ · 신호는 1거래일 지연 자료")
+    bs, ms = baseline_specs(), (macro2_specs() if combo else macro_specs())
+    ref = macro_specs()
+    print(f"\n  [S3m {'신용+금리 인상 결합 M7~M9 · PLAN §14' if combo else '금리·신용 신호 · PLAN §13'} · SPY 설계] 평가 {st.start}~ · 신호는 1거래일 지연 자료")
     res, passed = {}, []
     for name, spec in ms.items():
         r = st.judge(name, spec)
@@ -581,13 +597,14 @@ def cmd_macro(out: dict) -> None:
         res[name] = r
         if r["passed"]:
             passed.append(name)
-    out["macro"] = res
-    print(f"\n  요약: 6개 중 통과 {len(passed)}개 {passed}")
+    out["macro2" if combo else "macro"] = res
+    print(f"\n  요약: {len(ms)}개 중 통과 {len(passed)}개 {passed}")
     both = [n for n, r in res.items() if r["detail"]["vs_b1"]["cagr"] > 0 and r["detail"]["vs_b1"]["mdd"] >= 0]
     print(f"  (참고) B1(0) 보다 연복리도 높고 MDD 도 얕거나 같은 후보: {both or '없음'}")
     print(f"  5:5 점수 S 순위: " + " > ".join(f"{n} {r['detail']['score']['S']:+.3f}" for n, r in sorted(
         res.items(), key=lambda kv: -kv[1]["detail"]["score"]["S"])) + f" (B1(0) {out_s(st, bs):+.3f})")
-    print_tables(st, ("B0", "B1(0)") + tuple(ms), {**bs, **ms}, out, "yearly_macro")
+    cols = ("B0", "B1(0)") + (("M5", "M6") if combo else ()) + tuple(ms)
+    print_tables(st, cols, {**bs, **ref, **ms}, out, "yearly_macro2" if combo else "yearly_macro")
     print("\n  [보류] 재무부 CMT(1990~)·펀드(1991~)는 French 보류 구간(~1992)에 없어 계산할 수 없다 — "
           + ("설계 통과 후보는 '보류 불가, 실시간 모의 대상'으로만 기록한다." if passed else "설계 통과 후보가 없어 여기서 끝."))
 
@@ -660,6 +677,8 @@ def main(argv: list[str]) -> int:
         cmd_yearly(out)
     elif cmd == "macro":
         cmd_macro(out)
+    elif cmd == "macro2":
+        cmd_macro(out, combo=True)
     elif cmd == "defense":
         cmd_defense(out)
     elif cmd == "candidates":

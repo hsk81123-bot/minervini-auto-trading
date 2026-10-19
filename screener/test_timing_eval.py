@@ -83,6 +83,19 @@ assert "§13" in plan and "h = 1.0" in plan and "θ = 0" in plan
 assert "spy-timing-macro-M1-M6" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] >= 169
 ok("M1~M6·이웃 14개·장부 169건이 PLAN §13 과 같다")
 
+# 0d) 결합 M7~M9 가 PLAN §14 / ledger 와 같다
+m2s = TE.macro2_specs()
+assert list(m2s) == ["M7", "M8", "M9"] and [d["params"]["mode"] for d in m2s.values()] == ["m7", "m8", "m9"]
+for name, d in m2s.items():
+    assert {k: v for k, v in d["params"].items() if k != "mode"} == {"sma_n": 200, "cs_n": 200, "theta": 0.0, "h": 1.0}
+    assert len(d["neighbors"]) == 4 and d["omega"] == 0.0
+    for nb in d["neighbors"]:
+        diff = [k for k in nb if nb[k] != d["params"][k]]
+        assert len(diff) == 1 and diff[0] in ("cs_n", "h"), (name, nb)
+assert "§14" in plan and "사후 가설" in plan
+assert "spy-timing-macro-combo-M7-M9" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] >= 184
+ok("M7~M9·이웃 12개·장부 184건이 PLAN §14 와 같다")
+
 # 0b) 종합점수 S (PLAN §3.1): 수익 개선 : 낙폭 감소 = 5 : 5, B0 대비 상대치
 sc = TE.score({"cagr": 0.12, "mdd": -0.30}, {"cagr": 0.10, "mdd": -0.50})
 assert close(sc["s_ret"], 0.2) and close(sc["s_dd"], 0.4) and close(sc["S"], 0.3)

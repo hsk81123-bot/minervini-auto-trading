@@ -197,6 +197,27 @@ assert (T.sig_macro(mr, mode="m3", h=1.25).iloc[251:] == 1).all()
 assert T.signal(mc, "macro", mode="m4", **kw).iloc[1:].tolist() == [1, 0, 0, 0, 0]
 ok("sig_macro: M1~M6 — CS 추세·곡선 역전·긴축 국면·AND/OR/평균, 엄격 부등호, 252일 최저")
 
+# 12d) 결합 M7~M9 (PLAN §14): 300행, CSon 은 홀수 행에서 1, G 는 i%4∈{1,2} 에서 1, RTon 은 251~279 에서만 1
+nn = 300
+mx = frame(np.cumsum([0.0] + [1.0 if i % 4 in (1, 2) else -1.0 for i in range(1, nn)]) + 100.0)
+mx["CS"] = [float(i % 2) for i in range(nn)]
+mx["R10"] = 4.0
+mx["R3M"] = [1.0] * 280 + [2.0] * 20
+kw = dict(cs_n=2, sma_n=2)
+gg = np.array([1.0 if i % 4 in (1, 2) else 0.0 for i in range(nn)])          # G (C 증감: + + − −)
+cc = np.array([float(i % 2) for i in range(nn)])                              # CSon (CS 가 직전보다 높을 때)
+rt_ = T.sig_macro(mx, mode="m3").to_numpy()
+assert np.array_equal(T.sig_macro(mx, mode="m1", **kw).to_numpy()[1:], cc[1:])
+assert np.array_equal(T.sig_macro(mx, mode="m4", **kw).to_numpy()[1:], (gg * cc)[1:])
+m7, m8, m9 = (T.sig_macro(mx, mode=k, **kw).to_numpy() for k in ("m7", "m8", "m9"))
+ix_ = np.arange(251, nn)
+assert np.allclose(m7[ix_], (cc * rt_)[ix_]) and np.allclose(m8[ix_], ((cc + rt_) / 2)[ix_])
+assert np.allclose(m9[ix_], (np.maximum(gg, cc) * rt_)[ix_])
+assert np.isnan(m7[:251]).all() and (m7[280:] == 0).all() and (m9[280:] == 0).all()        # 긴축 국면이면 거부권
+assert m8[253] == 1.0 and m8[254] == 0.5 and m8[281] == 0.5                                # 253: CS=1, RT=1 / 254: CS=0 / 281: CS=1, RT=0
+assert m9[254] == 1.0 and m9[256] == 0.0 and m9[257] == 1.0                           # 254: G=1 → 1 · 256: G=0, CS=0 → 0 · 257: 둘 다 1
+ok("sig_macro: 결합 M7(CS·RT)·M8(평균)·M9(max(G,CS)·RT) — 긴축 국면 거부권")
+
 # 13) 신호 분기
 d = frame([1, 2, 3.0])
 assert T.signal(d, "hold").tolist() == [1, 1, 1] and T.signal(d, "mix", w=0.3).tolist() == [.3] * 3
@@ -323,7 +344,8 @@ cases = [("sma", {}), ("sma", {"n": 150, "off": 0.5}), ("faber", {}), ("absmom",
          ("trendvol", {"off": 0.5}), ("ddfilter", {"mode": "q"}), ("ddfilter", {"mode": "and"}),
          ("ddfilter", {"mode": "or", "x": 0.08, "n": 42}), ("ddfilter", {"mode": "avg"}),
          ("macro", {"mode": "m1"}), ("macro", {"mode": "m2"}), ("macro", {"mode": "m3"}), ("macro", {"mode": "m4", "cs_n": 150}),
-         ("macro", {"mode": "m5"}), ("macro", {"mode": "m6", "theta": 0.5}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
+         ("macro", {"mode": "m5"}), ("macro", {"mode": "m6", "theta": 0.5}),
+         ("macro", {"mode": "m7"}), ("macro", {"mode": "m8", "h": 0.75}), ("macro", {"mode": "m9", "cs_n": 150}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
 for rule, p in cases:
     s0, s1 = T.signal(base, rule, **p), T.signal(alt, rule, **p)
     a, b = s0.iloc[:k + 1], s1.iloc[:k + 1]
@@ -332,7 +354,7 @@ for rule, p in cases:
     w0, w1 = T.run(base, s0, 5.0, "close")[1], T.run(alt, s1, 5.0, "close")[1]
     x, y = w0.iloc[:k + 3], w1.iloc[:k + 3]
     assert ((x == y) | (x.isna() & y.isna())).all()
-ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (20개 규칙 설정)")
+ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (23개 규칙 설정)")
 
 # 20) 신호가 충분히 정의된다
 for rule, p in cases:

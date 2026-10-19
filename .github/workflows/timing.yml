@@ -69,6 +69,9 @@ jobs:
       - name: S3m macro candidates M1-M6 (PLAN v7 section 13)
         run: python screener/timing_eval.py macro --json timing_macro.json
 
+      - name: S3m2 credit + rate-hike combos M7-M9 (PLAN v8 section 14)
+        run: python screener/timing_eval.py macro2 --json timing_macro2.json
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,4 +82,5 @@ jobs:
             timing_yearly.json
             timing_defense.json
             timing_macro.json
+            timing_macro2.json
           if-no-files-found: ignore
