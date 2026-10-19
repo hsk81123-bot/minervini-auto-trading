@@ -61,6 +61,12 @@
       "count": 4,
       "plan_commit": "a34c44c11d275c06187697acd932c871a37c7da2",
       "note": "급락 방어·급등 포착 D1(Q)·D2(G·Q)·D3(max)·D4(평균) — PLAN v6 §12"
+    },
+    {
+      "id": "spy-timing-macro-M1-M6",
+      "count": 6,
+      "plan_commit": "eb1e6d7f77e3eb553f4a0cb6858768b6e2f1a4ee",
+      "note": "금리·신용 신호 M1(CS)·M2(곡선)·M3(금리 인상 국면)·M4(G·CS)·M5(max)·M6(3신호 평균) — PLAN v7 §13"
     }
   ],
   "exploratory": [
@@ -118,6 +124,12 @@
       "count": 16,
       "plan_commit": "a34c44c11d275c06187697acd932c871a37c7da2",
       "note": "D1~D4 의 C7 이웃 (x 0.08/0.12 · N 42/84, 후보당 4개)"
+    },
+    {
+      "id": "spy-timing-macro-neighbors",
+      "count": 14,
+      "plan_commit": "eb1e6d7f77e3eb553f4a0cb6858768b6e2f1a4ee",
+      "note": "M1~M6 의 C7 이웃 (CS n 150/250 · θ ±0.5 · h 0.75/1.25)"
     }
   ]
 }
