@@ -597,7 +597,8 @@ def main(argv: list[str]) -> int:
         check_data()
     elif cmd == "fetchmacro":
         print(f"  받음: {T.fetch_macro()}")
-        check_macro()
+        if all((T.CACHE / f"fred_{sid}.csv").exists() for sid in T.FRED_IDS):
+            check_macro()
     elif cmd == "checkmacro":
         check_macro()
     elif cmd == "check":

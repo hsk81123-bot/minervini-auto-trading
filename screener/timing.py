@@ -93,17 +93,50 @@ def parse_fred(text: str) -> pd.Series:
     return s.sort_index()
 
 
-def fetch_macro() -> dict[str, str]:
-    """금리·스프레드 원자료를 받아 CSV 로 저장하고 SHA-256 을 돌려준다 (Actions 전용)."""
+def parse_fred_txt(text: str) -> pd.Series:
+    """FRED /data/ID.txt (머리말 뒤 'DATE VALUE' 표) → 일별 시리즈. 결측은 '.'."""
+    rows, started = [], False
+    for line in text.splitlines():
+        parts = line.split()
+        if len(parts) == 2 and parts[0] == "DATE":
+            started = True
+            continue
+        if started and len(parts) == 2 and len(parts[0]) == 10:
+            rows.append((pd.Timestamp(parts[0]), np.nan if parts[1] == "." else float(parts[1])))
+    sid = next((l.split(":")[0] for l in text.splitlines() if l.startswith("Series ID")), "x")
+    return pd.Series(dict(rows), name=sid).sort_index()
+
+
+def fetch_macro(tries: int = 3, timeout: int = 150) -> dict[str, str]:
+    """금리·스프레드 원자료를 받아 CSV 로 저장하고 SHA-256 을 돌려준다 (Actions 전용).
+    FRED 가 느려서 (그래프 CSV → 텍스트) 순으로 재시도한다. 시도 결과는 모두 출력한다."""
+    import time
     import requests
 
     CACHE.mkdir(parents=True, exist_ok=True)
     hashes = {}
+    ua = {"User-Agent": "Mozilla/5.0 (research script; contact via repo)"}
     for sid in FRED_IDS:
-        r = requests.get(FRED_URL.format(sid), timeout=60, headers={"User-Agent": "Mozilla/5.0"})
-        r.raise_for_status()
-        s = parse_fred(r.text)
-        s.to_csv(CACHE / f"fred_{sid}.csv", header=True)
+        got = None
+        for kind, url, parse in (("csv", FRED_URL.format(sid), parse_fred),
+                                 ("txt", f"https://fred.stlouisfed.org/data/{sid}.txt", parse_fred_txt)):
+            for k in range(tries):
+                t0 = time.time()
+                try:
+                    r = requests.get(url, timeout=(15, timeout), headers=ua)
+                    r.raise_for_status()
+                    got = parse(r.text)
+                    print(f"  FRED {sid} {kind} 시도 {k + 1}: 성공 {time.time() - t0:.1f}s {len(got)}행", flush=True)
+                    break
+                except Exception as e:
+                    print(f"  FRED {sid} {kind} 시도 {k + 1}: 실패 {time.time() - t0:.1f}s {type(e).__name__}", flush=True)
+                    time.sleep(3 * (k + 1))
+            if got is not None:
+                break
+        if got is None:
+            print(f"  FRED {sid}: 받지 못했다", flush=True)
+            continue
+        got.to_csv(CACHE / f"fred_{sid}.csv", header=True)
         hashes[f"fred_{sid}.csv"] = sha256(CACHE / f"fred_{sid}.csv")
     return hashes
 

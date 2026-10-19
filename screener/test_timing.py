@@ -256,6 +256,10 @@ ok("load_spy / parse_french / load_french")
 txt = "observation_date,BAA10Y\n2024-01-02,2.10\n2024-01-03,.\n2024-01-04,2.30\n2024-01-08,2.50\n"
 fs = T.parse_fred(txt)
 assert fs.name == "BAA10Y" and fs.isna().tolist() == [False, True, False, False] and fs.iloc[2] == 2.30
+ftxt = ("Title: x\nSeries ID:    BAA10Y\nFrequency:   Daily\n\nDATE       VALUE\n"
+        "2024-01-02  2.10\n2024-01-03  .\n2024-01-04  2.30\n")
+ft = T.parse_fred_txt(ftxt)
+assert ft.name == "BAA10Y" and ft.isna().tolist() == [False, True, False] and ft.iloc[2] == 2.30
 ix6 = pd.bdate_range("2024-01-02", periods=6)
 al = T.macro_aligned(fs, ix6)
 assert np.isnan(al.iloc[0])                              # 지연 1일 → 첫날은 값 없음
