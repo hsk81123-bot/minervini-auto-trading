@@ -103,7 +103,7 @@ def parse_fred_txt(text: str) -> pd.Series:
             continue
         if started and len(parts) == 2 and len(parts[0]) == 10:
             rows.append((pd.Timestamp(parts[0]), np.nan if parts[1] == "." else float(parts[1])))
-    sid = next((l.split(":")[0] for l in text.splitlines() if l.startswith("Series ID")), "x")
+    sid = next((l.split(":", 1)[1].strip() for l in text.splitlines() if l.startswith("Series ID")), "x")
     return pd.Series(dict(rows), name=sid).sort_index()
 
 
