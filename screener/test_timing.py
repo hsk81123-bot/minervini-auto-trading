@@ -159,6 +159,20 @@ p4b = T.sig_pullback(d4b, sma_n=3, rsi_thr=10.0, exit_n=2)
 assert p4b.iloc[5] == 1 and p4b.iloc[6] == 1
 ok("sig_pullback: 상승 추세 1 → 추세 밖 RSI(2)<10 에서 진입(1), 종가>단기 SMA 에서 청산")
 
+# 12b) 낙폭 필터 D1~D4 (PLAN §12) — sma_n=4, n=2, x=0.1: 구간 [idx3..6] 의 (G,Q) = (1,1)(1,0)(0,1)(0,0)
+dd = frame([50, 60, 100, 120, 105, 107, 90.0])
+kw = dict(sma_n=4, x=0.10, n=2)
+qs, an, orr, av = (T.sig_ddfilter(dd, mode=m, **kw) for m in ("q", "and", "or", "avg"))
+assert qs.iloc[0:1].isna().all() and qs.iloc[1:3].tolist() == [1.0, 1.0]       # Q 는 창 n 이 차면 정의
+assert an.iloc[:3].isna().all() and orr.iloc[:3].isna().all() and av.iloc[:3].isna().all()   # G 가 정의되기 전
+assert qs.iloc[3:].tolist() == [1, 0, 1, 0]
+assert an.iloc[3:].tolist() == [1, 0, 0, 0]
+assert orr.iloc[3:].tolist() == [1, 1, 1, 0]
+assert av.iloc[3:].tolist() == [1, .5, .5, 0]
+assert T.sig_ddfilter(dd, mode="avg", off=0.5, **kw).iloc[3:].tolist() == [1, .75, .75, .5]
+assert T.signal(dd, "ddfilter", mode="or", **kw).iloc[3:].tolist() == [1, 1, 1, 0]
+ok("sig_ddfilter: Q 만 / G·Q / max / 평균 — (G,Q) 네 조합이 각각 다른 값")
+
 # 13) 신호 분기
 d = frame([1, 2, 3.0])
 assert T.signal(d, "hold").tolist() == [1, 1, 1] and T.signal(d, "mix", w=0.3).tolist() == [.3] * 3
@@ -253,7 +267,8 @@ for col in ("C", "TR", "O"):
     alt.iloc[k + 1:, alt.columns.get_loc(col)] = alt[col].iloc[k + 1:].to_numpy() * mult
 cases = [("sma", {}), ("sma", {"n": 150, "off": 0.5}), ("faber", {}), ("absmom", {}),
          ("absmom", {"months": 10, "off": 0.5}), ("voltarget", {}), ("trendvol", {}),
-         ("trendvol", {"off": 0.5}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
+         ("trendvol", {"off": 0.5}), ("ddfilter", {"mode": "q"}), ("ddfilter", {"mode": "and"}),
+         ("ddfilter", {"mode": "or", "x": 0.08, "n": 42}), ("ddfilter", {"mode": "avg"}), ("pullback", {}), ("pullback", {"off": 0.5, "exit_n": 3})]
 for rule, p in cases:
     s0, s1 = T.signal(base, rule, **p), T.signal(alt, rule, **p)
     a, b = s0.iloc[:k + 1], s1.iloc[:k + 1]
@@ -262,7 +277,7 @@ for rule, p in cases:
     w0, w1 = T.run(base, s0, 5.0, "close")[1], T.run(alt, s1, 5.0, "close")[1]
     x, y = w0.iloc[:k + 3], w1.iloc[:k + 3]
     assert ((x == y) | (x.isna() & y.isna())).all()
-ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (10개 규칙 설정)")
+ok("누수 시험: 미래 가격을 바꿔도 지나간 신호·체결 비중은 그대로 (14개 규칙 설정)")
 
 # 20) 신호가 충분히 정의된다
 for rule, p in cases:

@@ -243,8 +243,23 @@ def sig_pullback(df: pd.DataFrame, sma_n: int = 200, rsi_thr: float = 10.0,
     return out
 
 
+def sig_ddfilter(df: pd.DataFrame, mode: str = "and", sma_n: int = 200, x: float = 0.10,
+                 n: int = 63, off: float = 0.0) -> pd.Series:
+    """PLAN §12 D1~D4. G = 종가 > SMA(sma_n), Q = 종가 > (1−x)·최근 n일(당일 포함) 최고 종가 (둘 다 엄격).
+    mode: q → Q · and → G·Q · or → max(G,Q) · avg → (G+Q)/2. 꺼짐 비중은 off. 정의 전은 NaN."""
+    c = df["C"]
+    g = (c > c.rolling(sma_n).mean()).astype("float64")
+    g[c.rolling(sma_n).mean().isna()] = np.nan
+    hi = c.rolling(n).max()
+    q = (c > (1.0 - x) * hi).astype("float64")
+    q[hi.isna()] = np.nan
+    on = {"q": q, "and": g * q, "or": pd.concat([g, q], axis=1).max(axis=1, skipna=False),
+          "avg": (g + q) / 2.0}[mode]
+    return off + (1.0 - off) * on
+
+
 RULES = {"sma": sig_sma, "faber": sig_faber, "absmom": sig_absmom, "voltarget": sig_voltarget,
-         "trendvol": sig_trendvol, "pullback": sig_pullback}
+         "trendvol": sig_trendvol, "pullback": sig_pullback, "ddfilter": sig_ddfilter}
 
 
 def signal(df: pd.DataFrame, rule: str, **params) -> pd.Series:

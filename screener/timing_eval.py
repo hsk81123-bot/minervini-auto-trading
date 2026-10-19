@@ -5,6 +5,7 @@
     python screener/timing_eval.py fetch        # S0: 받기 + 점검 + 해시
     python screener/timing_eval.py frontier     # S2: 베이스라인 프런티어 (SPY · French)
     python screener/timing_eval.py yearly       # 기준선 연도별 표 (기술 통계)
+    python screener/timing_eval.py defense      # PLAN §12 급락 방어·급등 포착 D1~D4
     python screener/timing_eval.py candidates   # S3: 후보 판정 → 통과한 것만 S4 보류 1회
 """
 import json
@@ -57,6 +58,15 @@ NEIGHBORS = {"absmom": [{"months": 10}, {"months": 14}],
 LABEL = {"absmom": "A1", "voltarget": "A2", "trendvol": "A3", "pullback": "A4"}
 OMEGAS = (0.0, 0.5)
 
+# PLAN §12: 급락 방어·급등 포착 D1~D4 (ω=0 만). 이웃은 x, N 을 하나씩만 바꾼다
+BASE_DEF = {"sma_n": 200, "x": 0.10, "n": 63}
+NEIGH_DEF = [{"x": 0.08}, {"x": 0.12}, {"n": 42}, {"n": 84}]
+DEF_MODES = {"D1": "q", "D2": "and", "D3": "or", "D4": "avg"}
+SURGES = [("닷컴 반등 2002-10~2003-12", "2002-10-09", "2003-12-31"),
+          ("금융위기 반등 2009-03~12", "2009-03-09", "2009-12-31"),
+          ("코로나 반등 2020-03~12", "2020-03-23", "2020-12-31"),
+          ("2022 반등 2022-10~2023-07", "2022-10-12", "2023-07-31")]
+
 
 def candidate_specs() -> dict[str, dict]:
     out = {}
@@ -67,6 +77,15 @@ def candidate_specs() -> dict[str, dict]:
             out[name] = {"rule": rule, "params": {**BASE_PARAMS[rule], **kw},
                          "neighbors": [{**BASE_PARAMS[rule], **kw, **nb} for nb in NEIGHBORS[rule]],
                          "omega": om}
+    return out
+
+
+def defense_specs() -> dict[str, dict]:
+    out = {}
+    for name, mode in DEF_MODES.items():
+        base = {**BASE_DEF, "mode": mode}
+        out[name] = {"rule": "ddfilter", "params": base, "omega": 0.0,
+                     "neighbors": [{**base, **nb} for nb in NEIGH_DEF]}
     return out
 
 
@@ -285,6 +304,8 @@ class Study:
         s_b1 = {om: score(self.summary(bs[f"B1({om:g})"]), sb)["S"] for om in oms}
         s_b2 = score(s2, sb)["S"]
         out["detail"].update(score=sc, s_b1=s_b1, s_b2=s_b2)
+        b1s = self.summary(bs[f"B1({oms[0]:g})"])
+        out["detail"]["vs_b1"] = {"cagr": sm["cagr"] - b1s["cagr"], "mdd": abs(b1s["mdd"]) - abs(sm["mdd"])}
         out["checks"]["C6"] = bool(all(sm["calmar"] >= v for v in b1c.values())
                                    and sm["cagr"] >= s2["cagr"] and sm["calmar"] > s2["calmar"]
                                    and all(sc["S"] > v for v in s_b1.values()) and sc["S"] > s_b2)
@@ -362,6 +383,10 @@ def print_verdict(res: dict) -> None:
     sc = d["score"]
     print(f"            5:5 점수 S {sc['S']:+.3f} (수익 {sc['s_ret']:+.2f} · 낙폭 {sc['s_dd']:+.2f}) vs B1 "
           + "/".join(f"{v:+.3f}" for v in d["s_b1"].values()) + f" · B2 {d['s_b2']:+.3f} · 25bp S {d['S_25bp']:+.3f}")
+    if "vs_b1" in d:
+        v = d["vs_b1"]
+        print(f"            B1(같은 ω) 대비 연복리 {pct(v['cagr'], 7).strip()} · MDD {v['mdd'] * 100:+.1f}%p(양수=더 얕음)"
+              + (" → 둘 다 개선" if v["cagr"] > 0 and v["mdd"] >= 0 else ""))
     print(f"            판정 {marks} → {'통과' if res['passed'] else '탈락'}")
 
 
@@ -403,9 +428,9 @@ def cmd_frontier(out: dict) -> None:
                                                 "S2 프런티어 · French 시장수익 (보류 구간 자료 — 베이스라인만)")
 
 
-def yearly_table(st: Study, names: tuple[str, ...]) -> list[dict]:
+def yearly_table(st: Study, names: tuple[str, ...], specs: dict | None = None) -> list[dict]:
     """달력 연도별 수익률·그 해 안의 최대낙폭(해 첫날 100%)·SPY 노출·비중 변경 횟수 (기술 통계)."""
-    bs = baseline_specs()
+    bs = specs or baseline_specs()
     runs = {nm: st.run(bs[nm]) for nm in names}
     years = sorted({d.year for d in runs[names[0]][0].index})
     rows = []
@@ -439,6 +464,63 @@ def cmd_yearly(out: dict) -> None:
     r0, r1 = st.run(baseline_specs()["B0"])[0], st.run(baseline_specs()["B1(0)"])[0]
     print(f"  전체: B0 연복리 {pct(T.cagr(r0)).strip()} MDD {pct(T.max_dd(r0)).strip()} · "
           f"B1 연복리 {pct(T.cagr(r1)).strip()} MDD {pct(T.max_dd(r1)).strip()}")
+
+
+def window_ret(r: pd.Series, lo: str, hi: str) -> float | None:
+    x = r.loc[lo:hi]
+    return float((1.0 + x).prod() - 1.0) if len(x) >= 5 else None
+
+
+def cmd_defense(out: dict) -> None:
+    """PLAN §12: D1~D4 를 C1~C8(+C6(c)) 로 판정하고, 급락·급등 구간과 연도별로 B0·B1(0) 와 비교."""
+    st = Study(T.load_spy(), "spy")
+    bs, ds = baseline_specs(), defense_specs()
+    print(f"\n  [S3d 급락 방어·급등 포착 · SPY 설계] PLAN §12 · x={BASE_DEF['x']:.0%} N={BASE_DEF['n']} · 평가 {st.start}~")
+    res, passed = {}, []
+    for name, spec in ds.items():
+        r = st.judge(name, spec)
+        print_verdict(r)
+        res[name] = r
+        if r["passed"]:
+            passed.append(name)
+    out["defense"] = res
+    print(f"\n  요약: 4개 중 통과 {len(passed)}개 {passed}")
+    both = [n for n, r in res.items() if r["detail"]["vs_b1"]["cagr"] > 0 and r["detail"]["vs_b1"]["mdd"] >= 0]
+    print(f"  (참고) B1(0) 보다 연복리도 높고 MDD 도 얕거나 같은 후보: {both or '없음'}")
+    print(f"  5:5 점수 S 순위: " + " > ".join(f"{n} {r['detail']['score']['S']:+.3f}" for n, r in sorted(
+        res.items(), key=lambda kv: -kv[1]["detail"]["score"]["S"])) + f" (B1(0) {out_s(st, bs):+.3f})")
+    allspecs = {**bs, **ds}
+    cols = ("B0", "B1(0)", "D1", "D2", "D3", "D4")
+    runs = {c: st.run(allspecs[c])[0] for c in cols}
+    for title, wins in (("급락 구간 수익률 (방어: 덜 잃을수록 좋음)", st.crises), ("급등 구간 수익률 (포착: 많이 벌수록 좋음)", SURGES)):
+        print(f"\n  [{title}]")
+        print(f"  {'구간':<28}" + "".join(f"{c:>9}" for c in cols))
+        for lab, lo, hi in wins:
+            print(f"  {lab:<28}" + "".join(pct(window_ret(runs[c], lo, hi), 9) for c in cols))
+    rows = yearly_table(st, cols, allspecs)
+    out["yearly_defense"] = rows
+    print(f"\n  [연도별 수익률 / 그 해 MDD]  (1994 는 5/2~, 2026 은 10/16 까지)")
+    print(f"  {'연도':<6}" + "".join(f"{c:>15}" for c in cols))
+    for r in rows:
+        print(f"  {r['year']:<6}" + "".join(f"{r[c]['ret'] * 100:+8.1f}%/{r[c]['mdd'] * 100:+5.0f}%" for c in cols))
+    print(f"  {'노출':<6}" + "".join(f"{st.summary(allspecs[c])['exposure'] * 100:14.0f}%" for c in cols))
+    print(f"  {'연거래':<5}" + "".join(f"{st.summary(allspecs[c])['trades_per_year']:15.1f}" for c in cols))
+    print(f"\n  [S4 보류 · French 시장수익] 설계 통과 후보만 한 번")
+    if not passed:
+        print("    설계를 통과한 후보가 없다 — 보류는 계산하지 않는다 (PLAN §12 중단 기준)")
+    elif not (T.CACHE / "french.csv").exists():
+        print("    French 자료가 없어 보류를 계산할 수 없다 (참고로 격하)")
+    else:
+        fr = Study(T.load_french(), "french", t_min=T_MIN_HOLDOUT)
+        out["defense_holdout"] = {}
+        for name in passed:
+            r = fr.judge(name, ds[name])
+            print_verdict(r)
+            out["defense_holdout"][name] = r
+
+
+def out_s(st: Study, bs: dict) -> float:
+    return score(st.summary(bs["B1(0)"]), st.summary(bs["B0"]))["S"]
 
 
 def cmd_candidates(out: dict) -> None:
@@ -498,6 +580,8 @@ def main(argv: list[str]) -> int:
         cmd_frontier(out)
     elif cmd == "yearly":
         cmd_yearly(out)
+    elif cmd == "defense":
+        cmd_defense(out)
     elif cmd == "candidates":
         cmd_candidates(out)
     else:

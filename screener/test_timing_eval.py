@@ -51,6 +51,23 @@ bs = TE.baseline_specs()
 assert list(bs) == ["B0", "B4", "B1(0)", "B3(0)", "B1(0.5)", "B3(0.5)"]
 ok("후보 7개·이웃 23개·구간·임계값이 PLAN.md / ledger.json 과 같다")
 
+# 0a) 급락 방어·급등 포착 D1~D4 가 PLAN §12 / ledger 와 같다
+ds = TE.defense_specs()
+assert list(ds) == ["D1", "D2", "D3", "D4"]
+assert [d["params"]["mode"] for d in ds.values()] == ["q", "and", "or", "avg"]
+for name, d in ds.items():
+    assert {k: v for k, v in d["params"].items() if k != "mode"} == {"sma_n": 200, "x": 0.10, "n": 63}
+    assert d["omega"] == 0.0 and len(d["neighbors"]) == 4
+    for nb in d["neighbors"]:
+        diff = [k for k in nb if nb[k] != d["params"][k]]
+        assert len(diff) == 1 and diff[0] in ("x", "n"), (name, nb)
+assert sum(len(d["neighbors"]) for d in ds.values()) == 16
+assert "§12" in plan and "x = 0.10" in plan and "N = 63" in plan
+assert "spy-timing-defense-D1-D4" in json.dumps(led) and E.ledger_summary(ROOT / "screener" / "ledger.json")["n"] == 149
+for _, lo, hi in TE.SURGES:
+    assert lo in plan and hi in plan, (lo, hi)
+ok("D1~D4·이웃 16개·급등 구간·장부 149건이 PLAN §12 와 같다")
+
 # 0b) 종합점수 S (PLAN §3.1): 수익 개선 : 낙폭 감소 = 5 : 5, B0 대비 상대치
 sc = TE.score({"cagr": 0.12, "mdd": -0.30}, {"cagr": 0.10, "mdd": -0.50})
 assert close(sc["s_ret"], 0.2) and close(sc["s_dd"], 0.4) and close(sc["S"], 0.3)
@@ -154,6 +171,12 @@ try:
         assert res["checks"]["C7"] is None and res["passed"] is False
         assert res["checks"]["C1"] is False                  # 같거나 낮다
         assert res["checks"]["C4"] is True                   # 낙폭은 B0 이하
+    rd = st.judge("D2", ds["D2"])
+    assert set(rd["checks"]) == {f"C{i}" for i in range(1, 9)} and len(rd["detail"]["neighbors"]) == 4
+    assert set(rd["detail"]["vs_b1"]) == {"cagr", "mdd"} and set(rd["detail"]["s_b1"]) == {0.0}
+    TE.print_verdict(rd)
+    wr = TE.window_ret(r_b0, "2018-09-01", "2018-12-31")
+    assert close(wr, (1 + r_b0.loc["2018-09-01":"2018-12-31"]).prod() - 1) and TE.window_ret(r_b0, "2018-09-01", "2018-09-03") is None
     res = st.judge("A1(0)", cs["A1(0)"])
     assert set(res["checks"]) == {f"C{i}" for i in range(1, 9)} and "neighbors" in res["detail"]
     assert all(isinstance(v, bool) for v in res["checks"].values())
