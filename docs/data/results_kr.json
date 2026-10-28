@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-10-27T01:50:11.241467",
-  "data_date": "2026-10-27",
+  "generated_at": "2026-10-28T01:42:45.362959",
+  "data_date": "2026-10-28",
   "freshness": {
-    "expected_date": "2026-10-27",
-    "fresh_ratio": 0.9592,
+    "expected_date": "2026-10-28",
+    "fresh_ratio": 0.96,
     "retries": 0,
     "stale": false
   },
   "market": "kr",
   "universe": "한국 전 종목 (KOSPI·KOSDAQ, 1,000원+, 유동성 필터)",
   "universe_size": 2558,
-  "analyzed": 1376,
-  "passed": 40,
+  "analyzed": 1380,
+  "passed": 46,
   "results": [
     {
       "ticker": "351320.KQ",
@@ -27,14 +27,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 5430.0,
-      "ma50": 3649.78,
-      "ma150": 2028.21,
-      "ma200": 1818.13,
+      "price": 5490.0,
+      "ma50": 3736.98,
+      "ma150": 2056.15,
+      "ma200": 1838.99,
       "high52": 5690.0,
       "low52": 771.0,
-      "pct_off_high": -4.6,
-      "pct_above_low": 604.3,
+      "pct_off_high": -3.5,
+      "pct_above_low": 612.1,
       "rs_nh": false,
       "vcp": {
         "score": 28,
@@ -54,7 +54,7 @@
         "final_depth_pct": 22.8,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 16
+        "base_days": 17
       }
     },
     {
@@ -71,14 +71,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 29600.0,
-      "ma50": 25818.8,
-      "ma150": 17794.33,
-      "ma200": 14651.52,
+      "price": 28550.0,
+      "ma50": 25941.8,
+      "ma150": 17946.4,
+      "ma200": 14767.2,
       "high52": 35550.0,
       "low52": 3700.0,
-      "pct_off_high": -16.7,
-      "pct_above_low": 700.0,
+      "pct_off_high": -19.7,
+      "pct_above_low": 671.6,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -98,7 +98,42 @@
         "final_depth_pct": 32.5,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 13
+        "base_days": 14
+      }
+    },
+    {
+      "ticker": "092870.KQ",
+      "name": "엑시콘",
+      "rs_rank": 99,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 66200.0,
+      "ma50": 38515.8,
+      "ma150": 29724.0,
+      "ma200": 28436.01,
+      "high52": 67200.0,
+      "low52": 10110.0,
+      "pct_off_high": -1.5,
+      "pct_above_low": 554.8,
+      "rs_nh": true,
+      "vcp": {
+        "score": 0,
+        "count": 0,
+        "contractions": [],
+        "pivot": null,
+        "stop": null,
+        "final_depth_pct": null,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 0
       }
     },
     {
@@ -115,17 +150,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 56900.0,
-      "ma50": 46744.0,
-      "ma150": 37146.53,
-      "ma200": 31781.1,
-      "high52": 62600.0,
+      "price": 62100.0,
+      "ma50": 47350.0,
+      "ma150": 37460.27,
+      "ma200": 32030.7,
+      "high52": 62800.0,
       "low52": 10960.0,
-      "pct_off_high": -9.1,
-      "pct_above_low": 419.2,
+      "pct_off_high": -1.1,
+      "pct_above_low": 466.6,
       "rs_nh": true,
       "vcp": {
-        "score": 16,
+        "score": 23,
         "count": 1,
         "contractions": [
           {
@@ -142,7 +177,51 @@
         "final_depth_pct": 29.9,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 16
+        "base_days": 17
+      }
+    },
+    {
+      "ticker": "131290.KQ",
+      "name": "티에스이",
+      "rs_rank": 98,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 270500.0,
+      "ma50": 266850.0,
+      "ma150": 218758.67,
+      "ma200": 184891.0,
+      "high52": 345000.0,
+      "low52": 45444.04,
+      "pct_off_high": -21.6,
+      "pct_above_low": 495.2,
+      "rs_nh": false,
+      "vcp": {
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-14",
+            "lo_date": "2026-10-23",
+            "high": 345000.0,
+            "low": 235000.0,
+            "depth_pct": 31.9,
+            "vol_ratio": 0.85
+          }
+        ],
+        "pivot": 345000.0,
+        "stop": 235000.0,
+        "final_depth_pct": 31.9,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 11
       }
     },
     {
@@ -159,17 +238,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 93900.0,
-      "ma50": 76794.0,
-      "ma150": 62590.67,
-      "ma200": 54601.25,
+      "price": 97300.0,
+      "ma50": 77080.0,
+      "ma150": 63034.0,
+      "ma200": 54984.75,
       "high52": 100300.0,
       "low52": 15300.0,
-      "pct_off_high": -6.4,
-      "pct_above_low": 513.7,
+      "pct_off_high": -3.0,
+      "pct_above_low": 535.9,
       "rs_nh": true,
       "vcp": {
-        "score": 16,
+        "score": 23,
         "count": 1,
         "contractions": [
           {
@@ -186,92 +265,13 @@
         "final_depth_pct": 32.1,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 14
-      }
-    },
-    {
-      "ticker": "396300.KQ",
-      "name": "HT로보틱스",
-      "rs_rank": 98,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 9770.0,
-      "ma50": 5896.5,
-      "ma150": 4848.2,
-      "ma200": 4571.43,
-      "high52": 11690.0,
-      "low52": 2270.0,
-      "pct_off_high": -16.4,
-      "pct_above_low": 330.4,
-      "rs_nh": false,
-      "vcp": {
-        "score": 8,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-21",
-            "lo_date": "2026-10-23",
-            "high": 11690.0,
-            "low": 8940.0,
-            "depth_pct": 23.5,
-            "vol_ratio": 2.66
-          }
-        ],
-        "pivot": 11690.0,
-        "stop": 8940.0,
-        "final_depth_pct": 23.5,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 5
-      }
-    },
-    {
-      "ticker": "092870.KQ",
-      "name": "엑시콘",
-      "rs_rank": 98,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 56600.0,
-      "ma50": 37544.2,
-      "ma150": 29485.67,
-      "ma200": 28173.37,
-      "high52": 59100.0,
-      "low52": 10110.0,
-      "pct_off_high": -4.2,
-      "pct_above_low": 459.8,
-      "rs_nh": true,
-      "vcp": {
-        "score": 0,
-        "count": 0,
-        "contractions": [],
-        "pivot": null,
-        "stop": null,
-        "final_depth_pct": null,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 0
+        "base_days": 15
       }
     },
     {
       "ticker": "080580.KQ",
       "name": "오킨스전자",
-      "rs_rank": 97,
+      "rs_rank": 98,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -282,17 +282,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 26100.0,
-      "ma50": 22476.4,
-      "ma150": 19471.93,
-      "ma200": 18092.0,
+      "price": 29650.0,
+      "ma50": 22768.6,
+      "ma150": 19544.8,
+      "ma200": 18192.75,
       "high52": 30950.0,
       "low52": 7530.0,
-      "pct_off_high": -15.7,
-      "pct_above_low": 246.6,
-      "rs_nh": false,
+      "pct_off_high": -4.2,
+      "pct_above_low": 293.8,
+      "rs_nh": true,
       "vcp": {
-        "score": 16,
+        "score": 13,
         "count": 1,
         "contractions": [
           {
@@ -309,57 +309,13 @@
         "final_depth_pct": 24.8,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 8
-      }
-    },
-    {
-      "ticker": "144960.KQ",
-      "name": "뉴파워프라즈마",
-      "rs_rank": 97,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 14480.0,
-      "ma50": 11215.8,
-      "ma150": 9093.7,
-      "ma200": 8298.25,
-      "high52": 14860.0,
-      "low52": 4664.36,
-      "pct_off_high": -2.6,
-      "pct_above_low": 210.4,
-      "rs_nh": true,
-      "vcp": {
-        "score": 13,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-12",
-            "lo_date": "2026-10-15",
-            "high": 14470.0,
-            "low": 10010.0,
-            "depth_pct": 30.8,
-            "vol_ratio": 1.32
-          }
-        ],
-        "pivot": 14470.0,
-        "stop": 10010.0,
-        "final_depth_pct": 30.8,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 12
+        "base_days": 9
       }
     },
     {
       "ticker": "031980.KQ",
       "name": "피에스케이홀딩스",
-      "rs_rank": 97,
+      "rs_rank": 98,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -370,14 +326,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 172700.0,
-      "ma50": 156994.0,
-      "ma150": 131088.67,
-      "ma200": 117212.0,
+      "price": 186200.0,
+      "ma50": 158486.0,
+      "ma150": 131585.33,
+      "ma200": 117894.0,
       "high52": 219000.0,
       "low52": 39556.31,
-      "pct_off_high": -21.1,
-      "pct_above_low": 336.6,
+      "pct_off_high": -15.0,
+      "pct_above_low": 370.7,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -397,13 +353,13 @@
         "final_depth_pct": 28.8,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 11
+        "base_days": 12
       }
     },
     {
-      "ticker": "425420.KQ",
-      "name": "티에프이",
-      "rs_rank": 96,
+      "ticker": "396300.KQ",
+      "name": "HT로보틱스",
+      "rs_rank": 98,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -414,84 +370,40 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 73300.0,
-      "ma50": 55235.0,
-      "ma150": 52275.33,
-      "ma200": 49660.5,
-      "high52": 77700.0,
-      "low52": 23500.0,
-      "pct_off_high": -5.7,
-      "pct_above_low": 211.9,
-      "rs_nh": true,
+      "price": 9270.0,
+      "ma50": 5992.1,
+      "ma150": 4882.57,
+      "ma200": 4604.68,
+      "high52": 11690.0,
+      "low52": 2270.0,
+      "pct_off_high": -20.7,
+      "pct_above_low": 308.4,
+      "rs_nh": false,
       "vcp": {
-        "score": 23,
+        "score": 8,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-10-02",
-            "lo_date": "2026-10-15",
-            "high": 76700.0,
-            "low": 51600.0,
-            "depth_pct": 32.7,
-            "vol_ratio": 1.11
+            "hi_date": "2026-10-21",
+            "lo_date": "2026-10-23",
+            "high": 11690.0,
+            "low": 8940.0,
+            "depth_pct": 23.5,
+            "vol_ratio": 2.66
           }
         ],
-        "pivot": 76700.0,
-        "stop": 51600.0,
-        "final_depth_pct": 32.7,
+        "pivot": 11690.0,
+        "stop": 8940.0,
+        "final_depth_pct": 23.5,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 16
-      }
-    },
-    {
-      "ticker": "077500.KS",
-      "name": "유니퀘스트",
-      "rs_rank": 96,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 11670.0,
-      "ma50": 8563.8,
-      "ma150": 7187.93,
-      "ma200": 6997.95,
-      "high52": 12690.0,
-      "low52": 4075.0,
-      "pct_off_high": -8.0,
-      "pct_above_low": 186.4,
-      "rs_nh": true,
-      "vcp": {
-        "score": 16,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-22",
-            "lo_date": "2026-10-22",
-            "high": 12690.0,
-            "low": 10290.0,
-            "depth_pct": 18.9,
-            "vol_ratio": 8.79
-          }
-        ],
-        "pivot": 12690.0,
-        "stop": 10290.0,
-        "final_depth_pct": 18.9,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 4
+        "base_days": 6
       }
     },
     {
       "ticker": "042510.KQ",
       "name": "라온시큐어",
-      "rs_rank": 96,
+      "rs_rank": 97,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -502,14 +414,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 17600.0,
-      "ma50": 12022.2,
-      "ma150": 10318.87,
-      "ma200": 10059.9,
+      "price": 18350.0,
+      "ma50": 12228.4,
+      "ma150": 10383.27,
+      "ma200": 10107.55,
       "high52": 22450.0,
       "low52": 6320.0,
-      "pct_off_high": -21.6,
-      "pct_above_low": 178.5,
+      "pct_off_high": -18.3,
+      "pct_above_low": 190.3,
       "rs_nh": false,
       "vcp": {
         "score": 13,
@@ -529,13 +441,13 @@
         "final_depth_pct": 25.4,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 27
+        "base_days": 28
       }
     },
     {
-      "ticker": "003350.KS",
-      "name": "한국화장품제조",
-      "rs_rank": 95,
+      "ticker": "144960.KQ",
+      "name": "뉴파워프라즈마",
+      "rs_rank": 97,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -546,171 +458,250 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 15080.0,
-      "ma50": 14228.0,
-      "ma150": 10557.47,
-      "ma200": 10410.65,
-      "high52": 17910.0,
-      "low52": 6750.0,
-      "pct_off_high": -15.8,
-      "pct_above_low": 123.4,
-      "rs_nh": false,
-      "vcp": {
-        "score": 23,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-07",
-            "lo_date": "2026-10-23",
-            "high": 17910.0,
-            "low": 14150.0,
-            "depth_pct": 21.0,
-            "vol_ratio": 0.51
-          }
-        ],
-        "pivot": 17910.0,
-        "stop": 14150.0,
-        "final_depth_pct": 21.0,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 14
-      }
-    },
-    {
-      "ticker": "071200.KQ",
-      "name": "인피니트헬스케어",
-      "rs_rank": 95,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 10560.0,
-      "ma50": 10014.15,
-      "ma150": 7873.27,
-      "ma200": 7372.21,
-      "high52": 13069.89,
-      "low52": 4808.9,
-      "pct_off_high": -19.2,
-      "pct_above_low": 119.6,
-      "rs_nh": false,
-      "vcp": {
-        "score": 23,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-15",
-            "lo_date": "2026-09-15",
-            "high": 13069.89,
-            "low": 9802.41,
-            "depth_pct": 25.0,
-            "vol_ratio": 14.42
-          }
-        ],
-        "pivot": 13069.89,
-        "stop": 9802.41,
-        "final_depth_pct": 25.0,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 27
-      }
-    },
-    {
-      "ticker": "091580.KQ",
-      "name": "상신이디피",
-      "rs_rank": 95,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 26300.0,
-      "ma50": 21906.0,
-      "ma150": 20206.73,
-      "ma200": 18832.91,
-      "high52": 31550.0,
-      "low52": 11030.0,
-      "pct_off_high": -16.6,
-      "pct_above_low": 138.4,
-      "rs_nh": true,
-      "vcp": {
-        "score": 23,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-14",
-            "lo_date": "2026-10-16",
-            "high": 27400.0,
-            "low": 22000.0,
-            "depth_pct": 19.7,
-            "vol_ratio": 1.53
-          }
-        ],
-        "pivot": 27400.0,
-        "stop": 22000.0,
-        "final_depth_pct": 19.7,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 10
-      }
-    },
-    {
-      "ticker": "028050.KS",
-      "name": "삼성E&A",
-      "rs_rank": 95,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 62500.0,
-      "ma50": 48849.0,
-      "ma150": 47667.67,
-      "ma200": 43324.0,
-      "high52": 67300.0,
-      "low52": 23150.0,
-      "pct_off_high": -7.1,
-      "pct_above_low": 170.0,
+      "price": 15630.0,
+      "ma50": 11294.8,
+      "ma150": 9160.23,
+      "ma200": 8351.05,
+      "high52": 16220.0,
+      "low52": 4664.36,
+      "pct_off_high": -3.6,
+      "pct_above_low": 235.1,
       "rs_nh": true,
       "vcp": {
         "score": 13,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-09-18",
+            "hi_date": "2026-10-12",
             "lo_date": "2026-10-15",
-            "high": 55200.0,
-            "low": 41650.0,
-            "depth_pct": 24.5,
-            "vol_ratio": 1.09
+            "high": 14470.0,
+            "low": 10010.0,
+            "depth_pct": 30.8,
+            "vol_ratio": 1.32
           }
         ],
-        "pivot": 55200.0,
-        "stop": 41650.0,
-        "final_depth_pct": 24.5,
+        "pivot": 14470.0,
+        "stop": 10010.0,
+        "final_depth_pct": 30.8,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 24
+        "base_days": 13
       }
     },
     {
-      "ticker": "252990.KQ",
-      "name": "샘씨엔에스",
+      "ticker": "425420.KQ",
+      "name": "티에프이",
+      "rs_rank": 97,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 77700.0,
+      "ma50": 56153.0,
+      "ma150": 52428.67,
+      "ma200": 49881.5,
+      "high52": 82400.0,
+      "low52": 23500.0,
+      "pct_off_high": -5.7,
+      "pct_above_low": 230.6,
+      "rs_nh": true,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-02",
+            "lo_date": "2026-10-15",
+            "high": 76700.0,
+            "low": 51600.0,
+            "depth_pct": 32.7,
+            "vol_ratio": 1.11
+          }
+        ],
+        "pivot": 76700.0,
+        "stop": 51600.0,
+        "final_depth_pct": 32.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 17
+      }
+    },
+    {
+      "ticker": "052460.KQ",
+      "name": "아이크래프트",
+      "rs_rank": 97,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 6810.0,
+      "ma50": 6070.6,
+      "ma150": 4426.73,
+      "ma200": 4131.25,
+      "high52": 8610.0,
+      "low52": 2206.73,
+      "pct_off_high": -20.9,
+      "pct_above_low": 208.6,
+      "rs_nh": false,
+      "vcp": {
+        "score": 8,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-21",
+            "lo_date": "2026-10-23",
+            "high": 7770.0,
+            "low": 5620.0,
+            "depth_pct": 27.7,
+            "vol_ratio": 1.87
+          }
+        ],
+        "pivot": 7770.0,
+        "stop": 5620.0,
+        "final_depth_pct": 27.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 6
+      }
+    },
+    {
+      "ticker": "098120.KQ",
+      "name": "마이크로컨텍솔",
+      "rs_rank": 97,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 51600.0,
+      "ma50": 48028.0,
+      "ma150": 35020.6,
+      "ma200": 32007.85,
+      "high52": 63000.0,
+      "low52": 15500.0,
+      "pct_off_high": -18.1,
+      "pct_above_low": 232.9,
+      "rs_nh": true,
+      "vcp": {
+        "score": 0,
+        "count": 0,
+        "contractions": [],
+        "pivot": null,
+        "stop": null,
+        "final_depth_pct": null,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 0
+      }
+    },
+    {
+      "ticker": "077500.KS",
+      "name": "유니퀘스트",
+      "rs_rank": 96,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 11630.0,
+      "ma50": 8654.2,
+      "ma150": 7223.13,
+      "ma200": 7024.05,
+      "high52": 12690.0,
+      "low52": 4075.0,
+      "pct_off_high": -8.4,
+      "pct_above_low": 185.4,
+      "rs_nh": false,
+      "vcp": {
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-22",
+            "lo_date": "2026-10-22",
+            "high": 12690.0,
+            "low": 10290.0,
+            "depth_pct": 18.9,
+            "vol_ratio": 8.79
+          }
+        ],
+        "pivot": 12690.0,
+        "stop": 10290.0,
+        "final_depth_pct": 18.9,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 5
+      }
+    },
+    {
+      "ticker": "078350.KQ",
+      "name": "한양디지텍",
+      "rs_rank": 96,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 40650.0,
+      "ma50": 27119.4,
+      "ma150": 26687.8,
+      "ma200": 26296.45,
+      "high52": 44300.0,
+      "low52": 13720.0,
+      "pct_off_high": -8.2,
+      "pct_above_low": 196.3,
+      "rs_nh": true,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-16",
+            "lo_date": "2026-10-23",
+            "high": 39900.0,
+            "low": 29300.0,
+            "depth_pct": 26.6,
+            "vol_ratio": 1.4
+          }
+        ],
+        "pivot": 39900.0,
+        "stop": 29300.0,
+        "final_depth_pct": 26.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 9
+      }
+    },
+    {
+      "ticker": "036540.KQ",
+      "name": "SFA반도체",
       "rs_rank": 95,
       "checks": {
         "price_above_150_200": true,
@@ -722,40 +713,40 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 16620.0,
-      "ma50": 15791.4,
-      "ma150": 13560.07,
-      "ma200": 12505.75,
-      "high52": 20750.0,
-      "low52": 6140.0,
-      "pct_off_high": -19.9,
-      "pct_above_low": 170.7,
-      "rs_nh": true,
+      "price": 9390.0,
+      "ma50": 8219.0,
+      "ma150": 7287.4,
+      "ma200": 7104.45,
+      "high52": 12370.0,
+      "low52": 3735.0,
+      "pct_off_high": -24.1,
+      "pct_above_low": 151.4,
+      "rs_nh": false,
       "vcp": {
-        "score": 8,
+        "score": 23,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-10-14",
-            "lo_date": "2026-10-15",
-            "high": 18750.0,
-            "low": 13980.0,
-            "depth_pct": 25.4,
-            "vol_ratio": 1.76
+            "hi_date": "2026-10-06",
+            "lo_date": "2026-10-26",
+            "high": 12370.0,
+            "low": 8130.0,
+            "depth_pct": 34.3,
+            "vol_ratio": 0.89
           }
         ],
-        "pivot": 18750.0,
-        "stop": 13980.0,
-        "final_depth_pct": 25.4,
+        "pivot": 12370.0,
+        "stop": 8130.0,
+        "final_depth_pct": 34.3,
         "vol_declining": false,
-        "dryup": false,
-        "base_days": 10
+        "dryup": true,
+        "base_days": 16
       }
     },
     {
       "ticker": "051160.KQ",
       "name": "지어소프트",
-      "rs_rank": 94,
+      "rs_rank": 95,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -766,14 +757,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 12620.0,
-      "ma50": 11295.6,
-      "ma150": 8896.27,
-      "ma200": 8570.4,
+      "price": 13080.0,
+      "ma50": 11360.6,
+      "ma150": 8932.2,
+      "ma200": 8598.8,
       "high52": 15600.0,
       "low52": 6270.0,
-      "pct_off_high": -19.1,
-      "pct_above_low": 101.3,
+      "pct_off_high": -16.2,
+      "pct_above_low": 108.6,
       "rs_nh": false,
       "vcp": {
         "score": 23,
@@ -793,12 +784,144 @@
         "final_depth_pct": 22.1,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 6
+        "base_days": 7
       }
     },
     {
-      "ticker": "078350.KQ",
-      "name": "한양디지텍",
+      "ticker": "091580.KQ",
+      "name": "상신이디피",
+      "rs_rank": 95,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 27100.0,
+      "ma50": 22089.4,
+      "ma150": 20264.4,
+      "ma200": 18903.0,
+      "high52": 31550.0,
+      "low52": 11030.0,
+      "pct_off_high": -14.1,
+      "pct_above_low": 145.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-14",
+            "lo_date": "2026-10-16",
+            "high": 27400.0,
+            "low": 22000.0,
+            "depth_pct": 19.7,
+            "vol_ratio": 1.53
+          }
+        ],
+        "pivot": 27400.0,
+        "stop": 22000.0,
+        "final_depth_pct": 19.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 11
+      }
+    },
+    {
+      "ticker": "252990.KQ",
+      "name": "샘씨엔에스",
+      "rs_rank": 95,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 17360.0,
+      "ma50": 15824.8,
+      "ma150": 13601.07,
+      "ma200": 12555.6,
+      "high52": 20750.0,
+      "low52": 6140.0,
+      "pct_off_high": -16.3,
+      "pct_above_low": 182.7,
+      "rs_nh": true,
+      "vcp": {
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-14",
+            "lo_date": "2026-10-15",
+            "high": 18750.0,
+            "low": 13980.0,
+            "depth_pct": 25.4,
+            "vol_ratio": 1.76
+          }
+        ],
+        "pivot": 18750.0,
+        "stop": 13980.0,
+        "final_depth_pct": 25.4,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 11
+      }
+    },
+    {
+      "ticker": "028050.KS",
+      "name": "삼성E&A",
+      "rs_rank": 95,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 63800.0,
+      "ma50": 49133.0,
+      "ma150": 47869.0,
+      "ma200": 43521.25,
+      "high52": 67300.0,
+      "low52": 23150.0,
+      "pct_off_high": -5.2,
+      "pct_above_low": 175.6,
+      "rs_nh": true,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-18",
+            "lo_date": "2026-10-15",
+            "high": 55200.0,
+            "low": 41650.0,
+            "depth_pct": 24.5,
+            "vol_ratio": 1.09
+          }
+        ],
+        "pivot": 55200.0,
+        "stop": 41650.0,
+        "final_depth_pct": 24.5,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 25
+      }
+    },
+    {
+      "ticker": "003350.KS",
+      "name": "한국화장품제조",
       "rs_rank": 94,
       "checks": {
         "price_above_150_200": true,
@@ -810,34 +933,130 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 37150.0,
-      "ma50": 26769.4,
-      "ma150": 26592.13,
-      "ma200": 26199.45,
-      "high52": 44300.0,
-      "low52": 13720.0,
-      "pct_off_high": -16.1,
-      "pct_above_low": 170.8,
+      "price": 14630.0,
+      "ma50": 14288.0,
+      "ma150": 10596.0,
+      "ma200": 10436.0,
+      "high52": 17910.0,
+      "low52": 6750.0,
+      "pct_off_high": -18.3,
+      "pct_above_low": 116.7,
       "rs_nh": false,
       "vcp": {
-        "score": 16,
+        "score": 23,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-10-16",
+            "hi_date": "2026-10-07",
             "lo_date": "2026-10-23",
-            "high": 39900.0,
-            "low": 29300.0,
-            "depth_pct": 26.6,
-            "vol_ratio": 1.4
+            "high": 17910.0,
+            "low": 14150.0,
+            "depth_pct": 21.0,
+            "vol_ratio": 0.51
           }
         ],
-        "pivot": 39900.0,
-        "stop": 29300.0,
-        "final_depth_pct": 26.6,
+        "pivot": 17910.0,
+        "stop": 14150.0,
+        "final_depth_pct": 21.0,
         "vol_declining": false,
-        "dryup": false,
-        "base_days": 8
+        "dryup": true,
+        "base_days": 15
+      }
+    },
+    {
+      "ticker": "071200.KQ",
+      "name": "인피니트헬스케어",
+      "rs_rank": 94,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 10420.0,
+      "ma50": 10028.77,
+      "ma150": 7901.16,
+      "ma200": 7396.98,
+      "high52": 13069.89,
+      "low52": 4808.9,
+      "pct_off_high": -20.3,
+      "pct_above_low": 116.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 23,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-15",
+            "lo_date": "2026-09-15",
+            "high": 13069.89,
+            "low": 9802.41,
+            "depth_pct": 25.0,
+            "vol_ratio": 14.42
+          }
+        ],
+        "pivot": 13069.89,
+        "stop": 9802.41,
+        "final_depth_pct": 25.0,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 28
+      }
+    },
+    {
+      "ticker": "089860.KS",
+      "name": "롯데렌탈",
+      "rs_rank": 93,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 51500.0,
+      "ma50": 49189.0,
+      "ma150": 38376.99,
+      "ma200": 36406.63,
+      "high52": 53100.0,
+      "low52": 26650.0,
+      "pct_off_high": -3.0,
+      "pct_above_low": 93.2,
+      "rs_nh": false,
+      "vcp": {
+        "score": 66,
+        "count": 2,
+        "contractions": [
+          {
+            "hi_date": "2026-09-01",
+            "lo_date": "2026-09-16",
+            "high": 53100.0,
+            "low": 47250.0,
+            "depth_pct": 11.0,
+            "vol_ratio": 0.89
+          },
+          {
+            "hi_date": "2026-10-01",
+            "lo_date": "2026-10-15",
+            "high": 52100.0,
+            "low": 48150.0,
+            "depth_pct": 7.6,
+            "vol_ratio": 0.94
+          }
+        ],
+        "pivot": 52100.0,
+        "stop": 48150.0,
+        "final_depth_pct": 7.6,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 38
       }
     },
     {
@@ -854,17 +1073,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 2405.0,
-      "ma50": 1795.36,
-      "ma150": 1789.73,
-      "ma200": 1769.92,
+      "price": 2485.0,
+      "ma50": 1814.02,
+      "ma150": 1794.19,
+      "ma200": 1774.85,
       "high52": 2545.0,
       "low52": 1257.0,
-      "pct_off_high": -5.5,
-      "pct_above_low": 91.3,
+      "pct_off_high": -2.4,
+      "pct_above_low": 97.7,
       "rs_nh": true,
       "vcp": {
-        "score": 16,
+        "score": 23,
         "count": 1,
         "contractions": [
           {
@@ -881,57 +1100,13 @@
         "final_depth_pct": 16.9,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 9
-      }
-    },
-    {
-      "ticker": "005160.KQ",
-      "name": "동국산업",
-      "rs_rank": 92,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 3830.0,
-      "ma50": 3282.4,
-      "ma150": 2977.3,
-      "ma200": 2921.78,
-      "high52": 5060.0,
-      "low52": 2125.0,
-      "pct_off_high": -24.3,
-      "pct_above_low": 80.2,
-      "rs_nh": false,
-      "vcp": {
-        "score": 23,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-20",
-            "lo_date": "2026-10-26",
-            "high": 5060.0,
-            "low": 3500.0,
-            "depth_pct": 30.8,
-            "vol_ratio": 0.99
-          }
-        ],
-        "pivot": 5060.0,
-        "stop": 3500.0,
-        "final_depth_pct": 30.8,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 6
+        "base_days": 10
       }
     },
     {
       "ticker": "217190.KQ",
       "name": "제너셈",
-      "rs_rank": 92,
+      "rs_rank": 93,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -942,14 +1117,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 8260.0,
-      "ma50": 7350.2,
-      "ma150": 6430.5,
-      "ma200": 6242.6,
+      "price": 8840.0,
+      "ma50": 7416.0,
+      "ma150": 6445.7,
+      "ma200": 6260.65,
       "high52": 10650.0,
       "low52": 3965.0,
-      "pct_off_high": -22.4,
-      "pct_above_low": 108.3,
+      "pct_off_high": -17.0,
+      "pct_above_low": 123.0,
       "rs_nh": false,
       "vcp": {
         "score": 23,
@@ -969,12 +1144,56 @@
         "final_depth_pct": 31.5,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 13
+        "base_days": 14
       }
     },
     {
-      "ticker": "005320.KS",
-      "name": "온타이드",
+      "ticker": "053800.KQ",
+      "name": "안랩",
+      "rs_rank": 93,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 94700.0,
+      "ma50": 69986.0,
+      "ma150": 62678.67,
+      "ma200": 62650.5,
+      "high52": 95300.0,
+      "low52": 50800.0,
+      "pct_off_high": -0.6,
+      "pct_above_low": 86.4,
+      "rs_nh": true,
+      "vcp": {
+        "score": 13,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-06",
+            "lo_date": "2026-10-08",
+            "high": 93100.0,
+            "low": 72500.0,
+            "depth_pct": 22.1,
+            "vol_ratio": 4.98
+          }
+        ],
+        "pivot": 93100.0,
+        "stop": 72500.0,
+        "final_depth_pct": 22.1,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
+      }
+    },
+    {
+      "ticker": "121440.KQ",
+      "name": "골프존홀딩스",
       "rs_rank": 92,
       "checks": {
         "price_above_150_200": true,
@@ -986,84 +1205,56 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 1330.0,
-      "ma50": 1206.56,
-      "ma150": 1063.62,
-      "ma200": 1036.17,
-      "high52": 1675.0,
-      "low52": 600.0,
-      "pct_off_high": -20.6,
-      "pct_above_low": 121.7,
-      "rs_nh": false,
+      "price": 8100.0,
+      "ma50": 7704.4,
+      "ma150": 6158.77,
+      "ma200": 5832.05,
+      "high52": 8440.0,
+      "low52": 4090.0,
+      "pct_off_high": -4.0,
+      "pct_above_low": 98.0,
+      "rs_nh": true,
       "vcp": {
-        "score": 8,
-        "count": 1,
+        "score": 53,
+        "count": 3,
         "contractions": [
           {
-            "hi_date": "2026-10-16",
-            "lo_date": "2026-10-23",
-            "high": 1675.0,
-            "low": 1234.0,
-            "depth_pct": 26.3,
-            "vol_ratio": 0.91
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-09-04",
+            "high": 8350.0,
+            "low": 6850.0,
+            "depth_pct": 18.0,
+            "vol_ratio": 0.17
+          },
+          {
+            "hi_date": "2026-09-08",
+            "lo_date": "2026-09-23",
+            "high": 8440.0,
+            "low": 7500.0,
+            "depth_pct": 11.1,
+            "vol_ratio": 0.16
+          },
+          {
+            "hi_date": "2026-10-15",
+            "lo_date": "2026-10-26",
+            "high": 8000.0,
+            "low": 7540.0,
+            "depth_pct": 5.8,
+            "vol_ratio": 0.59
           }
         ],
-        "pivot": 1675.0,
-        "stop": 1234.0,
-        "final_depth_pct": 26.3,
+        "pivot": 8000.0,
+        "stop": 7540.0,
+        "final_depth_pct": 5.8,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 8
-      }
-    },
-    {
-      "ticker": "228850.KQ",
-      "name": "레이언스",
-      "rs_rank": 91,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 7960.0,
-      "ma50": 7580.0,
-      "ma150": 6697.73,
-      "ma200": 6353.38,
-      "high52": 8750.0,
-      "low52": 4714.83,
-      "pct_off_high": -9.0,
-      "pct_above_low": 68.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 36,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-30",
-            "lo_date": "2026-10-23",
-            "high": 8750.0,
-            "low": 7720.0,
-            "depth_pct": 11.8,
-            "vol_ratio": 0.7
-          }
-        ],
-        "pivot": 8750.0,
-        "stop": 7720.0,
-        "final_depth_pct": 11.8,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 18
+        "base_days": 40
       }
     },
     {
       "ticker": "059090.KQ",
       "name": "미코",
-      "rs_rank": 91,
+      "rs_rank": 92,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1074,14 +1265,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 22650.0,
-      "ma50": 20565.0,
-      "ma150": 18942.13,
-      "ma200": 17954.15,
+      "price": 23200.0,
+      "ma50": 20628.4,
+      "ma150": 18992.33,
+      "ma200": 17999.75,
       "high52": 29250.0,
       "low52": 11300.0,
-      "pct_off_high": -22.6,
-      "pct_above_low": 100.4,
+      "pct_off_high": -20.7,
+      "pct_above_low": 105.3,
       "rs_nh": false,
       "vcp": {
         "score": 8,
@@ -1101,13 +1292,13 @@
         "final_depth_pct": 24.3,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 10
+        "base_days": 11
       }
     },
     {
-      "ticker": "094860.KQ",
-      "name": "네오리진",
-      "rs_rank": 90,
+      "ticker": "228850.KQ",
+      "name": "레이언스",
+      "rs_rank": 91,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1118,17 +1309,61 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 1673.0,
-      "ma50": 1502.2,
-      "ma150": 1422.75,
-      "ma200": 1381.23,
-      "high52": 1859.0,
-      "low52": 907.0,
-      "pct_off_high": -10.0,
-      "pct_above_low": 84.5,
+      "price": 8020.0,
+      "ma50": 7625.2,
+      "ma150": 6711.13,
+      "ma200": 6368.43,
+      "high52": 8750.0,
+      "low52": 4714.83,
+      "pct_off_high": -8.3,
+      "pct_above_low": 70.1,
       "rs_nh": false,
       "vcp": {
-        "score": 16,
+        "score": 36,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-30",
+            "lo_date": "2026-10-23",
+            "high": 8750.0,
+            "low": 7720.0,
+            "depth_pct": 11.8,
+            "vol_ratio": 0.7
+          }
+        ],
+        "pivot": 8750.0,
+        "stop": 7720.0,
+        "final_depth_pct": 11.8,
+        "vol_declining": false,
+        "dryup": true,
+        "base_days": 19
+      }
+    },
+    {
+      "ticker": "094860.KQ",
+      "name": "네오리진",
+      "rs_rank": 88,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 1551.0,
+      "ma50": 1507.6,
+      "ma150": 1424.11,
+      "ma200": 1384.02,
+      "high52": 1859.0,
+      "low52": 907.0,
+      "pct_off_high": -16.6,
+      "pct_above_low": 71.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 8,
         "count": 1,
         "contractions": [
           {
@@ -1145,13 +1380,13 @@
         "final_depth_pct": 15.5,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 5
+        "base_days": 6
       }
     },
     {
       "ticker": "086450.KQ",
       "name": "동국제약",
-      "rs_rank": 88,
+      "rs_rank": 87,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1162,14 +1397,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 24600.0,
-      "ma50": 21507.6,
-      "ma150": 21231.6,
-      "ma200": 20475.25,
+      "price": 24150.0,
+      "ma50": 21553.6,
+      "ma150": 21268.87,
+      "ma200": 20509.0,
       "high52": 31250.0,
       "low52": 16260.0,
-      "pct_off_high": -21.3,
-      "pct_above_low": 51.3,
+      "pct_off_high": -22.7,
+      "pct_above_low": 48.5,
       "rs_nh": false,
       "vcp": {
         "score": 29,
@@ -1197,12 +1432,12 @@
         "final_depth_pct": 18.0,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 50
+        "base_days": 51
       }
     },
     {
-      "ticker": "068930.KQ",
-      "name": "디지털대성",
+      "ticker": "017890.KQ",
+      "name": "한국알콜",
       "rs_rank": 87,
       "checks": {
         "price_above_150_200": true,
@@ -1214,14 +1449,58 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 9180.0,
-      "ma50": 8877.2,
-      "ma150": 8208.85,
-      "ma200": 8107.17,
+      "price": 14860.0,
+      "ma50": 14587.2,
+      "ma150": 13164.27,
+      "ma200": 12676.7,
+      "high52": 16420.0,
+      "low52": 8968.57,
+      "pct_off_high": -9.5,
+      "pct_above_low": 65.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-08",
+            "lo_date": "2026-10-26",
+            "high": 16350.0,
+            "low": 13470.0,
+            "depth_pct": 17.6,
+            "vol_ratio": 1.05
+          }
+        ],
+        "pivot": 16350.0,
+        "stop": 13470.0,
+        "final_depth_pct": 17.6,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 14
+      }
+    },
+    {
+      "ticker": "068930.KQ",
+      "name": "디지털대성",
+      "rs_rank": 86,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 9130.0,
+      "ma50": 8894.4,
+      "ma150": 8214.36,
+      "ma200": 8116.01,
       "high52": 10000.0,
       "low52": 6367.24,
-      "pct_off_high": -8.2,
-      "pct_above_low": 44.2,
+      "pct_off_high": -8.7,
+      "pct_above_low": 43.4,
       "rs_nh": false,
       "vcp": {
         "score": 43,
@@ -1241,13 +1520,13 @@
         "final_depth_pct": 9.7,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 20
+        "base_days": 21
       }
     },
     {
       "ticker": "005960.KS",
       "name": "동부건설",
-      "rs_rank": 87,
+      "rs_rank": 86,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1258,17 +1537,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 8000.0,
-      "ma50": 7963.4,
-      "ma150": 7726.0,
-      "ma200": 7482.25,
+      "price": 8020.0,
+      "ma50": 7976.0,
+      "ma150": 7725.87,
+      "ma200": 7494.0,
       "high52": 10610.0,
       "low52": 5070.87,
-      "pct_off_high": -24.6,
-      "pct_above_low": 57.8,
+      "pct_off_high": -24.4,
+      "pct_above_low": 58.2,
       "rs_nh": false,
       "vcp": {
-        "score": 24,
+        "score": 32,
         "count": 2,
         "contractions": [
           {
@@ -1293,12 +1572,12 @@
         "final_depth_pct": 15.7,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 45
+        "base_days": 46
       }
     },
     {
-      "ticker": "021240.KS",
-      "name": "코웨이",
+      "ticker": "348030.KQ",
+      "name": "모비릭스",
       "rs_rank": 86,
       "checks": {
         "price_above_150_200": true,
@@ -1310,40 +1589,40 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 103600.0,
-      "ma50": 100440.32,
-      "ma150": 90914.23,
-      "ma200": 87447.31,
-      "high52": 111800.0,
-      "low52": 65950.07,
-      "pct_off_high": -7.3,
-      "pct_above_low": 57.1,
+      "price": 3850.0,
+      "ma50": 3271.0,
+      "ma150": 2836.23,
+      "ma200": 2822.22,
+      "high52": 4210.0,
+      "low52": 2100.0,
+      "pct_off_high": -8.6,
+      "pct_above_low": 83.3,
       "rs_nh": false,
       "vcp": {
         "score": 28,
         "count": 1,
         "contractions": [
           {
-            "hi_date": "2026-10-20",
-            "lo_date": "2026-10-26",
-            "high": 111800.0,
-            "low": 101400.0,
-            "depth_pct": 9.3,
-            "vol_ratio": 0.82
+            "hi_date": "2026-08-28",
+            "lo_date": "2026-10-02",
+            "high": 3670.0,
+            "low": 2530.0,
+            "depth_pct": 31.1,
+            "vol_ratio": 0.38
           }
         ],
-        "pivot": 111800.0,
-        "stop": 101400.0,
-        "final_depth_pct": 9.3,
+        "pivot": 3670.0,
+        "stop": 2530.0,
+        "final_depth_pct": 31.1,
         "vol_declining": false,
-        "dryup": false,
-        "base_days": 6
+        "dryup": true,
+        "base_days": 40
       }
     },
     {
-      "ticker": "033780.KS",
-      "name": "KT&G",
-      "rs_rank": 85,
+      "ticker": "000810.KS",
+      "name": "삼성화재",
+      "rs_rank": 86,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1354,18 +1633,62 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 186800.0,
-      "ma50": 177507.59,
-      "ma150": 174170.21,
-      "ma200": 168169.4,
-      "high52": 196400.0,
-      "low52": 127251.59,
-      "pct_off_high": -4.9,
-      "pct_above_low": 46.8,
+      "price": 638000.0,
+      "ma50": 637880.0,
+      "ma150": 591725.5,
+      "ma200": 565175.92,
+      "high52": 757000.0,
+      "low52": 419000.0,
+      "pct_off_high": -15.7,
+      "pct_above_low": 52.3,
       "rs_nh": false,
       "vcp": {
-        "score": 51,
-        "count": 2,
+        "score": 16,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-09-11",
+            "lo_date": "2026-10-15",
+            "high": 694000.0,
+            "low": 568000.0,
+            "depth_pct": 18.2,
+            "vol_ratio": 0.87
+          }
+        ],
+        "pivot": 694000.0,
+        "stop": 568000.0,
+        "final_depth_pct": 18.2,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 30
+      }
+    },
+    {
+      "ticker": "033780.KS",
+      "name": "KT&G",
+      "rs_rank": 84,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 188000.0,
+      "ma50": 177758.02,
+      "ma150": 174376.93,
+      "ma200": 168424.48,
+      "high52": 196400.0,
+      "low52": 127251.6,
+      "pct_off_high": -4.3,
+      "pct_above_low": 47.7,
+      "rs_nh": false,
+      "vcp": {
+        "score": 63,
+        "count": 3,
         "contractions": [
           {
             "hi_date": "2026-08-10",
@@ -1382,20 +1705,72 @@
             "low": 167200.0,
             "depth_pct": 6.6,
             "vol_ratio": 0.73
+          },
+          {
+            "hi_date": "2026-10-21",
+            "lo_date": "2026-10-27",
+            "high": 196400.0,
+            "low": 185600.0,
+            "depth_pct": 5.5,
+            "vol_ratio": 1.07
           }
         ],
-        "pivot": 179000.0,
-        "stop": 167200.0,
-        "final_depth_pct": 6.6,
-        "vol_declining": true,
+        "pivot": 196400.0,
+        "stop": 185600.0,
+        "final_depth_pct": 5.5,
+        "vol_declining": false,
         "dryup": false,
-        "base_days": 52
+        "base_days": 53
+      }
+    },
+    {
+      "ticker": "021240.KS",
+      "name": "코웨이",
+      "rs_rank": 84,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 101700.0,
+      "ma50": 100563.96,
+      "ma150": 91110.28,
+      "ma200": 87537.31,
+      "high52": 111800.0,
+      "low52": 65950.07,
+      "pct_off_high": -9.0,
+      "pct_above_low": 54.2,
+      "rs_nh": false,
+      "vcp": {
+        "score": 28,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-20",
+            "lo_date": "2026-10-28",
+            "high": 111800.0,
+            "low": 100900.0,
+            "depth_pct": 9.7,
+            "vol_ratio": 0.73
+          }
+        ],
+        "pivot": 111800.0,
+        "stop": 100900.0,
+        "final_depth_pct": 9.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 7
       }
     },
     {
       "ticker": "044450.KS",
       "name": "KSS해운",
-      "rs_rank": 85,
+      "rs_rank": 83,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1407,9 +1782,9 @@
         "rs_rank_70plus": true
       },
       "price": 11730.0,
-      "ma50": 10920.8,
-      "ma150": 10707.53,
-      "ma200": 10486.0,
+      "ma50": 10955.4,
+      "ma150": 10715.27,
+      "ma200": 10499.85,
       "high52": 14400.0,
       "low52": 8304.76,
       "pct_off_high": -18.5,
@@ -1433,145 +1808,13 @@
         "final_depth_pct": 9.1,
         "vol_declining": false,
         "dryup": false,
-        "base_days": 17
-      }
-    },
-    {
-      "ticker": "028100.KS",
-      "name": "동아지질",
-      "rs_rank": 84,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 18600.0,
-      "ma50": 18572.0,
-      "ma150": 17324.33,
-      "ma200": 17206.64,
-      "high52": 20750.0,
-      "low52": 12935.26,
-      "pct_off_high": -10.4,
-      "pct_above_low": 43.8,
-      "rs_nh": false,
-      "vcp": {
-        "score": 43,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-09-18",
-            "lo_date": "2026-10-15",
-            "high": 20050.0,
-            "low": 18060.0,
-            "depth_pct": 9.9,
-            "vol_ratio": 0.65
-          }
-        ],
-        "pivot": 20050.0,
-        "stop": 18060.0,
-        "final_depth_pct": 9.9,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 24
-      }
-    },
-    {
-      "ticker": "348030.KQ",
-      "name": "모비릭스",
-      "rs_rank": 84,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 3550.0,
-      "ma50": 3254.9,
-      "ma150": 2825.5,
-      "ma200": 2818.28,
-      "high52": 4210.0,
-      "low52": 2100.0,
-      "pct_off_high": -15.7,
-      "pct_above_low": 69.0,
-      "rs_nh": false,
-      "vcp": {
-        "score": 38,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-08-28",
-            "lo_date": "2026-10-02",
-            "high": 3670.0,
-            "low": 2530.0,
-            "depth_pct": 31.1,
-            "vol_ratio": 0.38
-          }
-        ],
-        "pivot": 3670.0,
-        "stop": 2530.0,
-        "final_depth_pct": 31.1,
-        "vol_declining": false,
-        "dryup": true,
-        "base_days": 39
-      }
-    },
-    {
-      "ticker": "004100.KS",
-      "name": "태양금속",
-      "rs_rank": 84,
-      "checks": {
-        "price_above_150_200": true,
-        "ma150_above_ma200": true,
-        "ma200_rising_1m": true,
-        "ma50_above_150_200": true,
-        "price_above_ma50": true,
-        "above_52w_low_30pct": true,
-        "within_25pct_52w_high": true,
-        "rs_rank_70plus": true
-      },
-      "price": 2900.0,
-      "ma50": 2843.9,
-      "ma150": 2830.13,
-      "ma200": 2750.7,
-      "high52": 3790.0,
-      "low52": 1942.77,
-      "pct_off_high": -23.5,
-      "pct_above_low": 49.3,
-      "rs_nh": false,
-      "vcp": {
-        "score": 8,
-        "count": 1,
-        "contractions": [
-          {
-            "hi_date": "2026-10-06",
-            "lo_date": "2026-10-23",
-            "high": 3375.0,
-            "low": 2710.0,
-            "depth_pct": 19.7,
-            "vol_ratio": 1.12
-          }
-        ],
-        "pivot": 3375.0,
-        "stop": 2710.0,
-        "final_depth_pct": 19.7,
-        "vol_declining": false,
-        "dryup": false,
-        "base_days": 15
+        "base_days": 18
       }
     },
     {
       "ticker": "294870.KS",
       "name": "IPARK현대산업개발",
-      "rs_rank": 83,
+      "rs_rank": 82,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1582,14 +1825,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 23900.0,
-      "ma50": 22646.0,
-      "ma150": 21462.68,
-      "ma200": 21306.54,
+      "price": 24200.0,
+      "ma50": 22694.0,
+      "ma150": 21481.65,
+      "ma200": 21321.73,
       "high52": 25050.0,
       "low52": 16900.0,
-      "pct_off_high": -4.6,
-      "pct_above_low": 41.4,
+      "pct_off_high": -3.4,
+      "pct_above_low": 43.2,
       "rs_nh": false,
       "vcp": {
         "score": 51,
@@ -1617,13 +1860,13 @@
         "final_depth_pct": 10.0,
         "vol_declining": true,
         "dryup": false,
-        "base_days": 29
+        "base_days": 30
       }
     },
     {
       "ticker": "067010.KQ",
       "name": "이씨에스",
-      "rs_rank": 83,
+      "rs_rank": 82,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1635,9 +1878,9 @@
         "rs_rank_70plus": true
       },
       "price": 2620.0,
-      "ma50": 2491.5,
-      "ma150": 2264.23,
-      "ma200": 2252.08,
+      "ma50": 2501.3,
+      "ma150": 2267.74,
+      "ma200": 2253.28,
       "high52": 2650.0,
       "low52": 1840.0,
       "pct_off_high": -1.1,
@@ -1661,13 +1904,13 @@
         "final_depth_pct": 5.7,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 6
+        "base_days": 7
       }
     },
     {
-      "ticker": "950190.KQ",
-      "name": "고스트스튜디오",
-      "rs_rank": 79,
+      "ticker": "004100.KS",
+      "name": "태양금속",
+      "rs_rank": 82,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1678,14 +1921,58 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 9730.0,
-      "ma50": 9513.0,
-      "ma150": 8921.27,
-      "ma200": 8753.3,
+      "price": 2855.0,
+      "ma50": 2852.8,
+      "ma150": 2829.2,
+      "ma200": 2753.47,
+      "high52": 3790.0,
+      "low52": 1942.77,
+      "pct_off_high": -24.7,
+      "pct_above_low": 47.0,
+      "rs_nh": false,
+      "vcp": {
+        "score": 8,
+        "count": 1,
+        "contractions": [
+          {
+            "hi_date": "2026-10-06",
+            "lo_date": "2026-10-23",
+            "high": 3375.0,
+            "low": 2710.0,
+            "depth_pct": 19.7,
+            "vol_ratio": 1.12
+          }
+        ],
+        "pivot": 3375.0,
+        "stop": 2710.0,
+        "final_depth_pct": 19.7,
+        "vol_declining": false,
+        "dryup": false,
+        "base_days": 16
+      }
+    },
+    {
+      "ticker": "950190.KQ",
+      "name": "고스트스튜디오",
+      "rs_rank": 78,
+      "checks": {
+        "price_above_150_200": true,
+        "ma150_above_ma200": true,
+        "ma200_rising_1m": true,
+        "ma50_above_150_200": true,
+        "price_above_ma50": true,
+        "above_52w_low_30pct": true,
+        "within_25pct_52w_high": true,
+        "rs_rank_70plus": true
+      },
+      "price": 9740.0,
+      "ma50": 9526.6,
+      "ma150": 8931.93,
+      "ma200": 8758.4,
       "high52": 12460.0,
       "low52": 6920.0,
-      "pct_off_high": -21.9,
-      "pct_above_low": 40.6,
+      "pct_off_high": -21.8,
+      "pct_above_low": 40.8,
       "rs_nh": false,
       "vcp": {
         "score": 76,
@@ -1713,13 +2000,13 @@
         "final_depth_pct": 5.8,
         "vol_declining": true,
         "dryup": true,
-        "base_days": 26
+        "base_days": 27
       }
     },
     {
       "ticker": "031510.KQ",
       "name": "오스템",
-      "rs_rank": 79,
+      "rs_rank": 77,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1730,17 +2017,17 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 1162.0,
-      "ma50": 1134.66,
-      "ma150": 1095.89,
-      "ma200": 1079.18,
+      "price": 1150.0,
+      "ma50": 1134.42,
+      "ma150": 1096.67,
+      "ma200": 1079.56,
       "high52": 1324.0,
       "low52": 851.0,
-      "pct_off_high": -12.2,
-      "pct_above_low": 36.5,
+      "pct_off_high": -13.1,
+      "pct_above_low": 35.1,
       "rs_nh": false,
       "vcp": {
-        "score": 63,
+        "score": 88,
         "count": 3,
         "contractions": [
           {
@@ -1772,14 +2059,14 @@
         "stop": 1082.0,
         "final_depth_pct": 6.6,
         "vol_declining": true,
-        "dryup": false,
-        "base_days": 53
+        "dryup": true,
+        "base_days": 54
       }
     },
     {
       "ticker": "068790.KQ",
       "name": "DMS",
-      "rs_rank": 75,
+      "rs_rank": 74,
       "checks": {
         "price_above_150_200": true,
         "ma150_above_ma200": true,
@@ -1790,14 +2077,14 @@
         "within_25pct_52w_high": true,
         "rs_rank_70plus": true
       },
-      "price": 7590.0,
-      "ma50": 7398.0,
-      "ma150": 7173.1,
-      "ma200": 7019.93,
+      "price": 7650.0,
+      "ma50": 7396.8,
+      "ma150": 7169.5,
+      "ma200": 7025.82,
       "high52": 9190.0,
       "low52": 4230.0,
-      "pct_off_high": -17.4,
-      "pct_above_low": 79.4,
+      "pct_off_high": -16.8,
+      "pct_above_low": 80.9,
       "rs_nh": false,
       "vcp": {
         "score": 31,
@@ -1817,7 +2104,7 @@
         "final_depth_pct": 18.2,
         "vol_declining": false,
         "dryup": true,
-        "base_days": 14
+        "base_days": 15
       }
     }
   ]
